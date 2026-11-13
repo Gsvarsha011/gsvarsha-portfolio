@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>G S Varsha — Product Designer &amp; UX Designer</title>
+  <meta name="description" content="Portfolio of G S Varsha, product designer and UX designer.">
+  <meta name="theme-color" content="#F3EFE7">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%23F3EFE7'/%3E%3Ccircle cx='8' cy='8' r='3.2' fill='%23B66A4B'/%3E%3C/svg%3E">
+
+  <link rel="preload" href="fonts/PPFragment-GlareRegular.otf" as="font" type="font/otf" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&amp;display=swap">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/hero.css">
+  <link rel="stylesheet" href="css/projects.css">
+  <link rel="stylesheet" href="css/about.css">
+  <link rel="stylesheet" href="css/outro.css">
+  <link rel="stylesheet" href="css/rally.css">
+  <link rel="stylesheet" href="css/cursor.css">
+
+  <!-- Tamil + Devanagari for the greeting: only the glyphs used (text=
+       subset), loaded without blocking render; system fonts are fallbacks. -->
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400&amp;family=Noto+Sans+Tamil:wght@400&amp;text=%E0%AE%B5%E0%AE%A3%E0%AE%95%E0%AF%8D%E0%AE%95%E0%AE%AE%E0%AF%8D%E0%A4%A8%E0%A4%AE%E0%A4%B8%E0%A5%8D%E0%A4%A4%E0%A5%87&amp;display=swap" onload="this.onload=null;this.rel='stylesheet'">
+
+
+  <script>
+    (() => {
+      const root = document.documentElement;
+      root.classList.add("js");
+      // .motion turns on the pinned scroll sequence; without it (no JS, no
+      // WebGL, or reduced motion) the hero is a still, readable page.
+      const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (!reduce) root.classList.add("motion");
+
+      // The greeting (js/loader.js): the first visit in this browser
+      // session, or any visit with ?hello; never when arriving at a #link.
+      let greet = !location.hash;
+      try {
+        if (sessionStorage.getItem("gsv9-greeted")) greet = false;
+      } catch (e) {}
+      if (/[?&]hello\b/.test(location.search)) greet = true;
+      if (!greet) return;
+      root.classList.add("greet");
+      if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+      // is-loading: only the paper shows; the name and desk wait to come in
+      if (!reduce) root.classList.add("is-loading", "is-rising");
+      // safety net: never leave the page covered or the hero empty
+      setTimeout(() => root.classList.remove("greet", "is-loading", "is-rising"), 9000);
+    })();
+  </script>
+  <!-- js/bundle.js is js/hero.js and everything it imports (three.js
+       included) in one plain script, so the page also works opened straight
+       from disk. Rebuild it after editing js/: see README. -->
+  <script type="speculationrules">{"prefetch":[{"where":{"selector_matches":"a[href*='work/'], a[href*='index.html']"},"eagerness":"moderate"}]}</script>
+  <script defer src="js/bundle.js"></script>
+  <script defer src="js/nav.js"></script>
+  <script defer src="js/projects.js"></script>
+  <script defer src="js/outro.js"></script>
+  <script defer src="js/rally-core.js"></script>
+  <script defer src="js/rally.js"></script>
+  <script defer src="js/loader.js"></script>
+  <script defer src="js/cursor.js"></script>
+</head>
+<body>
+  <a class="skip" href="#work">Skip to work</a>
+
+  <!-- Header, always on top: the name on the left, the links on the right
+       in a small paper tab (a sand slab slides under the one you point at),
+       over a soft blur that fades out downward. -->
+  <!-- the header's soft blur sits outside it: the header keeps its own view transition, and that would stop the blur seeing the page -->
+  <div class="dock__blur" aria-hidden="true" data-dock-blur><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <header class="dock" data-dock>
+    <a class="dock__name" href="#top">G S Varsha</a>
+    <!-- phones: Resume stays out; the other links fold into a menu -->
+    <div class="dock__end">
+      <div class="dock__pill">
+        <a class="dock__cta" href="assets/G-S-Varsha-Resume.pdf" target="_blank" rel="noopener" data-resume>Resume</a>
+        <span class="dock__sep" aria-hidden="true"></span>
+        <button class="dock__burger" type="button" aria-expanded="false" aria-controls="dock-menu" data-burger>
+          <span class="dock__burger-word" aria-hidden="true"><span>Menu</span><span>Close</span></span>
+          <span class="dock__bars" aria-hidden="true"><i></i><i></i></span>
+          <span class="visually-hidden">Menu</span>
+        </button>
+      </div>
+    </div>
+    <nav class="dock__nav" id="dock-menu" aria-label="Primary">
+      <span class="dock__slab" aria-hidden="true" data-slab></span>
+      <ul class="dock__list">
+        <li><a class="dock__link" href="#work" data-section-link="work">Work</a></li>
+        <li><a class="dock__link" href="#about" data-section-link="about">About</a></li>
+        <li><a class="dock__link" href="#contact">Contact</a></li>
+        <li class="dock__rule" aria-hidden="true"></li>
+        <!-- the PDF: assets/G-S-Varsha-Resume.pdf (replace the file to update it; RESUME_READY in js/nav.js) -->
+        <li><a class="dock__link dock__link--resume" href="assets/G-S-Varsha-Resume.pdf" target="_blank" rel="noopener" data-resume>Resume</a></li>
+      </ul>
+      <!-- phones only: a quiet line to reach you, under the links -->
+      <p class="dock__extra">
+        <a data-link="email">Email</a>
+        <a data-link="linkedin">LinkedIn</a>
+      </p>
+    </nav>
+  </header>
+
+  <main id="top">
+    <!-- Hero. The pin holds still for the scroll sequence (js/hero.js):
+         1  the name, above a little desk scene (js/scene.js)
+         2  the name rolls out; the roles and introduction roll in
+         3  the camera swings over your shoulder into the laptop as it opens
+         4  the screen shows the projects carousel; the real carousel
+            (#work, below) fades in exactly over it and takes over.
+         Layers, back to front: paper (WebGL) · type · desk (WebGL). -->
+    <section class="hero" aria-labelledby="hero-name" data-hero>
+      <div class="hero__pin" data-pin>
+        <div class="hero__frame" data-frame>
+          <canvas class="hero__paper" aria-hidden="true" data-paper></canvas>
+
+
+          <!-- The greeting: a one-line window at the name's place; the
+               greetings roll up through it (js/loader.js). -->
+          <div class="loader" aria-hidden="true" data-loader>
+            <div class="loader__window">
+              <ol class="loader__track" data-loader-track>
+                <li lang="en">Hello</li>
+                <li lang="ta"><span class="loader__ta">வணக்கம்</span></li>
+                <li lang="hi"><span class="loader__hi">नमस्ते</span></li>
+                <li lang="fr">Salut</li>
+                <li lang="la">Salve</li>
+              </ol>
+            </div>
+          </div>
+
+          <h1 class="hero__name" id="hero-name" data-name>
+            <span class="mask"><span class="word" data-word>G</span></span>
+            <span class="mask"><span class="word" data-word>S</span></span><br>
+            <span class="mask"><span class="word" data-word>Varsha</span></span>
+          </h1>
+
+          <canvas class="hero__scene" aria-hidden="true" data-scene></canvas>
+        </div>
+
+        <div class="hero__identity" data-identity>
+          <p class="roles">
+            <span class="mask roles__line"><span class="roles__text" data-role>Product Designer</span></span>
+            <span class="mask roles__line roles__line--2"><span class="roles__text" data-role>UX Designer</span></span>
+          </p>
+          <!-- In the scroll sequence these are speech bubbles from your head
+               (placed every frame by js/hero.js): "heyy!" while your name is
+               up, the introduction with the roles. On the still page the
+               introduction is a plain paragraph beside the roles. -->
+          <p class="intro bubble" data-intro><span class="bubble__text">I’ve always been curious about how things work and how they could work better. I love asking questions, exploring ideas, and turning little observations into things people can actually use.</span></p>
+          <p class="bubble bubble--hey" aria-hidden="true" data-hey><span class="bubble__text">heyy!</span></p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Projects: a carousel driven by the page's own scroll (js/projects.js).
+         The section is tall and its stage sticks inside it; scrolling moves
+         the projects sideways, one at a time, resting on each. The current
+         one is large and tilted in the middle; its neighbours wait, small and
+         blurred, on either side. The list on the right names all five and
+         jumps to any of them. Phones and reduced motion get a swipeable
+         row instead. Every word comes from the case studies. -->
+    <section class="work" id="work" aria-labelledby="work-heading" tabindex="-1" data-work>
+      <div class="work__stage">
+        <header class="work__top">
+          <h2 class="work__heading" id="work-heading">A few ideas, out in the world.</h2>
+        </header>
+
+        <!-- The projects travel through a curved field of focus as you scroll
+             (js/projects.js): each card's place, size, tilt, blur and
+             opacity come from its distance to the middle. Each card: a header
+             line (name, kind) and one large screen; the one in focus links to
+             its case study. -->
+        <ol class="work__cards" role="list">
+          <li class="card3" data-card>
+            <p class="card3__head" aria-hidden="true"><span class="card3__name">SpatialLite</span><span class="card3__kind">Product design · PropTech</span></p>
+            <a class="card3__body card3--spatiallite" data-case="spatiallite" aria-label="SpatialLite: explore the case study">
+              <span class="card3__shot"><img src="assets/projects/spatiallite-thumb.jpg" alt="SpatialLite on a laptop and a phone: a community master plan with its phases marked, and a building's floor plan" width="1672" height="941" decoding="async"></span>
+              <span class="card3__cta">Explore case study <span aria-hidden="true">↗</span></span>
+            </a>
+          </li>
+          <li class="card3" data-card>
+            <p class="card3__head" aria-hidden="true"><span class="card3__name">Spacture AI</span><span class="card3__kind">Website redesign · AI</span></p>
+            <a class="card3__body card3--spacture" data-case="spacture" aria-label="Spacture AI: explore the case study">
+              <span class="card3__shot"><img src="assets/projects/spacture-thumb.jpg" alt="Redesigned Spacture AI homepage on a laptop: Know Sooner. Respond Faster., beside a camera lens" width="1536" height="1024" decoding="async" loading="lazy"></span>
+              <span class="card3__cta">Explore case study <span aria-hidden="true">↗</span></span>
+            </a>
+          </li>
+          <li class="card3" data-card>
+            <p class="card3__head" aria-hidden="true"><span class="card3__name">Craft</span><span class="card3__kind">Website design &amp; implementation</span></p>
+            <a class="card3__body card3--craft" data-case="craft" aria-label="Craft: explore the case study">
+              <span class="card3__shot"><img src="assets/projects/craft-thumb.jpg" alt="Craft homepage: Creative Studio for AEC Workflows, with a sketch-to-render comparison and a tower render" width="1672" height="941" decoding="async" loading="lazy"></span>
+              <span class="card3__cta">Explore case study <span aria-hidden="true">↗</span></span>
+            </a>
+          </li>
+          <li class="card3" data-card>
+            <p class="card3__head" aria-hidden="true"><span class="card3__name">Flex Academy</span><span class="card3__kind">Website design</span></p>
+            <a class="card3__body card3--flex" data-case="flex" aria-label="Flex Academy: explore the case study">
+              <span class="card3__shot"><img src="assets/projects/flex-thumb.jpg" alt="Flex Academy on a laptop and a phone: We teach you how to build The Machine, and Your next 10 units shouldn’t feel like your first" width="1536" height="1024" decoding="async" loading="lazy"></span>
+              <span class="card3__cta">Explore case study <span aria-hidden="true">↗</span></span>
+            </a>
+          </li>
+          <!-- Spatial Key: no case study, it stays private. Its picture sits
+               under a pane of frosted glass with a lock in the middle, and
+               the card leads to Contact. -->
+          <li class="card3" data-card>
+            <p class="card3__head" aria-hidden="true"><span class="card3__name">Spatial Key</span><span class="card3__kind">Private project</span></p>
+            <a class="card3__body card3--locked" href="#contact" data-locked aria-label="Spatial Key is a private project. Connect to have a look">
+              <span class="card3__shot"><img src="assets/projects/spatial-key-thumb.jpg" alt="" width="1672" height="941" decoding="async" loading="lazy"></span>
+              <span class="card3__seal" aria-hidden="true">
+                <span class="card3__lock"><svg viewBox="0 0 12 14" focusable="false"><path class="card3__shackle" d="M3.2 6V4.2a2.8 2.8 0 0 1 5.6 0V6" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><rect x="1.5" y="6" width="9" height="7" rx="1.6" fill="currentColor"/></svg></span>
+                <span class="card3__ask">Connect to have a look?</span>
+              </span>
+            </a>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- About (#about): one scene that plays with the scroll. The three
+         statements take turns in the middle of the screen; the last one
+         rises to the top as your portrait comes up with your character from
+         the hero and a few lines about you (css/about.css, js/about.js).
+         Things to fill in are marked "ADD:". -->
+    <section class="story" id="about" aria-labelledby="story-title" data-story>
+      <div class="story__stage">
+        <h2 class="story__label" id="story-title" data-story-label>About me</h2>
+        <div class="story__lines">
+          <p class="beat__line" data-line>I started with visuals.</p>
+          <p class="beat__line" data-line>Then I looked deeper.</p>
+          <p class="beat__line" data-line>Now, I design experiences.</p>
+        </div>
+
+        <div class="meet" data-meet>
+          <div class="meet__pic" data-meet-pic>
+            <!-- me: the photo comes into focus once it's up (js/about.js) -->
+            <figure class="meet__photo" data-portrait>
+              <svg class="meet__blob" viewBox="0 0 1200 1500" aria-hidden="true" focusable="false"><path d="M640 300C880 270 1120 430 1150 660C1165 770 1185 830 1190 930C1200 1110 1120 1290 960 1400C780 1520 470 1500 300 1390C120 1270 40 1010 70 800C100 560 380 340 640 300Z"/></svg>
+              <img src="assets/about/portrait-cut.webp" alt="G S Varsha smiling at the camera, in a beige cap and a white T-shirt" width="1200" height="1500" decoding="async">
+            </figure>
+            <!-- your character, the same one as at the top of the page -->
+            <figure class="meet__me" data-story-me>
+              <canvas aria-hidden="true" data-cutout></canvas>
+              <figcaption class="visually-hidden">My blocky character from the top of the page</figcaption>
+            </figure>
+          </div>
+          <div class="meet__text" data-meet-text>
+            <p class="meet__hey">Hey, I’m Varsha.</p>
+            <p>I’m someone who gets curious about a lot of things. I studied visual communication, started exploring design, and eventually found myself drawn to the world of digital products.</p>
+            <p>I like figuring things out, noticing little details, experimenting with ideas and occasionally going down rabbit holes just because something caught my attention.</p>
+            <p>There’s still a lot I want to learn, make and explore. This little corner of the internet is a collection of some of that.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Toolset: one sentence. When it comes into view, three cursors fly
+         in carrying the logos; as each arrives the words part to make room
+         and the logo drops in beside its name. It plays by itself, once
+         per visit (again on a reload), like a short film. Four lines,
+         before and after: each line is a .kit__row
+         (js/about.js, initKit). Logos: the apps' own icons, in
+         assets/tools/. No JS or reduced motion: the logos are already in. -->
+    <section class="kit" aria-labelledby="kit-title" data-kit>
+      <div class="kit__stage" data-kit-stage>
+        <h2 class="visually-hidden" id="kit-title">My toolset</h2>
+        <p class="kit__line" data-kit-line><span class="kit__row">I design in <span class="chip" data-chip><img src="assets/tools/figma.png" alt="" width="512" height="512"></span>Figma and <span class="chip" data-chip><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="2.4" y="2.4" width="19.2" height="19.2" rx="4.3" fill="#000"/><path fill="#fff" d="M7.6 5.2h8.8v4.4H12zM7.6 9.6H12l4.4 4.4H7.6zM7.6 14H12v4.4z"/></svg></span>Framer,</span> <span class="kit__row">explore ideas with <span class="chip" data-chip><img src="assets/tools/claude.png" alt="" width="512" height="512"></span>Claude, craft visuals in</span> <span class="kit__row"><span class="chip" data-chip><img src="assets/tools/illustrator.png" alt="" width="512" height="512"></span>Illustrator and <span class="chip" data-chip><img src="assets/tools/photoshop.png" alt="" width="512" height="512"></span>Photoshop, prototype with</span> <span class="kit__row"><span class="chip" data-chip><img src="assets/tools/cursor.png" alt="" width="512" height="512"></span>Cursor and edit in <span class="chip" data-chip><img class="chip__pad" src="assets/tools/premiere-pro.svg" alt="" width="234" height="234"></span>Premiere&nbsp;Pro.</span></p>
+        <!-- the three cursors that bring the logos in -->
+        <span class="kit__cursor kit__cursor--a" aria-hidden="true" data-kit-cursor>
+          <svg viewBox="0 0 24 24" focusable="false"><path d="M3.5 2.5 20 10.2l-7.1 2.1-3.3 6.9z" fill="#24221F" stroke="#FFFFFF" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          <b>Designer</b>
+        </span>
+        <span class="kit__cursor kit__cursor--b" aria-hidden="true" data-kit-cursor>
+          <svg viewBox="0 0 24 24" focusable="false"><path d="M3.5 2.5 20 10.2l-7.1 2.1-3.3 6.9z" fill="#24221F" stroke="#FFFFFF" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          <b>Thinker</b>
+        </span>
+        <span class="kit__cursor kit__cursor--c" aria-hidden="true" data-kit-cursor>
+          <svg viewBox="0 0 24 24" focusable="false"><path d="M3.5 2.5 20 10.2l-7.1 2.1-3.3 6.9z" fill="#24221F" stroke="#FFFFFF" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          <b>Maker</b>
+        </span>
+      </div>
+    </section>
+
+    <!-- Beyond the pixels: a bento of tiles in three columns, the middle one
+         offset (css/about.css). Each opens its own thing: the photographs and
+         the artwork open the gallery at their picture, On repeat opens the
+         songs. Tiles rise in as they come into
+         view (js/about.js). -->
+    <section class="beyond" aria-labelledby="beyond-title" data-beyond>
+      <div class="beyond__canvas">
+        <header class="beyond__head">
+          <h2 class="beyond__title" id="beyond-title">What I do beyond the pixels.</h2>
+          <p class="beyond__line">Design is a big part of my life, but it isn’t all of it. I love photography, making things, music, badminton and probably picking up more interests than I have time for.</p>
+        </header>
+
+        <!-- left column: tiles a and e; middle: b, d and g; right: c and f
+             (where each sits: css/about.css) -->
+        <div class="bento" data-bento>
+          <button class="tile tile--a" type="button" aria-haspopup="dialog" aria-controls="gallery" data-gallery-open="photography" data-gallery-at="0" style="--i: 0">
+            <span class="tile__media" data-thumb="0"></span>
+            <span class="tile__tag">Photography</span>
+            <span class="tile__go" aria-hidden="true">↗</span>
+          </button>
+          <button class="tile tile--b tile--music" type="button" aria-haspopup="dialog" aria-controls="songs" data-open-songs style="--i: 1">
+            <span class="tile__disc" aria-hidden="true"></span>
+            <span class="tile__big">On repeat</span>
+            <span class="tile__small">Songs I can’t skip</span>
+            <span class="tile__go" aria-hidden="true">↗</span>
+          </button>
+          <button class="tile tile--c" type="button" aria-haspopup="dialog" aria-controls="gallery" data-gallery-open="artwork" data-gallery-at="0" style="--i: 2">
+            <span class="tile__media" data-thumb="0"></span>
+            <span class="tile__tag">Graphic design</span>
+            <span class="tile__go" aria-hidden="true">↗</span>
+          </button>
+          <button class="tile tile--d" type="button" aria-haspopup="dialog" aria-controls="gallery" data-gallery-open="artwork" data-gallery-at="1" style="--i: 3">
+            <span class="tile__media" data-thumb="1"></span>
+            <span class="tile__tag">Graphic design</span>
+            <span class="tile__go" aria-hidden="true">↗</span>
+          </button>
+          <button class="tile tile--e" type="button" aria-haspopup="dialog" aria-controls="gallery" data-gallery-open="drawings" data-gallery-at="0" style="--i: 4">
+            <span class="tile__media" data-thumb="0"></span>
+            <span class="tile__tag">Art &amp; illustration</span>
+            <span class="tile__go" aria-hidden="true">↗</span>
+          </button>
+          <button class="tile tile--f" type="button" aria-haspopup="dialog" aria-controls="gallery" data-gallery-open="photography" data-gallery-at="1" style="--i: 5">
+            <span class="tile__media" data-thumb="1"></span>
+            <span class="tile__tag">Photography</span>
+            <span class="tile__go" aria-hidden="true">↗</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- the songs on repeat, opened from the record -->
+      <dialog class="songs" id="songs" aria-labelledby="repeat-title" data-songs>
+        <h3 class="repeat__title" id="repeat-title">On repeat</h3>
+        <!-- a little player: the song playing on the left with its cover,
+             the songs on the right, and back, play and next under them
+             (js/about.js, initPlayer). Each song plays its Apple Music
+             preview: about 30 seconds, from the part of the song Apple
+             picks to show it off (usually the chorus), for anyone, signed in
+             to anything or not. Then the next one plays.
+             The songs, one <li> each: data-song is the song's Apple Music
+             id (the number after ?i= in its music.apple.com link),
+             data-preview and data-cover its preview and cover, from
+             https://itunes.apple.com/lookup?id=<id>&country=in
+             (previewUrl, and artworkUrl100 with 100x100bb made 600x600bb):
+             <li><button class="track__btn" type="button" data-song="..." data-preview="..." data-cover="..."><span class="track__song">Song title</span> <span class="track__artist">Artist</span></button></li>
+             A playlist link can go in .repeat__link: set href and remove
+             hidden. Nothing loads until the songs open. -->
+        <div class="deck">
+          <div class="now" data-now>
+            <div class="now__art"><img alt="" width="640" height="640" decoding="async" data-now-art></div>
+            <p class="now__song" data-now-song></p>
+            <p class="now__artist" data-now-artist></p>
+            <div class="now__time" aria-hidden="true">
+              <span data-now-at>0:00</span>
+              <span class="now__bar"><span class="now__fill" data-now-fill></span></span>
+              <span data-now-len>0:30</span>
+            </div>
+          </div>
+          <div class="deck__side">
+            <ol class="repeat__list" data-tracks>
+              <li><button class="track__btn" type="button" data-song="1524793907" data-preview="https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/ba/9f/fd/ba9ffdbe-e2d8-f0f2-3e64-dc0ad2429a05/mzaf_7780705505584561681.plus.aac.p.m4a" data-cover="https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/7c/04/ba/7c04ba17-2ff8-21b3-0ac0-7d141f86e924/20UMGIM64216.rgb.jpg/600x600bb.jpg"><span class="track__song">august</span> <span class="track__artist">Taylor Swift</span></button></li>
+              <li><button class="track__btn" type="button" data-song="586962314" data-preview="https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/ab/fc/03/abfc030a-1ba4-ce92-65a9-69f6898ff393/mzaf_17416643675212349681.plus.aac.p.m4a" data-cover="https://is1-ssl.mzstatic.com/image/thumb/Music113/v4/8c/b7/fb/8cb7fb4f-3e96-8fa3-10ab-b494b2597c9f/886443579477.jpg/600x600bb.jpg"><span class="track__song">Rasathi</span> <span class="track__artist">A.R. Rahman, Shahul Hameed</span></button></li>
+              <li><button class="track__btn" type="button" data-song="1217902078" data-preview="https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/8e/fc/60/8efc6062-8126-4b28-4758-65ef0f80e4c1/mzaf_16286515255404637093.plus.aac.p.m4a" data-cover="https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/a3/71/ee/a371eea6-b148-0e47-9170-baf2147c8f7b/603497870066.jpg/600x600bb.jpg"><span class="track__song">Seven Wonders</span> <span class="track__artist">Fleetwood Mac</span></button></li>
+              <li><button class="track__btn" type="button" data-song="1729751827" data-preview="https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/7a/95/dc/7a95dc84-2a23-6db0-eab7-d13154856a2c/mzaf_17323186275842451113.plus.aac.p.m4a" data-cover="https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/92/0e/16/920e16ba-bcfe-8c82-d33b-b1e6d8196cb7/196871814256.jpg/600x600bb.jpg"><span class="track__song">Mandram Vandha</span> <span class="track__artist">Ilaiyaraaja, S. P. Balasubrahmanyam</span></button></li>
+              <li><button class="track__btn" type="button" data-song="1497230972" data-preview="https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview211/v4/e5/b6/05/e5b605d9-5a44-e981-d9be-2c434cb61de4/mzaf_16402977899153564031.plus.aac.p.m4a" data-cover="https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/65/e3/e7/65e3e740-b69f-f5cb-f2e6-7dedb5265ac9/19UMGIM96748.rgb.jpg/600x600bb.jpg"><span class="track__song">Borderline</span> <span class="track__artist">Tame Impala</span></button></li>
+              <li><button class="track__btn" type="button" data-song="1544268343" data-preview="https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview221/v4/fc/ef/7b/fcef7b7a-cf8f-df89-14af-6de042067641/mzaf_2860575469514027484.plus.aac.p.m4a" data-cover="https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/bd/dd/54/bddd543b-4e0f-007b-1398-5fef90b963c3/20UM1IM14847.rgb.jpg/600x600bb.jpg"><span class="track__song">‘tis the damn season</span> <span class="track__artist">Taylor Swift</span></button></li>
+            </ol>
+            <div class="deck__controls">
+              <button class="deck__btn" type="button" aria-label="Previous song" data-prev><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 5h2.2v14H6zM19 5.6v12.8a.6.6 0 0 1-.92.5L9 12.5a.6.6 0 0 1 0-1L18.08 5.1a.6.6 0 0 1 .92.5Z"/></svg></button>
+              <button class="deck__btn deck__btn--play" type="button" aria-label="Play" data-toggle><svg class="i-play" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.2v13.6a.7.7 0 0 0 1.06.6l10.6-6.8a.7.7 0 0 0 0-1.2L9.06 4.6A.7.7 0 0 0 8 5.2Z"/></svg><svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="6.5" y="5" width="3.6" height="14" rx="1.2"/><rect x="13.9" y="5" width="3.6" height="14" rx="1.2"/></svg></button>
+              <button class="deck__btn" type="button" aria-label="Next song" data-next><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M18 5h-2.2v14H18zM5 5.6v12.8a.6.6 0 0 0 .92.5L15 12.5a.6.6 0 0 0 0-1L5.92 5.1a.6.6 0 0 0-.92.5Z"/></svg></button>
+            </div>
+          </div>
+        </div>
+        <audio preload="none" data-audio></audio>
+        <a class="repeat__link" href="" target="_blank" rel="noopener" hidden>Open the playlist <span aria-hidden="true">↗</span></a>
+        <button class="songs__close" type="button" aria-label="Close" data-songs-close><span aria-hidden="true">×</span></button>
+      </dialog>
+
+      <!-- the gallery: one picture at a time, full size, ← → and close -->
+      <div class="gallery" id="gallery" role="dialog" aria-modal="true" aria-label="Gallery" hidden data-gallery>
+        <div class="gallery__media" data-g-media></div>
+        <p class="visually-hidden" aria-live="polite" data-g-count></p>
+        <button class="gallery__arrow gallery__arrow--prev" type="button" aria-label="Previous" data-g-prev><span aria-hidden="true">←</span></button>
+        <button class="gallery__arrow gallery__arrow--next" type="button" aria-label="Next" data-g-next><span aria-hidden="true">→</span></button>
+        <button class="gallery__close" type="button" aria-label="Close" data-g-close><span aria-hidden="true">×</span></button>
+      </div>
+
+      <!-- the photographs, one <li> each (WebP, long edge 2000px). The first
+           two are the photography tiles. To add one:
+           <li><img src="assets/beyond/photography/13.webp" alt="What the photo shows" width="2000" height="1333"><p>Optional caption</p></li> -->
+      <ol hidden data-source="photography" data-title="Photography" data-kind="Photograph">
+        <li><img src="assets/beyond/photography/01.webp" alt="Close portrait of an elderly woman with grey hair and gold nose studs" width="1333" height="2000"></li>
+        <li><img src="assets/beyond/photography/02.webp" alt="A white-throated kingfisher on a branch under tamarind leaves" width="2000" height="1333"></li>
+        <li><img src="assets/beyond/photography/03.webp" alt="Two blackbuck grazing head to head, their spiral horns crossing" width="1333" height="2000"></li>
+        <li><img src="assets/beyond/photography/04.webp" alt="A pelican gliding across golden, rippled water" width="2000" height="1333"></li>
+        <li><img src="assets/beyond/photography/05.webp" alt="Black and white portrait of an elderly man with a white moustache" width="1333" height="2000"></li>
+        <li><img src="assets/beyond/photography/06.webp" alt="A young bonnet macaque looking up among green leaves" width="2000" height="1333"></li>
+        <li><img src="assets/beyond/photography/07.webp" alt="Ferry boats on a calm, hazy sea under a blue sky" width="1500" height="2000"></li>
+        <li><img src="assets/beyond/photography/08.webp" alt="The carved rock temple at Ellora, framed by the cave's overhang" width="1500" height="2000"></li>
+        <li><img src="assets/beyond/photography/09.webp" alt="A painted stork in flight, seen through soft green leaves against the sky" width="2000" height="1334"></li>
+        <li><img src="assets/beyond/photography/10.webp" alt="Close-up of a tiger's face, looking straight at the camera" width="2000" height="1334"></li>
+        <li><img src="assets/beyond/photography/11.webp" alt="A peacock standing tall in front of a dark grey wall" width="2000" height="1334"></li>
+        <li><img src="assets/beyond/photography/12.webp" alt="A white tiger licking its nose as it walks through green brush" width="2000" height="1334"></li>
+      </ol>
+
+      <!-- the artwork, the same way (WebP in assets/beyond/artwork); data-kind
+           on each <li> says what it is (Illustration, Graphic design). The
+           first two are the poster tiles. -->
+      <ol hidden data-source="artwork" data-title="Illustration &amp; graphic design" data-kind="Illustration,Graphic design">
+        <li data-kind="Graphic design"><img src="assets/beyond/artwork/01.webp" alt="Arrival: a poster of white concentric rings spiralling into a starry night sky" width="595" height="842"></li>
+        <li data-kind="Graphic design"><img src="assets/beyond/artwork/02.webp" alt="On the Edge: a poster of a lone figure on an isometric ledge before a huge red planet" width="595" height="842"></li>
+        <li data-kind="Graphic design"><img src="assets/beyond/artwork/03.webp" alt="Fluffy: the word in light letters over swirls of orange fur" width="1080" height="1080"></li>
+        <li data-kind="Illustration"><img src="assets/beyond/artwork/04.webp" alt="A six-panel ink comic: a man in the shower fights a sputtering shampoo bottle" width="1743" height="1268"></li>
+      </ol>
+
+      <!-- your drawings and paintings, the same way (WebP in
+           assets/beyond/drawings); data-kind on each <li> is Drawing or
+           Painting. The first is the Drawings & paintings tile. -->
+      <ol hidden data-source="drawings" data-title="Art &amp; illustration" data-kind="Drawing,Painting">
+        <li data-kind="Painting"><img src="assets/beyond/drawings/01.webp" alt="Watercolour of a red apple up close, its stem and a green leaf, with water droplets on the skin" width="549" height="794"></li>
+        <li data-kind="Painting"><img src="assets/beyond/drawings/02.webp" alt="Watercolour of a sliced blood orange: deep red segments in a pale rind against a dark navy background" width="532" height="794"></li>
+        <li data-kind="Painting"><img src="assets/beyond/drawings/03.webp" alt="Watercolour of a sailboat in silhouette on still water at sunset, under a peach and lilac sky" width="521" height="692"></li>
+      </ol>
+    </section>
+
+    <!-- Footer: a drop falls in as you scroll, swells, and spreads into a
+         rounded panel (js/outro.js). Inside: the hero's paper, and you,
+         meditating (js/footer.js). -->
+    <footer class="foot" id="contact" data-foot>
+      <div class="fpanel" data-drop>
+        <canvas class="fpanel__paper" aria-hidden="true" data-foot-paper></canvas>
+        <!-- The quote is the footer's headline. -->
+        <figure class="fquote">
+          <blockquote>
+            <p><span>“The details are not the details.</span> <span>They make the design.”</span></p>
+          </blockquote>
+          <figcaption>— Charles Eames</figcaption>
+        </figure>
+
+        <!-- You, meditating (js/footer.js). Hover, focus or tap: your eyes
+             open and a small note appears, with a way back to your story. -->
+        <div class="foot__me" data-me-spot>
+          <canvas aria-hidden="true" data-me></canvas>
+          <button class="foot__me-hit" type="button" aria-expanded="false" aria-controls="me-note" data-me-hit>
+            <span class="visually-hidden">Say hello to G S Varsha's character, meditating</span>
+          </button>
+          <div class="foot__say" id="me-note" data-me-note>
+            <p>You found me in my peaceful era.</p>
+            <a href="#about">Explore my story again?</a>
+          </div>
+        </div>
+
+        <!-- Connect: LinkedIn · Email (hover shows the address; click opens a
+             new email to it) · Resume. Addresses: LINKS in js/outro.js -->
+        <div class="fconnect">
+          <h3>Connect</h3>
+          <div class="fchips">
+            <a class="fchip" data-link="linkedin" aria-label="LinkedIn">
+              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4.98 3.5a2.48 2.48 0 1 1 0 4.96 2.48 2.48 0 0 1 0-4.96ZM3 9.75h3.96V21H3V9.75Zm6.38 0h3.8v1.54h.05c.53-1 1.82-2.06 3.75-2.06 4 0 4.75 2.64 4.75 6.07V21h-3.96v-5.03c0-1.2-.02-2.74-1.67-2.74-1.67 0-1.93 1.3-1.93 2.65V21H9.38V9.75Z"/></svg>
+            </a>
+            <a class="fchip fchip--wide" data-link="email">
+              <span class="fchip__a">Email me</span>
+              <span class="fchip__b" aria-hidden="true" data-email-text></span>
+            </a>
+            <a class="fchip" data-link="resume" aria-label="Resume">
+              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" d="M6 3h8l4 4v14H6z"/><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" d="M14 3v4h4M9 12h6M9 15.5h6"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- the little racket: hover and it swings; click and the game opens -->
+        <button class="sig" type="button" aria-haspopup="dialog" data-open-rally>
+          <span class="sig__label">Fancy a rally?<span class="visually-hidden"> (opens a game of badminton)</span></span>
+          <svg class="sig__art" aria-hidden="true" viewBox="0 0 30 24" width="76" height="61" shape-rendering="crispEdges">
+            <g class="sig__racket">
+              <path fill="#24221F" d="M5 2h6v1H5zM3 3h2v1H3zM11 3h2v1h-2zM2 4h1v2H2zM13 4h1v2h-1zM1 6h1v4H1zM14 6h1v4h-1zM2 10h1v2H2zM13 10h1v2h-1zM3 12h2v1H3zM11 12h2v1h-2zM5 13h6v1H5z"/>
+              <path fill="rgba(36,34,31,0.35)" d="M4 5h1v7H4zM6 3h1v10H6zM8 3h1v10H8zM10 3h1v10h-1zM12 5h1v7h-1zM3 6h10v1H3zM2 8h12v1H2zM3 10h10v1H3z"/>
+              <path fill="#24221F" d="M7 14h2v2H7zM7 16h2v3H7z"/>
+              <path fill="#B66A4B" d="M6.5 19h3v5h-3z"/>
+            </g>
+            <g class="sig__shuttle">
+              <path fill="#FFFFFF" stroke="#24221F" stroke-width="0.35" paint-order="stroke" d="M22 4h1v1h-1zM21 5h3v1h-3zM20 6h5v1h-5zM20 7h5v1h-5z"/>
+              <path fill="#D8C8B4" d="M21 8h3v1h-3z"/>
+              <path fill="#B66A4B" d="M21 9h3v2h-3z"/>
+            </g>
+          </svg>
+        </button>
+        <p class="fpanel__copy">© 2026 G S Varsha · Portfolio</p>
+      </div>
+
+    </footer>
+    <!-- The badminton game, opened from the racket in the footer
+         (js/rally.js, the rules in js/rally-core.js). -->
+    <dialog class="rally" aria-labelledby="rally-title" data-rally>
+      <div class="rally__card">
+        <header class="rally__head">
+          <h2 class="rally__title" id="rally-title">One quick rally?</h2>
+          <button class="rally__close" type="button" aria-label="Close the game" data-close>Close <span aria-hidden="true">×</span></button>
+        </header>
+
+        <div class="rally__game" tabindex="-1" aria-describedby="rally-help" data-game>
+          <p class="rally__score" aria-label="Score">
+            <span class="rally__side">You <b data-score-you>0</b></span>
+            <span class="rally__to">to 21 · singles</span>
+            <span class="rally__side rally__side--gs"><b data-score-gs>0</b> GS</span>
+          </p>
+
+          <div class="rally__holder">
+            <div class="rally__stage" data-stage>
+              <canvas class="rally__court" aria-hidden="true" data-court></canvas>
+              <p class="rally__msg" role="status" aria-live="polite" data-msg></p>
+              <button class="rally__paused" type="button" hidden data-paused>Paused · click to carry on</button>
+            </div>
+            <div class="rally__panel" data-panel>
+              <p class="rally__panel-title" data-panel-title>You on the left, me on the right.</p>
+              <button class="rally__start" type="button" data-start>Play badminton</button>
+            </div>
+          </div>
+
+          <p class="rally__turn">Turn your phone sideways for a bigger court.</p>
+          <div class="rally__touch">
+            <button type="button" class="rally__hit" data-touch="swing">Hit</button>
+          </div>
+
+          <p class="rally__keys" id="rally-help">
+            <span><kbd>Space</kbd> hit (and serve). You move on your own: just time it.</span>
+            <span><kbd>Esc</kbd> close</span>
+          </p>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- Spatial Key's locked card opens this (js/projects.js): it stays private,
+         so the visitor stays on the projects and gets two ways to ask. -->
+    <dialog class="keycard" aria-labelledby="keycard-title" data-keycard tabindex="-1">
+      <button class="keycard__close" type="button" aria-label="Close" data-keycard-close><span aria-hidden="true">×</span></button>
+      <span class="keycard__lock" aria-hidden="true"><svg viewBox="0 0 12 14" focusable="false"><path class="keycard__shackle" d="M3.2 6V4.2a2.8 2.8 0 0 1 5.6 0V6" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><rect x="1.5" y="6" width="9" height="7" rx="1.6" fill="currentColor"/></svg></span>
+      <h2 class="keycard__title" id="keycard-title">Spatial Key is private.</h2>
+      <p class="keycard__line">But I'm happy to walk you through it.</p>
+      <div class="keycard__actions">
+        <a class="keycard__btn keycard__btn--main" data-link="email" data-subject="Spatial Key: can I have a look?">Email me</a>
+        <a class="keycard__btn" data-link="linkedin">LinkedIn <span aria-hidden="true">↗</span></a>
+      </div>
+      <p class="keycard__address" data-email-plain></p>
+    </dialog>
+
+  </main>
+</body>
+</html>
