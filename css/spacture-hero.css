@@ -1,0 +1,48 @@
+/* Spacture AI's first screen, from the Figma frame (2000 x 1300): the
+   type and buttons sit over the background video, which plays muted and
+   loops. Every size is the frame's px x 0.05cqw, so the whole screen
+   scales with its box like an image. Fonts as in the design: Plus Jakarta
+   Sans and Inter. The logo is Spacture's own, keyed out of the Figma
+   export (assets/work/spacture-ai/logo.webp). */
+
+.sx-hero {
+  position: relative;
+  container-type: inline-size;
+  aspect-ratio: 2000 / 1300;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #0B0D10;
+  box-shadow: var(--frame);
+  color: #FFFFFF;
+  font-family: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.sx-hero__vid { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 50%; }
+.sx-hero__ui { position: absolute; inset: 0; }
+.sx-hero__ui > * { position: absolute; margin: 0; }
+
+/* the top bar */
+.sx-hero__logo { left: 6.29cqw; top: 3.76cqw; width: 9.52cqw; height: auto; }
+.sx-hero__nav { left: 30.95cqw; top: 4.25cqw; translate: 0 -50%; display: flex; gap: 1.125cqw; font-size: 1.1cqw; font-weight: 500; letter-spacing: 0.01em; }
+.sx-hero__btn {
+  display: grid;
+  place-items: center;
+  height: 3.4cqw;
+  padding: 0 1.9cqw;
+  border-radius: 0.4cqw;
+  background: #3157F6;
+  font-size: 1.3cqw;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+.sx-hero__btn--top { right: 6.25cqw; top: 2.5cqw; width: 12.9cqw; padding: 0; }
+
+/* the message, bottom left */
+.sx-hero__alert { left: 6.25cqw; top: 44.5cqw; translate: 0 -50%; display: flex; align-items: center; gap: 0.6cqw; font-family: "Inter", sans-serif; font-size: 1.24cqw; color: #FF3B30; }
+.sx-hero__alert::before { content: ""; width: 0.8cqw; height: 0.8cqw; border-radius: 50%; background: currentColor; }
+.sx-hero__h { left: 6.25cqw; top: 45.825cqw; font-size: 4.4cqw; font-weight: 700; line-height: 1; letter-spacing: -0.004em; }
+.sx-hero__sub { left: 6.25cqw; top: 56.55cqw; translate: 0 -50%; font-family: "Inter", sans-serif; font-size: 1.075cqw; letter-spacing: 0.01em; }
+.sx-hero__ctas { left: 6.25cqw; top: 59.05cqw; display: flex; align-items: center; gap: 3.2cqw; }
+.sx-hero__ctas .sx-hero__btn { width: 12.85cqw; padding: 0; }
+.sx-hero__link { font-size: 1.275cqw; font-weight: 500; letter-spacing: -0.01em; }

@@ -1,0 +1,320 @@
+/* Hero: layout, type, the laptop screen, and the two modes.
+   Without .motion (no JS, no WebGL, or reduced motion) the hero is a still
+   page: the name above the desk, then the roles and introduction, then the
+   projects. With .motion the hero is tall and its pin sticks while
+   js/hero.js plays the sequence from scroll progress. */
+
+.hero {
+  --inset: clamp(8px, 1vw, 14px);
+  --radius: clamp(14px, 1.6vw, 24px);
+  --name-size: min(9.4vw, 15.5svh);
+  --roles-size: var(--t-h1);
+  --type-y: 27%;
+  --roles-y: 27%;
+  position: relative;
+}
+
+.hero__pin { position: relative; }
+
+/* the frame: a card of paper inset from the page */
+.hero__frame {
+  position: relative;
+  height: calc(100vh - var(--inset) * 2);
+  height: calc(100svh - var(--inset) * 2);
+  margin: var(--inset);
+  overflow: hidden;
+  border-radius: var(--radius);
+  /* stands in for the WebGL paper until it draws (or if it can't) */
+  background: linear-gradient(170deg, #E6D3C3 0%, #EADFD2 40%, #F1EBE2 100%);
+}
+
+.hero__paper,
+.hero__scene {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.hero__paper { z-index: 0; }
+.hero__scene { z-index: 3; pointer-events: none; }
+.no-gl .hero__scene { display: none; }
+
+/* ---------- the name ---------- */
+
+.hero__name {
+  position: absolute;
+  left: 50%;
+  top: var(--type-y);
+  z-index: 1;
+  transform: translate(-50%, -50%);
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: var(--name-size);
+  line-height: 0.94;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+  text-align: center;
+  color: var(--ink);
+}
+
+/* a word sits in a mask so it can roll in and out of its own line */
+.mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding: 0.07em 0.04em;
+  margin: -0.07em -0.04em;
+}
+.word,
+.roles__text { display: inline-block; }
+
+/* ---------- roles + introduction ---------- */
+
+.hero__identity {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: auto minmax(0, 24rem);
+  justify-content: space-between;
+  align-items: end;
+  column-gap: 48px;
+  padding: clamp(64px, 12vh, 120px) calc(var(--gutter) + var(--inset));
+}
+.roles {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end; /* the two DESIGNERs stack */
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: var(--roles-size);
+  line-height: 0.98;
+  letter-spacing: -0.012em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.roles__line { display: block; }
+.intro {
+  max-width: 24rem;
+  margin-bottom: calc(var(--roles-size) * 0.23 - 0.43em); /* last line on the roles' baseline */
+  font-family: var(--text);
+  font-size: var(--t-lead);
+  line-height: 1.55;
+  color: var(--ink);
+  text-wrap: pretty;
+}
+
+/* ---------- the scroll sequence ---------- */
+
+.motion .hero { height: 560vh; height: 560svh; }
+.motion .hero__pin {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+}
+/* no z-index here: the frame's layers interleave with the identity block */
+.motion .hero__frame {
+  position: absolute;
+  inset: var(--inset);
+  height: auto;
+  margin: 0;
+}
+/* the roles take the name's place */
+.motion .hero__identity {
+  position: absolute;
+  left: calc(var(--gutter) + var(--inset));
+  right: calc(var(--gutter) + var(--inset));
+  /* centred on --roles-y without a transform (the bubble inside is placed
+     in this box's own coordinates) */
+  top: 0;
+  height: calc(var(--roles-y) * 2);
+  align-content: center;
+  padding: 0;
+  z-index: 4; /* above the desk, so the speech bubbles are never behind it */
+  pointer-events: none;
+}
+/* ---------- speech bubbles from your head ----------
+   --bx / --by is the point a bubble speaks from (js/hero.js, every frame);
+   .is-open pops it out of its tail with a soft spring, and the words follow
+   a beat later. Closing is quicker and has no bounce. */
+.bubble--hey { display: none; }
+.motion .bubble {
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
+  margin: 0;
+  background: #F7F3EC;
+  color: var(--ink);
+  box-shadow: 0 0 0 1px rgba(36, 34, 31, 0.08), 0 14px 30px -20px rgba(60, 40, 28, 0.45);
+  opacity: 0;
+  scale: 0.55;
+  visibility: hidden;
+  transition: scale 0.32s cubic-bezier(0.4, 0, 1, 1), opacity 0.26s ease, visibility 0s linear 0.32s;
+  will-change: scale, opacity;
+}
+.motion .bubble.is-open {
+  opacity: 1;
+  scale: 1;
+  visibility: visible;
+  transition: scale 0.7s cubic-bezier(0.34, 1.45, 0.64, 1), opacity 0.22s ease, visibility 0s;
+}
+.motion .bubble__text {
+  position: relative;
+  z-index: 1;
+  display: block;
+  opacity: 0;
+  translate: 0 5px;
+  transition: opacity 0.2s ease, translate 0.2s ease;
+}
+.motion .bubble.is-open .bubble__text {
+  opacity: 1;
+  translate: 0 0;
+  transition: opacity 0.4s ease 0.16s, translate 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.16s;
+}
+/* the tail */
+.motion .bubble::after {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  background: #F7F3EC;
+  box-shadow: 1px 1px 0 rgba(36, 34, 31, 0.08);
+}
+
+/* the introduction: above your head, tail pointing down to it */
+.motion .intro {
+  width: min(23rem, calc(100vw - 2 * var(--inset) - 32px));
+  max-width: none;
+  padding: 16px 20px 17px;
+  border-radius: 22px 22px 22px 6px;
+  font-size: var(--t-small);
+  translate: var(--bx, 0px) calc(var(--by, 0px) - 100%);
+  transform-origin: var(--tail, 24px) calc(100% + 10px);
+}
+.motion .intro::after {
+  left: var(--tail, 24px);
+  bottom: -8px;
+  margin-left: -9px;
+  border-radius: 0 0 5px 0;
+  transform: rotate(45deg);
+}
+
+/* "heyy!": beside your head, tail pointing left to it */
+.motion .bubble--hey {
+  padding: 9px 18px 11px;
+  border-radius: 18px;
+  font-family: var(--display);
+  font-size: var(--t-h3);
+  line-height: 1;
+  white-space: nowrap;
+  translate: var(--bx, 0px) calc(var(--by, 0px) - 50%);
+  transform-origin: -10px 50%;
+}
+.motion .bubble--hey::after {
+  left: -6px;
+  top: 50%;
+  margin-top: -9px;
+  border-radius: 0 0 0 5px;
+  transform: rotate(45deg);
+  box-shadow: -2px 2px 5px -4px rgba(60, 40, 28, 0.25);
+}
+/* first paint already matches progress 0; js/hero.js takes over from here */
+.motion .roles__text { transform: translate3d(0, 112%, 0); }
+.motion .word,
+.motion .roles__text { will-change: transform, opacity; }
+
+/* ---------- small screens ---------- */
+
+@media (max-width: 760px) {
+  .hero {
+    --name-size: min(19vw, 12svh);
+    --type-y: 25%;
+    --roles-y: 19%;
+  }
+  .hero__identity {
+    grid-template-columns: 1fr;
+    row-gap: 18px;
+  }
+  /* centred under where the name was */
+  .roles { justify-self: center; align-items: center; text-align: center; white-space: nowrap; }
+  .intro {
+    max-width: 34ch;
+    margin-bottom: 0;
+    font-size: var(--t-body);
+  }
+}
+
+/* ---------- the greeting (js/loader.js) ----------
+   First visit only. While .greet is on, the frame shows just the paper:
+   greetings roll up through a one-line window in the middle of the screen.
+   Once the last one has rolled away, the name rises into its place
+   (.is-rising) and the desk builds itself in (js/scene.js). */
+
+.loader { display: none; }
+.greet { overflow: hidden; } /* no scrolling mid-greeting */
+.greet .loader {
+  display: block;
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.greet .loader.is-on { opacity: 1; }
+/* reduced motion: nothing moves underneath, so the greeting covers it */
+.greet:not(.motion) .loader { background: inherit; }
+.greet:not(.motion) .loader.is-leaving { opacity: 0; }
+
+.loader__window {
+  --step: 1.6em; /* room above and below, so the next greeting never peeks in */
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: var(--step);
+  overflow: hidden;
+  transform: translateY(-50%);
+  text-align: center;
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: var(--t-h1);
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+.loader__track {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  transform: translateY(calc(var(--i, 0) * var(--step) * -1));
+  transition: transform 440ms cubic-bezier(0.76, 0, 0.24, 1);
+}
+.loader__track > li {
+  height: var(--step);
+  line-height: var(--step);
+  white-space: nowrap;
+}
+.loader__ta,
+.loader__hi { letter-spacing: 0; }
+.loader__ta {
+  font-family: "Noto Sans Tamil", "Tamil Sangam MN", "Tamil MN", "Nirmala UI", "Latha", sans-serif;
+  font-size: 0.66em;
+}
+.loader__hi {
+  font-family: "Noto Sans Devanagari", "Kohinoor Devanagari", "Devanagari Sangam MN", "Nirmala UI", "Mangal", sans-serif;
+  font-size: 0.8em;
+}
+
+/* the name waits below its masks, then rises word by word */
+.is-loading .hero__name .word { transform: translate3d(0, 112%, 0); }
+.is-rising .hero__name .word { transition: transform 1s cubic-bezier(0.22, 1, 0.36, 1); }
+.is-rising .hero__name .mask:nth-child(2) .word { transition-delay: 0.08s; }
+.is-rising .hero__name .mask:nth-child(4) .word { transition-delay: 0.16s; }
+
+/* the WebGL paper fades in over its CSS stand-in on its first frame
+   (js/hero.js), so the background never jumps */
+.hero__paper { opacity: 0; transition: opacity 0.4s ease; }
+.hero__paper.is-drawn { opacity: 1; }

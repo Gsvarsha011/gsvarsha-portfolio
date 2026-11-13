@@ -1,0 +1,421 @@
+/* Tokens, type, reset, navigation, and the section after the hero. */
+
+@font-face {
+  font-family: "PP Fragment Glare";
+  /* the installed copy first: the file can't load from a file:// page */
+  src: local("PP Fragment Glare Regular"), local("PPFragment-GlareRegular"),
+       url("../fonts/PPFragment-GlareRegular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: block; /* local file; the name should never flash in a fallback */
+}
+
+:root {
+  --paper: #F3EFE7;
+  --ink: #24221F;
+  --terra: #B66A4B;
+  --sand: #D8C8B4;
+  --white: #FFFFFF;
+  --ink-soft: rgba(36, 34, 31, 0.72);
+  --hair: rgba(36, 34, 31, 0.12);
+
+  --display: "PP Fragment Glare", "Times New Roman", serif;
+  --text: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --gutter: clamp(20px, 4vw, 64px);
+  --inset: clamp(8px, 1vw, 14px);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* the type system: every text size on the site is one of these.
+     Display is for the big moments only: the name and the story's lines. */
+  --t-display: clamp(46px, 7vw, 128px);
+  --t-h1: clamp(34px, 4.2vw, 60px);
+  --t-h2: clamp(28px, 2.6vw, 40px);
+  --t-h3: clamp(20px, 1.7vw, 24px);
+  --t-lead: clamp(17px, 1.35vw, 20px);
+  --t-body: 16px;
+  --t-small: 14px;
+  --t-label: 12px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; background: var(--paper); }
+/* no blue box on tap (phones): everything here shows its own pressed state */
+html { -webkit-tap-highlight-color: transparent; }
+body {
+  position: relative;
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--text);
+  font-size: var(--t-body);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+h1, h2, p, ul { margin: 0; }
+/* the tags: a section's own class can set a tag's size from the same scale */
+h1, h2, h3 { font-family: var(--display); font-weight: 400; letter-spacing: -0.02em; }
+h1 { font-size: var(--t-h1); line-height: 1.05; }
+h2 { font-size: var(--t-h2); line-height: 1.1; }
+h3 { font-size: var(--t-h3); line-height: 1.2; }
+button { font-size: var(--t-small); }
+small { font-size: inherit; }
+ul { padding: 0; list-style: none; }
+a { color: inherit; }
+::selection { background: rgba(182, 106, 75, 0.22); }
+
+.skip {
+  position: fixed;
+  left: 12px;
+  top: 12px;
+  z-index: 50;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: var(--t-small);
+  text-decoration: none;
+  transform: translateY(-160%);
+  transition: transform 0.3s var(--ease-out);
+}
+.skip:focus { transform: none; }
+
+/* ---------- floating navigation ---------- */
+
+/* the navigation waits out the greeting, then fades in after the name */
+.greet .dock { opacity: 0; visibility: hidden; }
+.dock {
+  transition: opacity 0.8s ease 0.9s, visibility 0s linear 0.9s;
+  /* always on top: name on the left, links on the right, on one line; the
+     edges line up with the content of the projects panel */
+  --edge: calc(var(--inset) + (100vw - 2 * var(--inset)) * 0.055);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: calc(max(var(--inset), env(safe-area-inset-top)) + clamp(14px, 1.6vw, 22px)) var(--edge) 0;
+  pointer-events: none;
+}
+.dock > * { pointer-events: auto; }
+/* a soft blur behind it from the projects on: stacked backdrop blurs, each
+   masked to a shorter band from the top, so it's strongest at the very top
+   and melts away below the bar with no edge, under a whisper of paper. All
+   the fades are eased (not straight ramps), so nothing reads as a line.
+   It's its own layer just under the header, not inside it: the header has a
+   view-transition-name, and that walls off what a blur inside it can see.
+   Each layer fades on its own: fading their parent would do the same. */
+.dock__blur {
+  position: fixed;
+  z-index: 19;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(var(--dock-h, 84px) + 48px);
+  pointer-events: none;
+}
+.dock__blur i,
+.dock__blur::after {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.45s var(--ease-out);
+}
+.dock__blur::after {
+  content: "";
+  /* eased, so its end never shows as an edge, even over a dark picture */
+  background: linear-gradient(to bottom, rgba(243, 239, 231, 0.500) 0%, rgba(243, 239, 231, 0.397) 10%, rgba(243, 239, 231, 0.306) 20%, rgba(243, 239, 231, 0.228) 30%, rgba(243, 239, 231, 0.163) 40%, rgba(243, 239, 231, 0.109) 50%, rgba(243, 239, 231, 0.067) 60%, rgba(243, 239, 231, 0.035) 70%, rgba(243, 239, 231, 0.014) 80%, rgba(243, 239, 231, 0.003) 90%, rgba(243, 239, 231, 0.000) 100%);
+}
+/* js/nav.js sets data-on from the projects on (never over the hero) */
+.dock__blur[data-on] i,
+.dock__blur[data-on]::after { opacity: 1; }
+.dock__blur i:nth-child(1) { -webkit-backdrop-filter: blur(1px); backdrop-filter: blur(1px); --m: linear-gradient(to bottom, #000 0%, #000 35%, rgba(0, 0, 0, 0.93) 45.8%, rgba(0, 0, 0, 0.74) 56.7%, rgba(0, 0, 0, 0.50) 67.5%, rgba(0, 0, 0, 0.26) 78.3%, rgba(0, 0, 0, 0.07) 89.2%, transparent 100%); }
+.dock__blur i:nth-child(2) { -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px); --m: linear-gradient(to bottom, #000 0%, #000 31.5%, rgba(0, 0, 0, 0.93) 41.2%, rgba(0, 0, 0, 0.74) 51.0%, rgba(0, 0, 0, 0.50) 60.8%, rgba(0, 0, 0, 0.26) 70.5%, rgba(0, 0, 0, 0.07) 80.2%, transparent 90%); }
+.dock__blur i:nth-child(3) { -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); --m: linear-gradient(to bottom, #000 0%, #000 27.3%, rgba(0, 0, 0, 0.93) 35.8%, rgba(0, 0, 0, 0.74) 44.2%, rgba(0, 0, 0, 0.50) 52.7%, rgba(0, 0, 0, 0.26) 61.1%, rgba(0, 0, 0, 0.07) 69.6%, transparent 78%); }
+.dock__blur i:nth-child(4) { -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); --m: linear-gradient(to bottom, #000 0%, #000 22.4%, rgba(0, 0, 0, 0.93) 29.3%, rgba(0, 0, 0, 0.74) 36.3%, rgba(0, 0, 0, 0.50) 43.2%, rgba(0, 0, 0, 0.26) 50.1%, rgba(0, 0, 0, 0.07) 57.1%, transparent 64%); }
+.dock__blur i:nth-child(5) { -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); --m: linear-gradient(to bottom, #000 0%, #000 17.5%, rgba(0, 0, 0, 0.93) 22.9%, rgba(0, 0, 0, 0.74) 28.3%, rgba(0, 0, 0, 0.50) 33.8%, rgba(0, 0, 0, 0.26) 39.2%, rgba(0, 0, 0, 0.07) 44.6%, transparent 50%); }
+.dock__blur i:nth-child(6) { -webkit-backdrop-filter: blur(32px); backdrop-filter: blur(32px); --m: linear-gradient(to bottom, #000 0%, #000 12.6%, rgba(0, 0, 0, 0.93) 16.5%, rgba(0, 0, 0, 0.74) 20.4%, rgba(0, 0, 0, 0.50) 24.3%, rgba(0, 0, 0, 0.26) 28.2%, rgba(0, 0, 0, 0.07) 32.1%, transparent 36%); }
+.dock__blur i { -webkit-mask-image: var(--m); mask-image: var(--m); }
+.dock__name {
+  font-family: var(--display);
+  font-size: var(--t-lead);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.dock__name:focus-visible { outline: 2px solid var(--terra); outline-offset: 4px; border-radius: 4px; }
+/* after a tap or click, no ring in the header (js/nav.js); the keyboard keeps them */
+[data-input="pointer"] .dock :focus-visible { outline: none; }
+.dock__nav {
+  position: relative;
+  padding: 5px;
+  border-radius: 14px;
+  /* a sheet of warm paper, slightly translucent: it should not read as glass */
+  background: rgba(243, 239, 231, 0.7);
+  border: 1px solid rgba(36, 34, 31, 0.09);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    0 1px 2px rgba(60, 40, 28, 0.06),
+    0 12px 28px -18px rgba(60, 40, 28, 0.35);
+  -webkit-backdrop-filter: blur(14px) saturate(1.05);
+  backdrop-filter: blur(14px) saturate(1.05);
+}
+.dock__list {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.dock__link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 14px 9px;
+  border-radius: 10px;
+  color: var(--ink);
+  font-size: var(--t-small);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.005em;
+  white-space: nowrap;
+  text-decoration: none;
+  opacity: 0.8;
+  transition: opacity 0.25s ease;
+}
+.dock__link:hover,
+.dock__link:focus-visible,
+.dock__link[aria-current="true"] { opacity: 1; }
+/* hover is a line under the word; only where you are gets the slab */
+@media (hover: hover) and (min-width: 761px) {
+  .dock__link::before {
+    content: "";
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 3px;
+    height: 1.5px;
+    border-radius: 1px;
+    background: var(--terra);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s var(--ease-out);
+  }
+  .dock__link:hover::before { transform: scaleX(1); }
+  .dock__link[aria-current="true"]::before,
+  .dock__link[aria-disabled="true"]::before { content: none; }
+}
+.dock__link:focus-visible {
+  outline: 1.5px solid var(--terra);
+  outline-offset: 1px;
+}
+.dock__link[aria-disabled="true"] { cursor: default; }
+.dock__soon { color: var(--ink-soft); font-weight: 400; }
+
+.dock__rule {
+  width: 1px;
+  height: 16px;
+  margin: 0 4px;
+  background: var(--hair);
+}
+
+/* the slab: where you are */
+.dock__slab {
+  position: absolute;
+  top: 5px;
+  left: 0;
+  height: calc(100% - 10px);
+  width: var(--slab-w, 0px);
+  border-radius: 10px;
+  background: rgba(216, 200, 180, 0.55);
+  box-shadow: inset 0 0 0 1px rgba(182, 106, 75, 0.08);
+  opacity: 0;
+  transform: translateX(var(--slab-x, 0px));
+  transition: transform 0.45s var(--ease-out), width 0.45s var(--ease-out), opacity 0.3s ease;
+  pointer-events: none;
+}
+.dock__nav[data-slab-on] .dock__slab { opacity: 1; }
+
+/* ---------- phones: Resume and Menu in one paper pill; the links open in
+   a card below, set large in the display face ---------- */
+
+.dock__end,
+.dock__extra { display: none; }
+@media (max-width: 760px) {
+  .dock__name { font-size: var(--t-lead); }
+  .dock__end { display: block; }
+  /* above the dimmed page while the menu is open */
+  .dock__name, .dock__end { position: relative; z-index: 2; }
+  .dock__nav { z-index: 1; }
+  .dock__pill {
+    display: flex;
+    align-items: center;
+    padding: 4px;
+    border-radius: 14px;
+    background: rgba(243, 239, 231, 0.72);
+    border: 1px solid rgba(36, 34, 31, 0.09);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 1px 2px rgba(60, 40, 28, 0.06), 0 12px 28px -18px rgba(60, 40, 28, 0.35);
+    -webkit-backdrop-filter: blur(14px) saturate(1.05);
+    backdrop-filter: blur(14px) saturate(1.05);
+  }
+  .dock__cta,
+  .dock__burger {
+    -webkit-tap-highlight-color: transparent;
+    display: inline-flex;
+    align-items: center;
+    height: 36px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 10px;
+    background: none;
+    color: var(--ink);
+    font: inherit;
+    font-size: var(--t-small);
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.25s ease;
+  }
+  .dock__cta[aria-disabled="true"] { cursor: default; }
+  .dock__cta .dock__soon { display: none; }
+  .dock__sep { width: 1px; height: 16px; background: var(--hair); }
+  .dock__burger { gap: 9px; padding-right: 11px; }
+  .dock[data-open] .dock__burger { background: rgba(216, 200, 180, 0.55); }
+  /* the word turns from Menu to Close */
+  .dock__burger-word { display: grid; height: 1.2em; overflow: hidden; line-height: 1.2; }
+  .dock__burger-word span { grid-area: 1 / 1; transition: translate 0.4s var(--ease-out), opacity 0.3s ease; }
+  .dock__burger-word span + span { translate: 0 110%; opacity: 0; }
+  .dock[data-open] .dock__burger-word span:first-child { translate: 0 -110%; opacity: 0; }
+  .dock[data-open] .dock__burger-word span + span { translate: 0 0; opacity: 1; }
+  /* two strokes, the lower one shorter and terracotta; they cross into an x */
+  .dock__bars { position: relative; width: 16px; height: 9px; }
+  .dock__bars i {
+    position: absolute;
+    right: 0;
+    height: 1.6px;
+    border-radius: 2px;
+    background: var(--ink);
+    transition: top 0.35s var(--ease-out), rotate 0.35s var(--ease-out), width 0.35s var(--ease-out), background 0.3s ease;
+  }
+  .dock__bars i:first-child { top: 0; width: 16px; }
+  .dock__bars i:last-child { top: calc(100% - 1.6px); width: 10px; background: var(--terra); }
+  .dock[data-open] .dock__bars i { top: calc(50% - 0.8px); width: 14px; }
+  .dock[data-open] .dock__bars i:first-child { rotate: 45deg; }
+  .dock[data-open] .dock__bars i:last-child { rotate: -45deg; background: var(--ink); }
+  .dock__cta:focus-visible,
+  .dock__burger:focus-visible { outline: 2px solid var(--terra); outline-offset: 2px; }
+
+  /* the menu: a small paper card that opens from the pill, right under it,
+     in the pill's own language: the words in the display face, a sand chip
+     under the one you press, a terracotta dot by the page you're on */
+  .dock__nav {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: auto;
+    right: var(--edge);
+    width: 220px;
+    padding: 6px;
+    border-radius: 16px;
+    background: rgba(243, 239, 231, 0.96);
+    border: 1px solid rgba(36, 34, 31, 0.09);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.6),
+      0 18px 40px -22px rgba(60, 40, 28, 0.45),
+      0 0 0 100vmax rgba(36, 34, 31, 0);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    opacity: 0;
+    visibility: hidden;
+    transform-origin: top right;
+    scale: 0.96;
+    translate: 0 -6px;
+    transition: opacity 0.2s ease, scale 0.35s var(--ease-out), translate 0.35s var(--ease-out), box-shadow 0.35s ease, visibility 0s linear 0.35s;
+  }
+  .dock[data-open] .dock__nav {
+    opacity: 1;
+    visibility: visible;
+    scale: 1;
+    translate: 0 0;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.6),
+      0 18px 40px -22px rgba(60, 40, 28, 0.45),
+      0 0 0 100vmax rgba(36, 34, 31, 0.12);
+    transition: opacity 0.18s ease, scale 0.4s var(--ease-out), translate 0.4s var(--ease-out), box-shadow 0.35s ease, visibility 0s;
+  }
+  .dock__list { flex-direction: column; align-items: stretch; gap: 2px; }
+  .dock__link {
+    -webkit-tap-highlight-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-family: var(--display);
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    transition: background 0.2s ease;
+  }
+  .dock__link:active { background: rgba(216, 200, 180, 0.45); }
+  .dock__link[aria-current="true"]::after {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--terra);
+  }
+  .dock__link:focus-visible { outline: 2px solid var(--terra); outline-offset: -2px; }
+  .dock__slab,
+  .dock__rule,
+  .dock__list li:has(.dock__link--resume) { display: none; }
+  /* how to reach you, small, at the foot of the card */
+  .dock__extra {
+    display: flex;
+    gap: 16px;
+    margin: 4px 0 0;
+    padding: 8px 12px 6px;
+    font-size: 13px;
+  }
+  .dock__extra a { color: var(--ink-soft); text-decoration: none; }
+  .dock__extra a:active { color: var(--terra); }
+  /* open, Close already sits on its sand chip: no ring around it as well */
+  .dock[data-open] .dock__burger:focus-visible { outline: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dock__nav, .dock__bars i, .dock__link, .dock__extra, .dock__burger-word span { transition: none !important; }
+}
+
+/* paper grain under everything outside the hero card, so there is no seam */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.045;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.14 0 0 0 0 0.13 0 0 0 0 0.12 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---------- moving between pages and sections ----------
+   One page dissolves into the next (a case study opening, Work going back)
+   and a nav jump dissolves the same way (softJump, js/nav.js), with the new
+   view settling up a few pixels. The header isn't part of it: it stays put. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+  .dock { view-transition-name: dock; }
+  ::view-transition-group(dock) { z-index: 2; animation: none; }
+  ::view-transition-old(dock) { display: none; }
+  ::view-transition-new(dock) { animation: none; }
+  ::view-transition-old(root) { animation: view-out 0.26s ease both; }
+  ::view-transition-new(root) { animation: view-in 0.52s var(--ease-out) both; }
+}
+@keyframes view-out { to { opacity: 0; } }
+@keyframes view-in { from { opacity: 0; translate: 0 10px; } }

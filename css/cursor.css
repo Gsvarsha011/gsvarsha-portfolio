@@ -1,0 +1,45 @@
+/* The cursor (js/cursor.js): a terracotta dot; over anything clickable, a
+   larger see-through ring.
+   The system pointer is hidden only once the script has run (.has-cursor),
+   and stays for text fields. */
+
+html.has-cursor,
+html.has-cursor :not(input, textarea, [contenteditable="true"]) { cursor: none !important; }
+
+.cursor {
+  --d: 14px;
+  /* a popover (see js/cursor.js), without a popover's box */
+  position: fixed;
+  inset: 0 auto auto 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  overflow: visible;
+  z-index: 2147483000;
+  pointer-events: none;
+  will-change: transform;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.cursor.is-on { opacity: 1; }
+.cursor.is-hidden { opacity: 0; }
+/* the disc, centred on the pointer */
+.cursor::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--d);
+  height: var(--d);
+  margin: calc(var(--d) / -2) 0 0 calc(var(--d) / -2);
+  border-radius: 50%;
+  background: var(--terra);
+  transition: width 0.45s var(--ease-out), height 0.45s var(--ease-out), margin 0.45s var(--ease-out),
+    background-color 0.3s ease, box-shadow 0.3s ease, scale 0.2s ease;
+}
+.cursor.is-link { --d: 56px; }
+.cursor.is-link::before { background: rgba(182, 106, 75, 0.26); box-shadow: inset 0 0 0 1.5px var(--terra); }
+.cursor.is-down::before { scale: 0.86; }

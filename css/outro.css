@@ -1,0 +1,306 @@
+/* The close: the footer (js/outro.js). */
+
+/* ---------- the footer: a drop of paint (js/outro.js) ---------- */
+
+.foot {
+  position: relative;
+  padding: clamp(8px, 2vh, 24px) var(--inset) var(--inset);
+  color: var(--ink);
+  --me-w: clamp(200px, 17vw, 270px);
+}
+/* the panel: paper underneath; the quote and Connect centred; you bottom
+   left, the racket and © bottom right */
+.fpanel {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: clamp(14px, 1.6vw, 24px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(18px, 1.6vw, 24px);
+  /* the bottom leaves room for you to sit beside Connect, not under it,
+     and for your speech bubble above your head */
+  padding: clamp(40px, 4vw, 64px) clamp(24px, 6vw, 96px) calc(var(--me-w) * 0.62);
+  text-align: center;
+  background: linear-gradient(120deg, #EFE6DA, #F3EFE7 45%, #E3D2BF); /* until the colour draws */
+  will-change: clip-path;
+  touch-action: pan-y;
+}
+.fpanel__paper {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.fquote, .fconnect, .fpanel__copy {
+  position: relative;
+  z-index: 1;
+  opacity: var(--fo, 1);
+  transform: translateY(calc((1 - var(--fo, 1)) * 14px));
+}
+.foot a:focus-visible, .foot button:focus-visible { outline: 2px solid var(--terra); outline-offset: 4px; border-radius: 3px; }
+
+/* ---------- the quote: the footer's headline ---------- */
+
+.fquote { margin: 0; min-width: 0; max-width: 100%; }
+.fquote blockquote { margin: 0; }
+.fquote p {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: var(--t-h1);
+  line-height: 1.08;
+  letter-spacing: -0.022em;
+  color: var(--ink);
+  text-wrap: balance;
+}
+/* the two halves of the quote, a line each where there is room */
+.fquote p span { display: block; }
+.fquote p span + span { color: var(--terra); }
+.fquote figcaption {
+  margin-top: 14px;
+  font-size: var(--t-small);
+  letter-spacing: 0.02em;
+  color: rgba(36, 34, 31, 0.62);
+}
+
+/* ---------- connect: round buttons and the email pill ---------- */
+
+.fconnect {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+}
+.fconnect h3 {
+  font-family: var(--text);
+  font-size: var(--t-label);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.fchips { display: flex; align-items: center; justify-content: center; gap: 10px; }
+.fchip {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: inset 0 0 0 1px rgba(36, 34, 31, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  color: var(--ink);
+  font-size: var(--t-small);
+  text-decoration: none;
+  transition: background 0.3s ease, box-shadow 0.3s ease, translate 0.35s var(--ease-out);
+}
+.fchip:hover { background: rgba(255, 255, 255, 0.58); box-shadow: inset 0 0 0 1px rgba(182, 106, 75, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.6); translate: 0 -2px; }
+.fchip:focus-visible { outline: 2px solid var(--terra); outline-offset: 3px; border-radius: 999px; }
+
+/* the pill: "Email me", and on hover the address rolls up into its place */
+.fchip--wide {
+  width: auto;
+  min-width: 13.5rem;
+  padding: 0 22px;
+  overflow: hidden;
+}
+.fchip__a, .fchip__b {
+  grid-area: 1 / 1;
+  white-space: nowrap;
+  transition: translate 0.45s var(--ease-out), opacity 0.3s ease;
+}
+.fchip__b { translate: 0 120%; opacity: 0; color: var(--terra); font-weight: 500; }
+.fchip--wide:hover .fchip__a, .fchip--wide:focus-visible .fchip__a { translate: 0 -120%; opacity: 0; }
+.fchip--wide:hover .fchip__b, .fchip--wide:focus-visible .fchip__b { translate: 0 0; opacity: 1; }
+
+/* not available yet */
+.fchip[aria-disabled="true"] { cursor: default; opacity: 0.55; }
+.fchip[aria-disabled="true"]:hover { translate: none; }
+.fchip[data-soon]::after {
+  content: attr(data-soon);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  translate: -50% 4px;
+  padding: 4px 9px 5px;
+  border-radius: 7px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: var(--t-label);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, translate 0.3s var(--ease-out);
+}
+.fchip[data-soon]:hover::after, .fchip[data-soon]:focus-visible::after { opacity: 1; translate: -50% 0; }
+
+/* ---------- you, meditating, bottom left ---------- */
+
+.foot__me {
+  position: absolute;
+  z-index: 1;
+  left: clamp(6px, 3.6vw, 60px);
+  bottom: 0;
+  width: var(--me-w);
+  aspect-ratio: 1 / 1.05;
+  opacity: var(--fo, 1);
+  text-align: left;
+}
+.foot__me.is-saying { z-index: 3; }
+.foot__me canvas { display: block; width: 100%; height: 100%; }
+.foot__me-hit {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+  position: absolute;
+  inset: 12% 14% 0;
+  padding: 0;
+  border: 0;
+  border-radius: 14px;
+  background: none;
+  cursor: pointer;
+}
+.foot__me-hit:focus { outline: none; }
+.foot__me-hit:focus-visible { outline: 2px solid var(--terra); outline-offset: 2px; }
+.foot__me canvas { -webkit-user-select: none; user-select: none; }
+
+/* the note: a speech bubble above your head, like the hero's, its tail
+   pointing down at you (the head is centred in the box, its top ~89% up);
+   it pops out of the tail with a soft spring */
+.foot__say {
+  position: absolute;
+  left: calc(50% - 2px);
+  bottom: calc(89% + 26px);
+  width: max-content;
+  max-width: 15rem;
+  padding: 13px 18px 14px;
+  border-radius: 20px 20px 20px 6px;
+  background: #F7F3EC;
+  box-shadow: 0 0 0 1px rgba(36, 34, 31, 0.08), 0 14px 30px -20px rgba(60, 40, 28, 0.45);
+  transform-origin: 20px calc(100% + 8px);
+  opacity: 0;
+  scale: 0.55;
+  visibility: hidden;
+  transition: scale 0.3s cubic-bezier(0.4, 0, 1, 1), opacity 0.24s ease, visibility 0s linear 0.3s;
+}
+.foot__say::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  bottom: -7px;
+  width: 16px;
+  height: 16px;
+  background: #F7F3EC;
+  border-radius: 0 0 5px 0;
+  box-shadow: 1px 1px 0 rgba(36, 34, 31, 0.08);
+  transform: rotate(45deg) skew(-8deg, -8deg);
+}
+.foot__say p {
+  position: relative;
+  z-index: 1;
+  font-family: var(--display);
+  font-size: var(--t-body);
+  line-height: 1.3;
+  color: var(--ink);
+}
+.foot__say a {
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+  margin-top: 8px;
+  font-size: var(--t-small);
+  color: var(--terra);
+  text-decoration: underline;
+  text-decoration-color: rgba(182, 106, 75, 0.35);
+  text-underline-offset: 4px;
+  transition: text-decoration-color 0.25s ease;
+}
+.foot__say a:hover { text-decoration-color: var(--terra); }
+.foot__say a:focus-visible { outline: 2px solid var(--terra); outline-offset: 3px; border-radius: 3px; }
+.foot__me.is-saying .foot__say {
+  opacity: 1;
+  scale: 1;
+  visibility: visible;
+  transition: scale 0.6s cubic-bezier(0.34, 1.45, 0.64, 1), opacity 0.2s ease, visibility 0s;
+}
+
+/* ---------- the racket and ©, bottom right ---------- */
+
+.sig {
+  position: absolute;
+  z-index: 2;
+  opacity: var(--fo, 1);
+  right: clamp(24px, 3.6vw, 60px);
+  bottom: clamp(48px, 4.6vw, 66px);
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 6px;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+.sig__label {
+  padding-bottom: 6px;
+  font-family: var(--display);
+  font-size: var(--t-body);
+  color: var(--ink);
+  transition: color 0.25s ease, translate 0.35s var(--ease-out);
+}
+.sig:hover .sig__label, .sig:focus-visible .sig__label { color: var(--terra); translate: -2px 0; }
+.sig__art { display: block; overflow: visible; image-rendering: pixelated; }
+.sig__racket { transform-box: view-box; transform-origin: 8px 23px; rotate: 8deg; }
+.sig__shuttle { transform-box: view-box; }
+.sig:hover .sig__racket, .sig.is-playing .sig__racket { animation: sig-swing 1.1s cubic-bezier(0.3, 0, 0.2, 1) both; }
+.sig:hover .sig__shuttle, .sig.is-playing .sig__shuttle { animation: sig-fly 1.1s cubic-bezier(0.4, 0, 0.2, 1) both; }
+@keyframes sig-swing {
+  0% { rotate: 8deg; } 22% { rotate: -28deg; } 40% { rotate: 30deg; } 62% { rotate: 16deg; } 100% { rotate: 8deg; }
+}
+@keyframes sig-fly {
+  0%, 30% { translate: 0 0; rotate: 0deg; } 62% { translate: 8px -14px; rotate: 40deg; } 100% { translate: 0 0; rotate: 0deg; }
+}
+.fpanel__copy {
+  position: absolute;
+  right: clamp(30px, 3.6vw + 6px, 66px);
+  bottom: clamp(20px, 2.2vw, 32px);
+  font-size: var(--t-label);
+  color: rgba(36, 34, 31, 0.55);
+  white-space: nowrap;
+}
+
+/* ---------- small screens ---------- */
+
+@media (max-width: 900px) {
+  .foot { --me-w: clamp(190px, 44vw, 250px); }
+  .fpanel { padding-bottom: calc(var(--me-w) * 1.05 + 70px); }
+  .foot__me { left: 4px; }
+  .foot__say { max-width: 13rem; }
+  .sig { flex-direction: column; align-items: flex-end; gap: 4px; bottom: 44px; right: 18px; }
+  .sig__label { padding-bottom: 0; font-size: var(--t-small); }
+  .fpanel__copy { right: 24px; bottom: 18px; font-size: var(--t-label); }
+}
+/* phones */
+@media (max-width: 600px) {
+  .foot { --me-w: 190px; }
+  .fpanel { padding-top: 40px; padding-bottom: calc(var(--me-w) * 1.05 + 110px); }
+  .foot__say { max-width: min(14rem, calc(100vw - 90px)); }
+}
+@media (max-width: 400px) {
+  .fchip { width: 46px; height: 46px; }
+  .fchip--wide { min-width: 11rem; padding: 0 14px; }
+  .fchip__b { font-size: var(--t-small); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .foot__say, .foot__me.is-saying .foot__say { transition: none; }
+  .fchip, .fchip__a, .fchip__b { transition: none; }
+  .sig:hover .sig__racket, .sig:hover .sig__shuttle { animation: none; }
+  .sig:hover .sig__racket { rotate: -6deg; }
+}

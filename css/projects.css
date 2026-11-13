@@ -1,0 +1,657 @@
+/* Projects: a gallery that travels through a curved field of focus
+   (js/projects.js).
+   .work-live (set by the script on roomy screens): the section is tall and
+   its stage sticks inside it; scrolling moves the row sideways. The script
+   places every card from its distance to the middle (u) through these
+   variables on each card:
+     --x --y   where its centre sits (px, from the stage's top left); y
+               follows a gentle curve, lower towards the sides
+     --s       scale        --rz   tilt along the curve (deg)
+     --blur    px           --o    opacity        --f  focus, 0..1
+     --z       stacking
+   and marks the one in focus with [data-current].
+   Otherwise (phones, reduced motion, no script): a row you swipe through. */
+
+.work {
+  --edge: calc(var(--inset) + (100vw - 2 * var(--inset)) * 0.055);
+  position: relative;
+}
+
+.work__top {
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+  padding: 0 var(--edge);
+}
+.work__heading {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: var(--t-h2);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.work__count {
+  font-size: var(--t-small);
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- a card: a header line, then one large screen ---------- */
+
+.card3 { position: relative; margin: 0; }
+.card3__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 2px 12px;
+  white-space: nowrap;
+}
+.card3__name {
+  font-family: var(--display);
+  font-size: var(--t-h3);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.card3__kind {
+  font-size: var(--t-label);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.card3__body {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  padding: 0;
+  border: 0;
+  border-radius: 14px;
+  font: inherit;
+  color: inherit;
+  text-decoration: none;
+  text-align: left;
+  container-type: inline-size;
+  box-shadow: 0 0 0 1px rgba(36, 34, 31, 0.07), 0 40px 70px -44px rgba(60, 40, 28, 0.55);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.14 0 0 0 0 0.13 0 0 0 0 0.12 0 0 0 0.1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.card3__body:focus-visible { outline: 2px solid var(--terra); outline-offset: 5px; }
+/* a card whose case study isn't built yet (CASES in js/projects.js) */
+a.card3__body:not([href]) { cursor: default; }
+
+/* each panel's colour, kept in --panel so the lens can paint it too */
+.card3__body { background-color: var(--panel, #E6DACB); }
+.card3--spacture { --panel: #CDB79F; }
+.card3--craft { --panel: #2E2724; }
+.card3--flex { --panel: #DCCDB9; }
+.card3--spatiallite { --panel: #24221F; color: #F3EFE7; }
+.card3--locked { --panel: #E2D4C2; }
+
+/* the real screen, filling the panel */
+.card3__shot {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #E6DACB;
+}
+.card3__shot img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 0;
+  transition: scale 0.9s var(--ease-out);
+}
+.card3__body:hover .card3__shot img,
+.card3__body:focus-visible .card3__shot img { scale: 1.025; }
+
+/* SpatialLite: no shareable screens yet; its real scope, typeset */
+.card3__type {
+  position: absolute;
+  left: 7%;
+  top: 12%;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--display);
+  font-size: 8cqw; /* sized to the card, whatever its width */
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+}
+.card3__type span:nth-child(2) { padding-left: 0.5em; color: #D8C8B4; }
+.card3__type span:nth-child(3) { padding-left: 1em; }
+.card3__note {
+  position: absolute;
+  right: 7%;
+  bottom: 9%;
+  width: 34%;
+  font-size: max(12px, 1.7cqw);
+  line-height: 1.5;
+  color: rgba(243, 239, 231, 0.55);
+}
+
+/* the way in: shown on the card in focus */
+.card3__cta {
+  position: absolute;
+  left: 3.2%;
+  bottom: 5%;
+  display: inline-flex;
+  gap: 6px;
+  padding: 10px 16px 11px;
+  border-radius: 999px;
+  background: #24221F;
+  color: #F3EFE7;
+  font-size: var(--t-small);
+  font-weight: 500;
+  line-height: 1;
+  box-shadow: 0 10px 24px -12px rgba(30, 20, 14, 0.6);
+  transition: background 0.3s ease;
+}
+.card3__cta span { transition: transform 0.3s var(--ease-out); }
+.card3__cta--light { background: #F3EFE7; color: #24221F; }
+.card3__body:hover .card3__cta span,
+.card3__body:focus-visible .card3__cta span { transform: translate(2px, -2px); }
+.card3__body:hover .card3__cta:not(.card3__cta--light) { background: var(--terra); }
+
+/* ---------- Spatial Key: under frosted glass ----------
+   Frosted glass over the whole picture, edge to edge with no outline, so
+   it reads as one soft image rather than a box, with a lock in the middle
+   and an invitation to connect. The lens paints the same pane (paintSeal in js/projects.js):
+   change one, change the other. */
+
+.card3__seal {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: max(10px, 2.4cqw);
+  border-radius: inherit;
+  background: rgba(36, 34, 31, 0.34);
+  -webkit-backdrop-filter: blur(max(14px, 2.6cqw)) saturate(1.15);
+  backdrop-filter: blur(max(14px, 2.6cqw)) saturate(1.15);
+  color: #F3EFE7;
+}
+.card3__lock {
+  display: grid;
+  place-items: center;
+  width: max(40px, 9cqw);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: rgba(243, 239, 231, 0.14);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.32);
+}
+.card3__lock svg { width: 38%; height: auto; overflow: visible; }
+.card3__shackle { transition: translate 0.35s var(--ease-out); }
+.card3__ask {
+  font-family: var(--display);
+  font-size: max(16px, 3.6cqw);
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  white-space: nowrap;
+}
+.card3--locked:hover .card3__shackle,
+.card3--locked:focus-visible .card3__shackle { translate: 0 -1.6px; }
+
+/* ---------- the notes and the project index ---------- */
+
+.work__nav { display: none; }
+.work__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.work__list button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  font: inherit;
+  font-size: var(--t-small);
+  font-weight: 500;
+  line-height: 1;
+  color: rgba(36, 34, 31, 0.5);
+  cursor: pointer;
+  transition: color 0.3s ease, background 0.3s ease;
+}
+.work__list button:hover { color: var(--ink); }
+.work__list button:focus-visible,
+.work__step:focus-visible { outline: 2px solid var(--terra); outline-offset: 2px; }
+.work__list button[aria-current="true"] { color: var(--ink); background: rgba(216, 200, 180, 0.45); }
+.work__step {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--hair);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink);
+  font: 400 16px/1 var(--text);
+  cursor: pointer;
+  transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, opacity 0.3s ease;
+}
+.work__step:hover { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.work__step:disabled { opacity: 0.3; pointer-events: none; }
+
+.work__about { display: grid; }
+.about { grid-area: 1 / 1; }
+.about__cat {
+  font-size: var(--t-label);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.about__lede {
+  margin-top: 8px;
+  font-size: var(--t-lead);
+  line-height: 1.5;
+  color: var(--ink);
+  text-wrap: pretty;
+}
+.about__part {
+  margin-top: 10px;
+  font-size: var(--t-small);
+  line-height: 1.55;
+  color: rgba(36, 34, 31, 0.72);
+  text-wrap: pretty;
+}
+.about__part span {
+  margin-right: 6px;
+  font-size: var(--t-label);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.about__links { display: flex; flex-wrap: wrap; gap: 6px 22px; margin-top: 14px; }
+.about__private { margin-top: 12px; font-size: var(--t-small); color: var(--ink-soft); transition: color 0.3s ease; }
+.about__private.is-said { color: var(--terra); }
+
+.proj__link {
+  display: inline-flex;
+  gap: 6px;
+  padding: 4px 0;
+  font-size: var(--t-small);
+  font-weight: 500;
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: rgba(36, 34, 31, 0.25);
+  text-underline-offset: 5px;
+  transition: text-decoration-color 0.25s ease;
+}
+.proj__link span[aria-hidden] { color: var(--terra); transition: transform 0.3s var(--ease-out); }
+.proj__link:hover { text-decoration-color: var(--terra); }
+.proj__link:hover span[aria-hidden] { transform: translate(2px, -2px); }
+.proj__link:focus-visible { outline: 2px solid var(--terra); outline-offset: 3px; border-radius: 3px; }
+.proj__link--quiet { color: var(--ink-soft); font-weight: 400; }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------- swipe row (default: phones, reduced motion, no script) ---------- */
+
+.work { padding: clamp(80px, 12vh, 140px) 0 clamp(64px, 10vh, 120px); }
+.work__cards {
+  display: flex;
+  gap: 18px;
+  margin: 28px 0 0;
+  padding: 8px var(--edge) 18px;
+  list-style: none;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding: 0 var(--edge);
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x pan-y;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+.work__cards::-webkit-scrollbar { display: none; }
+.work__cards .card3 { flex: 0 0 min(84vw, 560px); scroll-snap-align: center; scroll-snap-stop: always; }
+.work__side { padding: 10px var(--edge) 0; }
+/* in the row, every project's notes are shown under the cards in order */
+.work__about { gap: 34px; grid-template-columns: 1fr; max-width: 40rem; }
+.about { grid-area: auto; }
+.about__cat::before { content: attr(data-name) " · "; color: var(--ink); }
+
+/* ---------- live: the stage sticks and the cards travel ---------- */
+
+.work-live .work { padding: 0; height: calc(100svh + 4 * 78svh + 24svh); }
+.work-live .work__stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+}
+.work-live .work__top { position: absolute; left: 0; right: 0; top: clamp(112px, 14vh, 150px); }
+.work-live .work__cards {
+  display: block;
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+.work-live .card3 {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--card-w, 640px);
+  transform:
+    translate(calc(var(--x, 0px) - 50%), calc(var(--y, 0px) - 50%))
+    rotate(calc(var(--rz, 0) * 1deg)) scale(var(--s, 1));
+  filter: blur(calc(var(--blur, 0) * 1px));
+  opacity: var(--o, 1);
+  z-index: var(--z, 0);
+  will-change: transform, filter, opacity;
+}
+.work-live .card3[data-current] { pointer-events: auto; }
+/* the way in shows as the card comes into focus, following --f */
+.work-live .card3__cta {
+  opacity: calc((var(--f, 1) - 0.75) * 4);
+  translate: 0 calc((1 - var(--f, 1)) * 14px);
+}
+.work-live .card3__head { opacity: calc(0.35 + var(--f, 1) * 0.65); }
+
+/* the notes (left) and the index (right), under the gallery */
+.work-live .work__side {
+  position: absolute;
+  left: var(--edge);
+  right: var(--edge);
+  bottom: clamp(28px, 5vh, 52px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 40px;
+  padding: 0;
+}
+.work-live .work__nav {
+  order: 2;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: none;
+}
+.work-live .work__about { order: 1; gap: 0; max-width: min(44rem, 52vw); }
+.work-live .about { grid-area: 1 / 1; opacity: 0; visibility: hidden; translate: 0 8px; transition: opacity 0.3s ease, translate 0.45s var(--ease-out), visibility 0s linear 0.3s; }
+.work-live .about[data-current] { opacity: 1; visibility: visible; translate: 0 0; transition: opacity 0.4s ease 0.06s, translate 0.55s var(--ease-out) 0.06s, visibility 0s; }
+.work-live .about__cat::before { content: none; }
+.work-live .about__part { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* tablets: a narrower index */
+@media (max-width: 1180px) {
+  .work-live .work__list button { padding: 7px 9px; font-size: var(--t-small); }
+  .work-live .work__about { max-width: 46vw; }
+}
+
+/* the swipe row with the script: only the current project's notes */
+.work-row .about:not([data-current]) { display: none; }
+.work-row .about__cat::before { content: none; }
+
+/* ---------- the handover from the hero ----------
+   Roomy screens (.work-live): the carousel starts tucked under the end of
+   the hero: it reaches the top of the screen just as the camera arrives at
+   the laptop (hero progress 0.885 of its 460svh run = 53svh before its
+   end). It waits invisible there, then fades in exactly over the laptop
+   screen, which already shows its opening view (js/hero.js sets
+   --handover).
+   Phones (.work-row): the same idea. The section sits over the hero's
+   last screen (margin -100svh), so when the pin lets go its top is exactly
+   at the top of the screen. Until then its stage is held there, fixed
+   ([data-pinned], set by js/hero.js), so it fades in exactly over the
+   laptop screen, which shows the same view painted, and stays put while
+   the zoom finishes. When the hero ends, the stage drops back into the
+   page at the same spot and simply scrolls on. */
+.motion.work-live .work {
+  z-index: 5;
+  margin-top: calc(-100vh - 53vh);
+  margin-top: calc(-100svh - 53svh);
+}
+.motion.work-live .work[data-waiting] { visibility: hidden; }
+.motion.work-live .work { height: calc(100svh + 4 * 78svh + 24svh + 30svh); }
+.motion.work-live .work__stage { opacity: var(--handover, 1); }
+/* a backdrop only while it covers the end of the hero; after that the
+   page's own paper and grain show through, so there is no seam */
+.motion.work-live .work[data-over-hero] .work__stage {
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.14 0 0 0 0 0.13 0 0 0 0 0.12 0 0 0 0.045 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    #F0EBE3;
+}
+.motion.work-row .work {
+  position: relative;
+  z-index: 5;
+  margin-top: -100vh;
+  margin-top: -100svh;
+  padding-top: 0;
+}
+.motion.work-row .work[data-waiting] { visibility: hidden; }
+.motion.work-row .work__stage {
+  padding-top: clamp(124px, 17vh, 160px);
+  opacity: var(--handover, 1);
+}
+.motion.work-row .work[data-pinned] .work__stage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  min-height: 100vh;
+  min-height: 100svh;
+}
+.motion.work-row .work[data-over-hero] .work__stage {
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.14 0 0 0 0 0.13 0 0 0 0 0.12 0 0 0 0.045 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    var(--paper);
+}
+
+/* phones with motion (.work-rowdrive, js/projects.js): the heading and the
+   row stick in the middle of the screen while the page's scroll slides the
+   row; only that block sticks (--stage-h, measured), so About follows right
+   under it, with no empty paper. The section is just tall enough for the
+   ride: (100svh + the block) / 2, plus 55svh per project after the first.
+   The row doesn't snap by itself (the script settles a swipe on a project). */
+.motion.work-rowdrive .work {
+  height: calc((100svh + var(--stage-h, 100svh)) / 2 + (var(--n, 5) - 1) * 55svh);
+  padding-bottom: 0;
+}
+.motion.work-rowdrive .work__stage,
+.motion.work-rowdrive .work[data-pinned] .work__stage {
+  top: calc((100svh - var(--stage-h, 100svh)) / 2);
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  min-height: 0;
+  padding-top: 64px;
+  padding-bottom: 24px;
+}
+.motion.work-rowdrive .work__stage { position: sticky; }
+/* held by the hero, the block is the same size in the same spot (so the lens
+   lines up), and a full-screen sheet of paper behind it covers the hero */
+.motion.work-rowdrive .work[data-over-hero] .work__stage { background: none; }
+.motion.work-rowdrive .work[data-over-hero] .work__stage::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 0;
+  right: 0;
+  top: calc((var(--stage-h, 100svh) - 100svh) / 2);
+  height: 100vh;
+  height: 100svh;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.14 0 0 0 0 0.13 0 0 0 0 0.12 0 0 0 0.045 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    var(--paper);
+}
+.motion.work-rowdrive .work__cards { scroll-snap-type: none; }
+.motion.work-rowdrive.work-rowlens .work__cards {
+  padding-left: calc((100% - min(78vw, 460px)) / 2);
+  padding-right: calc((100% - min(78vw, 460px)) / 2);
+  padding-bottom: 28px;
+}
+.motion.work-rowdrive.work-rowlens .work__cards .card3 { flex-basis: min(78vw, 460px); }
+/* where you are among the projects: a dot each, the current one a terracotta dash */
+.work__dots { display: none; }
+.motion.work-rowdrive .work__dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+.work__dots i {
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(36, 34, 31, 0.18);
+  transition: width 0.35s var(--ease-out), background 0.3s ease;
+}
+.work__dots i[data-on] { width: 20px; background: var(--terra); }
+
+/* phones: a smaller way in, so the screen stays the thing you see */
+@media (max-width: 760px) {
+  .card3__cta { padding: 8px 12px 9px; font-size: var(--t-label); }
+  .card3__head { margin-bottom: 10px; }
+}
+
+/* ---------- the lens (WebGL, js/projects.js) ----------
+   The canvas behind draws the cards, bent and blurred by where they are on
+   the screen. The page's own cards lie flat over it, see-through, for the
+   links, keyboard focus, the header line and the way in. */
+.work__lens {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.work-lens .card3__body { background: transparent; box-shadow: none; }
+.work-lens .card3__body > :not(.card3__cta) { visibility: hidden; }
+/* opened from disk, a picture the lens couldn't read shows as itself */
+.work-lens .card3__body > .card3__shot.is-own { visibility: visible; }
+.work-lens .card3 { filter: none; }
+/* only the card in focus shows its header line and its way in */
+.work-lens .card3__head { opacity: calc((var(--f, 1) - 0.75) * 4); }
+
+/* phones (.work-rowlens): the same lens over the swipe row. Narrower cards,
+   centred, so the neighbours show at the sides, curving away; the canvas
+   sits behind the row (js/projects.js places it), the row's cards lie flat
+   and see-through on top for the links and the swipe itself. */
+.work-rowlens .work__stage { position: relative; }
+.work-rowlens .work__cards {
+  position: relative;
+  gap: 12px;
+  padding-left: calc((100% - min(70vw, 460px)) / 2);
+  padding-right: calc((100% - min(70vw, 460px)) / 2);
+  scroll-padding: 0;
+  padding-top: 24px;
+  padding-bottom: 48px;
+}
+.work-rowlens .work__cards .card3 { flex-basis: min(70vw, 460px); }
+.work-rowlens .card3__head { opacity: clamp(0, calc((var(--f, 1) - 0.5) * 2), 1); transition: none; }
+.work-rowlens .card3__cta { opacity: clamp(0, calc((var(--f, 1) - 0.6) * 2.5), 1); }
+
+/* ---------- Spatial Key's card (js/projects.js) ----------
+   Over the projects, which stay where they are underneath. */
+html:has(.keycard[open]) { overflow: hidden; }
+.keycard {
+  width: min(400px, calc(100vw - 32px));
+  max-width: none;
+  margin: auto;
+  padding: 36px 32px 26px;
+  border: 0;
+  border-radius: 22px;
+  background: linear-gradient(to bottom, #F6F1E8, #EEE6DA);
+  color: var(--ink);
+  text-align: center;
+  box-shadow: 0 40px 90px -40px rgba(20, 16, 12, 0.6);
+  outline: none;
+}
+.keycard::backdrop {
+  background: rgba(36, 34, 31, 0.5);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+.keycard[open] { animation: keycard-in 0.45s var(--ease-out); }
+.keycard[open]::backdrop { animation: keycard-fade 0.3s ease; }
+@keyframes keycard-in { from { opacity: 0; translate: 0 14px; scale: 0.97; } }
+@keyframes keycard-fade { from { opacity: 0; } }
+.keycard__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink-soft);
+  font: inherit;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.keycard__close:hover { background: rgba(36, 34, 31, 0.07); color: var(--ink); }
+.keycard__lock {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  background: rgba(182, 106, 75, 0.12);
+  color: var(--terra);
+}
+.keycard__lock svg { width: 40%; height: auto; overflow: visible; }
+/* the lock opens as the card does */
+.keycard__shackle { transform-box: fill-box; transform-origin: 100% 100%; }
+.keycard[open] .keycard__shackle { animation: keycard-unlock 0.6s var(--ease-out) 0.25s both; }
+@keyframes keycard-unlock { to { transform: translateY(-1.8px) rotate(24deg); } }
+.keycard__title {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: var(--t-h3);
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+}
+.keycard__line { margin-top: 8px; font-size: var(--t-body); line-height: 1.5; color: var(--ink-soft); }
+.keycard__actions { display: flex; justify-content: center; gap: 10px; margin-top: 24px; }
+.keycard__btn {
+  flex: 1;
+  padding: 12px 14px;
+  border-radius: 12px;
+  box-shadow: inset 0 0 0 1px rgba(36, 34, 31, 0.16);
+  color: var(--ink);
+  font-size: var(--t-small);
+  font-weight: 500;
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+}
+.keycard__btn:hover { background: rgba(255, 255, 255, 0.55); }
+.keycard__btn--main { background: var(--ink); box-shadow: none; color: #F6F1E8; }
+.keycard__btn--main:hover { background: var(--terra); }
+.keycard__address { margin-top: 14px; font-size: var(--t-small); color: var(--ink-soft); user-select: all; }
+.keycard a:focus-visible, .keycard button:focus-visible { outline: 2px solid var(--terra); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+  .keycard[open], .keycard[open]::backdrop { animation: none; }
+  .keycard[open] .keycard__shackle { animation: none; transform: translateY(-1.8px) rotate(24deg); }
+}
