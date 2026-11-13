@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>{e(name)} — G S Varsha</title>
+  <meta name="description" content="{e(name)}: {e(line)}">
+  <meta name="theme-color" content="#F3EFE7">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%23F3EFE7'/%3E%3Ccircle cx='8' cy='8' r='3.2' fill='%23B66A4B'/%3E%3C/svg%3E">
+  <link rel="preload" href="../fonts/PPFragment-GlareRegular.otf" as="font" type="font/otf" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&amp;display=swap">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/projects.css">
+  <link rel="stylesheet" href="../css/case.css">
+  <script defer src="../js/nav.js"></script>
+  <script defer src="../js/case.js"></script>
+</head>
+<!-- The {e(name)} case study. The words come from the Portfolio V6 case
+     study; anything still to write is marked "ADD:" below and isn't shown. -->
+<body class="case" id="top">
+  <a class="skip" href="#main">Skip to content</a>
+
+  <!-- the header's soft blur sits outside it: the header keeps its own view transition, and that would stop the blur seeing the page -->
+  <div class="dock__blur" aria-hidden="true" data-dock-blur><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <header class="dock" data-dock>
+    <a class="dock__name" href="../index.html">G S Varsha</a>
+    <div class="dock__end">
+      <div class="dock__pill">
+        <a class="dock__cta" href="../assets/G-S-Varsha-Resume.pdf" target="_blank" rel="noopener" data-resume>Resume</a>
+        <span class="dock__sep" aria-hidden="true"></span>
+        <button class="dock__burger" type="button" aria-expanded="false" aria-controls="dock-menu" data-burger>
+          <span class="dock__burger-word" aria-hidden="true"><span>Menu</span><span>Close</span></span>
+          <span class="dock__bars" aria-hidden="true"><i></i><i></i></span>
+          <span class="visually-hidden">Menu</span>
+        </button>
+      </div>
+    </div>
+    <nav class="dock__nav" id="dock-menu" aria-label="Primary">
+      <span class="dock__slab" aria-hidden="true" data-slab></span>
+      <ul class="dock__list">
+        <li><a class="dock__link" href="../index.html#work" aria-current="true">Work</a></li>
+        <li><a class="dock__link" href="../index.html#about">About</a></li>
+        <li><a class="dock__link" href="#contact">Contact</a></li>
+        <li class="dock__rule" aria-hidden="true"></li>
+        <li><a class="dock__link dock__link--resume" href="../assets/G-S-Varsha-Resume.pdf" target="_blank" rel="noopener" data-resume>Resume</a></li>
+      </ul>
+      <p class="dock__extra">
+        <a href="mailto:gsvarsha11@gmail.com">Email</a>
+        <a href="https://www.linkedin.com/in/gsvarsha/" target="_blank" rel="noopener">LinkedIn</a>
+      </p>
+    </nav>
+  </header>
+
+  <main id="main">
+@@BODY@@
+  </main>
+
+  <footer class="wrap case-foot" id="contact">
+    <span>© 2026 G S Varsha</span>
+    <nav aria-label="Contact">
+      <a href="mailto:gsvarsha11@gmail.com">gsvarsha11@gmail.com</a>
+      <a href="https://www.linkedin.com/in/gsvarsha/" target="_blank" rel="noopener">LinkedIn <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>
+      <a href="../index.html#work">All work</a>
+    </nav>
+  </footer>
+</body>
+</html>
