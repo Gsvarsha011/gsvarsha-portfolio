@@ -72,12 +72,29 @@
   z-index: 0;
   padding-top: var(--top);
   background: #E8E6E2;
+  /* the cover's shadow stays inside the band: at the page's end the band is
+     still pinned behind the content, and its shadow would show above the
+     footer */
+  overflow: hidden;
 }
 .cs-sheet {
   position: relative;
   z-index: 1;
   background: var(--paper);
   box-shadow: 0 -24px 48px -32px rgba(36, 34, 31, 0.28);
+}
+/* at the page's end the pinned hero's bottom edge meets the sheet's; on
+   phones (fractional pixel ratios) a hair of the cover can show under it as
+   a dark line, so the sheet's paper reaches a few pixels further down, into
+   the footer's own paper */
+.cs-sheet::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: 4px;
+  background: var(--paper);
 }
 .cs-hero__in { display: grid; gap: var(--gap); }
 .cs-hero .crumbs a:hover { color: var(--ink); }

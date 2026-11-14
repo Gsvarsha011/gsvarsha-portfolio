@@ -553,6 +553,9 @@ a.card3__body:not([href]) { cursor: default; }
   .work-row .work__cards .card3 { flex-basis: 82vw; }
 
   .work-row .work__dots { display: flex; justify-content: center; gap: 6px; margin-top: 6px; }
+  /* no drop shadow: the row scrolls sideways, which clips it to a hard
+     grey edge under the cards */
+  .work-row .card3__body { box-shadow: 0 0 0 1px rgba(36, 34, 31, 0.07); }
   /* with the hero's handover: one full screen of paper, the gallery in its
      middle, so nothing of the laptop shows through under the row */
   .motion.work-row:not(.work-rowdrive) .work__stage {
