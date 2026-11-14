@@ -61,6 +61,9 @@
     });
   }
   const roomy = matchMedia("(min-width: 900px) and (min-height: 620px)");
+  // phones: flat cards, no lens (it distorts too much at this size); the
+  // page's scroll still moves the row from one project to the next
+  const phone = matchMedia("(max-width: 760px)");
 
   // Opened straight from disk (file://), WebGL may not read the cards'
   // pictures. Then the lens waits for js/work-images.js (the same pictures
@@ -612,7 +615,7 @@
     // from a file:// page); otherwise the cards bend in CSS instead
     if (!reduce.matches && !lens && picturesReadable()) lens = createLens();
     lensOn = live && !!lens;
-    rowLens = !live && !reduce.matches && !!lens;
+    rowLens = !live && !reduce.matches && !phone.matches && !!lens;
     ROWY = null;
     if (lens) for (const k of ["top", "left", "width", "height"]) lens.canvas.style.removeProperty(k);
     root.classList.toggle("work-lens", lensOn || rowLens);
@@ -1084,6 +1087,7 @@
   addEventListener("resize", onResize);
   reduce.addEventListener("change", setMode);
   roomy.addEventListener("change", setMode);
+  phone.addEventListener("change", setMode);
 
   setMode();
   loadDiskPictures();

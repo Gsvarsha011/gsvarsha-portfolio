@@ -204,6 +204,12 @@
   .story.is-live { height: 400svh; }
   /* phones: the character steps onto the blob rather than off the screen */
   .meet__me { left: -7%; width: 38%; }
+  /* the photo takes what the words leave, so the words take less: the full
+     width, a touch smaller, and the block starts higher */
+  .story.is-live .meet { top: 25svh; bottom: 3svh; row-gap: 16px; }
+  .story.is-live .meet__text { max-width: none; font-size: var(--t-small); line-height: 1.45; }
+  .story.is-live .meet__text p + p { margin-top: 0.7em; }
+  .story.is-live .meet__text .meet__hey { font-size: 22px; }
 }
 
 /* =====================================================================
@@ -761,11 +767,16 @@ html:has(.songs[open], .rally[open]) { overflow: hidden; }
 .gallery:not([hidden]) { animation: gallery-in 0.2s ease; }
 @keyframes gallery-in { from { opacity: 0; } }
 .has-gallery { overflow: hidden; }
+/* the gallery owns every gesture: a sideways drag moves the picture
+   (js/about.js), and there's nothing behind it to scroll */
+.gallery { touch-action: none; }
 .gallery__media {
   display: grid;
   place-items: center;
-  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
 }
+.gallery__media > * { -webkit-user-drag: none; will-change: transform; }
 /* each picture keeps its own shape (--ar, w / h, from js/about.js) and they
    all carry about the same weight: equal area, so a portrait stands tall and
    a landscape lies wide, never filling the screen */
@@ -791,7 +802,7 @@ html:has(.songs[open], .rally[open]) { overflow: hidden; }
 }
 .gallery__media .ph b { font-family: var(--display); font-weight: 400; font-size: var(--t-h2); }
 .gallery__media > .is-in { animation: pic-in 0.55s var(--ease-out); }
-@keyframes pic-in { from { opacity: 0; transform: translateX(calc(var(--dir, 1) * 40px)); } }
+@keyframes pic-in { from { opacity: 0; transform: translateX(calc(var(--dir, 1) * var(--from, 40px))); } }
 .gallery__arrow,
 .gallery__close {
   position: absolute;
@@ -810,7 +821,8 @@ html:has(.songs[open], .rally[open]) { overflow: hidden; }
 .gallery__arrow { top: 50%; margin-top: -28px; }
 .gallery__arrow--prev { left: clamp(16px, 2.4vw, 44px); }
 .gallery__arrow--next { right: clamp(16px, 2.4vw, 44px); }
-.gallery__close { top: clamp(16px, 2.4vw, 32px); right: clamp(16px, 2.4vw, 44px); font-size: 28px; }
+.gallery__close { top: clamp(16px, 2.4vw, 32px); right: clamp(16px, 2.4vw, 44px); }
+.gallery__arrow .icon, .gallery__close .icon { width: 20px; height: 20px; }
 .gallery__arrow:hover,
 .gallery__close:hover { background: var(--terra); color: var(--white); }
 .gallery button:focus-visible { outline: 2px solid var(--paper); outline-offset: 4px; }
@@ -860,7 +872,7 @@ html:has(.songs[open], .rally[open]) { overflow: hidden; }
 }
 @media (max-width: 760px) {
   .gallery__media img { --k: 94vmin; width: min(var(--k) * var(--sq, 1), calc(100vw - 24px), calc(100svh - 190px) * var(--ar, 1)); }
-  .gallery__arrow { top: auto; bottom: max(24px, env(safe-area-inset-bottom)); margin: 0; }
+  .gallery__arrow { top: auto; bottom: max(24px, env(safe-area-inset-bottom)); margin: 0; width: 52px; height: 52px; }
   .gallery__arrow--prev { left: calc(50% - 68px); }
   .gallery__arrow--next { right: calc(50% - 68px); }
 }

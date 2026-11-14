@@ -65,26 +65,12 @@
   </header>
 
   <main id="main">
-    <article class="wrap cs-article">
-      <nav class="crumbs" aria-label="Breadcrumb">
-        <ol><li><a href="../index.html#work"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linejoin="round" aria-hidden="true"><path d="M1.8 4.2c0-.7.5-1.2 1.2-1.2h3.3l1.5 1.7H13c.7 0 1.2.5 1.2 1.2v6.4c0 .7-.5 1.2-1.2 1.2H3c-.7 0-1.2-.5-1.2-1.2z"/></svg>Work</a></li><li aria-current="page">Spacture AI</li></ol>
-      </nav>
-      <div class="cs-body">
-      <nav class="toc" aria-label="Spacture AI case study contents" data-toc>
-        <p class="tag toc__title">Contents</p>
-        <ol><li><a href="#research">Research</a></li><li><a href="#challenge">The problem</a></li><li><a href="#direction">The direction</a></li><li><a href="#versions">Iterations</a></li><li><a href="#system">Type and colour</a></li><li><a href="#homepage">The homepage</a></li><li><a href="#motion">Motion</a></li><li><a href="#learnings">Learnings</a></li></ol>
-      </nav>
-      <div class="cs-story">
-      <header class="cs-head" data-reveal>
-        <p class="tag cs-head__eyebrow">Spacture AI <span aria-hidden="true">·</span> Website redesign · Assignment</p>
-        <h1>Redesigning a security AI website so a store owner gets it in one scroll</h1>
-        <!-- Intro and facts: set them in this project's "intro" and "facts" in
-             tools/make-cases.py; a value of None shows "To add".
-             Prototype or Figma link: set "figma" there. -->
-        <dl class="cs-intro"><div class="cs-intro__wide"><dt class="tag">Introduction</dt><dd><p>Spacture AI uses computer vision to help retailers spot theft and suspicious behaviour through the cameras they already have. It&#x27;s a powerful product, and that makes it hard to explain quickly.</p><p>I redesigned its homepage as an assignment in the 10K Designers C8 cohort. It isn&#x27;t Spacture&#x27;s live website. I did everything on my own, from research and structure to the copy and the visual design.</p></dd></div><div><dt class="tag">My role</dt><dd>UX Designer</dd></div><div><dt class="tag">Team</dt><dd>Solo</dd></div><div><dt class="tag">Tools</dt><dd>Figma</dd></div><div><dt class="tag">Context</dt><dd>10K Designers C8 assignment</dd></div></dl>
-        
-      </header>
-      <figure class="plate cs-cover" data-reveal>
+    <div class="cs-hero" style="--r:1.5385">
+      <div class="wrap cs-hero__in">
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <ol><li><a href="../index.html#work"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linejoin="round" aria-hidden="true"><path d="M1.8 4.2c0-.7.5-1.2 1.2-1.2h3.3l1.5 1.7H13c.7 0 1.2.5 1.2 1.2v6.4c0 .7-.5 1.2-1.2 1.2H3c-.7 0-1.2-.5-1.2-1.2z"/></svg>Work</a></li><li aria-current="page">Spacture AI</li></ol>
+        </nav>
+        <figure class="plate cs-cover">
           <div class="plate__mat"><div class="sx-hero" role="img" aria-label="Spacture AI homepage, first screen: the Spacture AI logo and menu over a security camera lens in close-up behind the headline Know Sooner. Respond Faster., with Book a demo and Download app">
             <video class="sx-hero__vid" src="../assets/work/spacture-ai/hero.mp4" poster="../assets/work/spacture-ai/hero-poster.webp" autoplay muted loop playsinline preload="auto" aria-hidden="true"></video>
             <script>matchMedia("(prefers-reduced-motion: reduce)").matches && document.currentScript.previousElementSibling.removeAttribute("autoplay")</script>
@@ -100,11 +86,33 @@
           </div></div>
 
         </figure>
+      </div>
+    </div>
+    <div class="cs-sheet">
+    <article class="wrap cs-article">
+      <!-- Intro and facts: set them in this project's "intro" and "facts" in
+           tools/make-cases.py; a value of None shows "To add".
+           Prototype or Figma link: set "figma" there. -->
+      <header class="cs-head" data-reveal>
+        <dl class="cs-facts"><div><dt>My role</dt><dd>UX Designer</dd></div><div><dt>Team</dt><dd>Solo</dd></div><div><dt>Tools</dt><dd>Figma</dd></div><div><dt>Context</dt><dd>10K Designers C8 assignment</dd></div></dl>
+        <div class="cs-head__main">
+          <p class="tag cs-head__eyebrow">Spacture AI <span aria-hidden="true">·</span> Website redesign · Assignment</p>
+          <h1>Redesigning a security AI website so a store owner gets it in one scroll</h1>
+          <div class="cs-head__intro"><p>Spacture AI uses computer vision to help retailers spot theft through the cameras they already have. Powerful, and hard to explain quickly.</p><p>I redesigned its homepage on my own as a 10K Designers C8 assignment, from research to visual design. It isn&#x27;t Spacture&#x27;s live site.</p></div>
+          
+        </div>
+      </header>
+      <div class="cs-body">
+      <nav class="toc" aria-label="Spacture AI case study contents" data-toc>
+        <p class="tag toc__title">Contents</p>
+        <ol><li><a href="#research">Research</a></li><li><a href="#challenge">The problem</a></li><li><a href="#direction">The direction</a></li><li><a href="#versions">Iterations</a></li><li><a href="#system">Type and colour</a></li><li><a href="#homepage">The homepage</a></li><li><a href="#motion">Motion</a></li><li><a href="#learnings">Learnings</a></li></ol>
+      </nav>
+      <div class="cs-story">
 
       <section class="cs-sec" id="research" aria-labelledby="research-h">
-        <h2 class="sec-head" id="research-h" data-reveal><span class="tag sec-head__label">Research</span> <span class="sec-head__title">Before any screens, I wanted to know who&#x27;s buying</span></h2>
-        <div class="prose" data-reveal><p>I started on a Figma board, not a page. I wrote down the brief, built two personas around what a store owner or security head is afraid of and what they want, drafted the copy, and sketched the site&#x27;s structure by hand.</p></div>
-        <div class="point" data-reveal><h3>The fear that shaped the page: finding out too late</h3><p>Both personas I built, the people who&#x27;d buy it and the people who&#x27;d use it every day, shared one fear: realising something had happened only after the stock was gone. That fear became the page&#x27;s opening, &quot;Every moment looks ordinary. Until they connect.&quot;</p></div>
+        <h2 class="sec-head" id="research-h" data-reveal><span class="tag sec-head__label">Research</span> <span class="sec-head__title">Before any screens, who&#x27;s buying?</span></h2>
+        <div class="prose" data-reveal><p>I started on a Figma board: the brief, two personas, copy drafts and a hand-sketched structure.</p></div>
+        <div class="point" data-reveal><h3>The fear that shaped the page</h3><p>Both personas feared finding out too late. That became the opening: &quot;Every moment looks ordinary. Until they connect.&quot;</p></div>
         <figure class="plate" data-reveal>
           <div class="plate__mat"><img class="plate__img" src="../assets/work/spacture-ai/process/research-board.webp" alt="A Figma board of research: the brief and problem, sticky notes, two user personas, a fear and desire breakdown, copywriting drafts and a hand-drawn information architecture" width="1948" height="956" loading="lazy" decoding="async"></div>
           
@@ -116,23 +124,19 @@
       </section>
       <section class="cs-sec" id="challenge" aria-labelledby="challenge-h">
         <h2 class="sec-head" id="challenge-h" data-reveal><span class="tag sec-head__label">The problem</span> <span class="sec-head__title">Buyers think in stores, not in AI models</span></h2>
-        <div class="point" data-reveal><h3><span class="point__n">1.</span> Stores already have cameras</h3><p>What they don&#x27;t have is someone watching every feed at the moment something happens. That gap is the real problem, and it&#x27;s what a store owner already feels.</p></div>
-        <div class="point" data-reveal><h3><span class="point__n">2.</span> &quot;Computer vision&quot; doesn&#x27;t mean anything to them</h3><p>Leading with the technology makes the visitor do the work of figuring out why it matters. I wanted the technology to show up as the answer, not the pitch.</p></div>
-        <p class="pull" data-reveal>So the page had to go: why it matters, how it works, what it looks like, in that order.</p>
-        <figure class="flow" style="--n:4" data-reveal>
-          <ol><li class=""><span class="flow__n">01</span><b>The gap</b><span>Why should I care?</span></li><li class=""><span class="flow__n">02</span><b>The mechanism</b><span>How does it work?</span></li><li class=""><span class="flow__n">03</span><b>The product</b><span>What does it look like?</span></li><li class=""><span class="flow__n">04</span><b>The next step</b><span>What do I do now?</span></li></ol>
-
+        <div class="point" data-reveal><h3>Stores already have cameras</h3><p>What&#x27;s missing is someone watching every feed at the right moment.</p></div>
+        <div class="point" data-reveal><h3>&quot;Computer vision&quot; means nothing to them</h3><p>The technology should be the answer, not the pitch.</p></div>
+        <figure class="flow" style="--n:4" aria-label="The order the page explains itself in" data-reveal>
+          <ol><li><b>The gap</b><span>Why should I care?</span></li><li><b>The mechanism</b><span>How does it work?</span></li><li><b>The product</b><span>What does it look like?</span></li><li><b>The next step</b><span>What do I do now?</span></li></ol>
         </figure>
       </section>
       <section class="cs-sec" id="direction" aria-labelledby="direction-h">
         <h2 class="sec-head" id="direction-h" data-reveal><span class="tag sec-head__label">The direction</span> <span class="sec-head__title">Four things the page had to do</span></h2>
-        <div class="prose" data-reveal><p>Before designing, I wrote down what the page had to get right. Every section had to earn its place against these.</p></div>
-        <ol class="ruled" data-reveal><li>A clear value proposition, before any mention of AI.</li><li>The product shown in use from the first screen.</li><li>A logical progression: the problem, how it works, what a team does with it.</li><li>One clear next step, repeated where a visitor is ready.</li></ol>
+        <ul class="aims" data-reveal><li>Value first, before any mention of AI</li><li>The product in use from the first screen</li><li>The problem, how it works, then what you do with it</li><li>One clear next step, wherever you&#x27;re ready</li></ul>
       </section>
       <section class="cs-sec" id="versions" aria-labelledby="versions-h">
         <h2 class="sec-head" id="versions-h" data-reveal><span class="tag sec-head__label">Iterations</span> <span class="sec-head__title">It didn&#x27;t start blue</span></h2>
-        <div class="prose" data-reveal><p>My first directions were dark green and teal. The final page settled on a deep blue, with red kept only for real alerts. On the right of the canvas are the colour, component and hero frames that got it there.</p></div>
-        <div class="point" data-reveal><h3>Why blue won</h3><p>Green and teal felt technical. A deep blue felt calmer and more trustworthy, which suits a product people rely on to keep watch, and it let the red alerts stand out as the only loud colour on the page.</p></div>
+        <div class="prose" data-reveal><p>The first directions were dark green and teal. A deep blue felt calmer and more trustworthy, and left red for real alerts only.</p></div>
         <figure class="plate" data-reveal>
           <div class="plate__mat"><img class="plate__img" src="../assets/work/spacture-ai/process/old-iterations.webp" alt="The Figma canvas: a row of frames under the label Old iteration on the left, and on the right the colour, component, hero, banner and phone frames that led to the final page" width="1582" height="600" loading="lazy" decoding="async"></div>
           
@@ -140,7 +144,6 @@
       </section>
       <section class="cs-sec" id="system" aria-labelledby="system-h">
         <h2 class="sec-head" id="system-h" data-reveal><span class="tag sec-head__label">Type and colour</span> <span class="sec-head__title">Two typefaces and one blue</span></h2>
-        <div class="prose" data-reveal><p>Plus Jakarta Sans for headlines and buttons, Inter for everything you read. Ten colours, built around one blue, with red saved for alerts.</p></div>
         <figure class="plate sxds" data-reveal>
           <div class="sxb">
             <div class="sxb__type" style="font-family:'Plus Jakarta Sans';--n:4"><div class="sxb__spec"><span class="sxb__label">Display typeface</span><p class="sxb__name">Plus Jakarta Sans</p><div class="sxb__cols"><div><span class="sxb__label">Style</span><ol class="sxb__styles"><li><span style="font-weight:700">Display</span><span class="sxb__meta">56 / 100% · Bold</span></li><li><span style="font-weight:600">Heading 1</span><span class="sxb__meta">40 / 100% · SemiBold</span></li><li><span style="font-weight:400">Heading 2</span><span class="sxb__meta">28 / 36px · Regular</span></li><li><span style="font-weight:600">Button Primary</span><span class="sxb__meta">16 / Auto · SemiBold</span></li><li><span style="font-weight:500">Button Secondary</span><span class="sxb__meta">16 / Auto · Medium</span></li></ol></div><div><span class="sxb__label">Type</span><p class="sxb__set" style="font-weight:400">Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz</p><p class="sxb__set" style="font-weight:700">Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz</p></div></div></div><div class="sxb__weight"><span class="sxb__label">Regular</span><span class="sxb__a" style="font-weight:400" aria-hidden="true">a</span></div><div class="sxb__weight"><span class="sxb__label">Medium</span><span class="sxb__a" style="font-weight:500" aria-hidden="true">a</span></div><div class="sxb__weight"><span class="sxb__label">SemiBold</span><span class="sxb__a" style="font-weight:600" aria-hidden="true">a</span></div><div class="sxb__weight"><span class="sxb__label">Bold</span><span class="sxb__a" style="font-weight:700" aria-hidden="true">a</span></div></div><div class="sxb__type" style="font-family:'Inter';--n:2"><div class="sxb__spec"><span class="sxb__label">Text typeface</span><p class="sxb__name">Inter</p><div class="sxb__cols"><div><span class="sxb__label">Style</span><ol class="sxb__styles"><li><span style="font-weight:400">Body Large</span><span class="sxb__meta">18 / Auto · Regular</span></li><li><span style="font-weight:400">Body</span><span class="sxb__meta">16 / Auto · Regular</span></li><li><span style="font-weight:400">Body Small</span><span class="sxb__meta">14 / Auto · Regular</span></li><li><span style="font-weight:400">Caption</span><span class="sxb__meta">12 / Auto · Regular</span></li><li><span style="font-weight:500">Nav Link</span><span class="sxb__meta">14 / Auto · Medium</span></li></ol></div><div><span class="sxb__label">Type</span><p class="sxb__set" style="font-weight:400">Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz</p><p class="sxb__set" style="font-weight:500">Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz</p></div></div></div><div class="sxb__weight"><span class="sxb__label">Regular</span><span class="sxb__a" style="font-weight:400" aria-hidden="true">a</span></div><div class="sxb__weight"><span class="sxb__label">Medium</span><span class="sxb__a" style="font-weight:500" aria-hidden="true">a</span></div></div>
@@ -153,8 +156,8 @@
         </figure>
       </section>
       <section class="cs-sec" id="homepage" aria-labelledby="homepage-h">
-        <h2 class="sec-head" id="homepage-h" data-reveal><span class="tag sec-head__label">The homepage</span> <span class="sec-head__title">Telling it as one shopper&#x27;s visit</span></h2>
-        <div class="point" data-reveal><h3>It opens with a feeling, not a feature</h3><p>&quot;Every moment looks ordinary. Until they connect.&quot; Before any product appears, the page follows one visit through a store, timestamped from entry to exit, and ends on the thing every store owner fears: the signs were already there.</p></div>
+        <h2 class="sec-head" id="homepage-h" data-reveal><span class="tag sec-head__label">The homepage</span> <span class="sec-head__title">Told as one shopper&#x27;s visit</span></h2>
+        <div class="point" data-reveal><h3>It opens with a feeling, not a feature</h3><p>One visit through a store, timestamped, ending on: the signs were already there.</p></div>
         <figure class="car" style="--ratio:2560 / 1664" aria-roledescription="carousel" aria-label="The opening" data-car data-reveal>
           <div class="car__frame">
             <div class="car__track" tabindex="0" data-car-track><div class="car__slide" role="group" aria-roledescription="slide" aria-label="1 of 3" data-cap="Every moment looks ordinary"><img class="car__img" src="../assets/work/spacture-ai/sections/01-ordinary.webp" alt="Dark frame with the line “Every moment looks ordinary.”, the words moment and ordinary in blue" width="2560" height="1664" loading="lazy" decoding="async"></div><div class="car__slide" role="group" aria-roledescription="slide" aria-label="2 of 3" data-cap="Until they connect"><img class="car__img" src="../assets/work/spacture-ai/sections/02-connect.webp" alt="The same line, now followed by “Until they connect.”" width="2560" height="1664" loading="lazy" decoding="async"></div><div class="car__slide" role="group" aria-roledescription="slide" aria-label="3 of 3" data-cap="One visit, timestamped from entry to exit"><img class="car__img" src="../assets/work/spacture-ai/sections/03-signals.webp" alt="“A visit is never a single event”: a path through a store, timestamped at Entered, Browsing, Paused, Returned and Exit, ending in “The signs were already there.”" width="2560" height="1664" loading="lazy" decoding="async"></div></div>
@@ -162,15 +165,15 @@
           </div>
 
         </figure>
-        <div class="point" data-reveal><h3>Then the product, one alert at a time</h3><p>The same visit is shown again, this time through Spacture&#x27;s dashboard. Confidence climbs from 38% to 94% across four alerts, so you see how the product thinks instead of reading about it. (The numbers are the design&#x27;s own example, not real data.)</p></div>
+        <div class="point" data-reveal><h3>Then the product, one alert at a time</h3><p>Confidence climbs from 38% to 94% across four alerts. (The design&#x27;s example numbers, not real data.)</p></div>
         <figure class="car" style="--ratio:2560 / 1664" aria-roledescription="carousel" aria-label="One visit, four alerts" data-car data-reveal>
           <div class="car__frame">
-            <div class="car__track" tabindex="0" data-car-track><div class="car__slide" role="group" aria-roledescription="slide" aria-label="1 of 4" data-cap="Customer entered store, 38% confidence"><img class="car__img" src="../assets/work/spacture-ai/sections/05-state-1.webp" alt="A tilted Spacture camera dashboard tracking customer #41 at 38% confidence, beside the alert “Customer entered store”, step 1 of 4" width="2560" height="1664" loading="lazy" decoding="async"></div><div class="car__slide" role="group" aria-roledescription="slide" aria-label="2 of 4" data-cap="In a blind spot, 52%"><img class="car__img" src="../assets/work/spacture-ai/sections/06-state-2.webp" alt="Step 2 of 4: the customer in a blind spot at 52% confidence, alert “Customer remained in blind spot”" width="2560" height="1664" loading="lazy" decoding="async"></div><div class="car__slide" role="group" aria-roledescription="slide" aria-label="3 of 4" data-cap="Repeated shelf interaction, 66%"><img class="car__img" src="../assets/work/spacture-ai/sections/07-state-3.webp" alt="Step 3 of 4: 66% confidence, alert “Repeated shelf interaction”" width="2560" height="1664" loading="lazy" decoding="async"></div><div class="car__slide" role="group" aria-roledescription="slide" aria-label="4 of 4" data-cap="Concealment detected, 94%"><img class="car__img" src="../assets/work/spacture-ai/sections/08-state-4.webp" alt="Step 4 of 4: 94% confidence, a red alert “Concealment detected”" width="2560" height="1664" loading="lazy" decoding="async"></div></div>
+            <div class="car__track" tabindex="0" data-car-track><div class="car__slide" role="group" aria-roledescription="slide" aria-label="1 of 4" data-cap="Customer entered store, 38% confidence"><img class="car__img" src="../assets/work/spacture-ai/sections/05-state-1.webp" alt="A tilted Spacture camera dashboard tracking customer #41 at 38% confidence, beside the alert “Customer entered store”" width="2560" height="1664" loading="lazy" decoding="async"></div><div class="car__slide" role="group" aria-roledescription="slide" aria-label="2 of 4" data-cap="In a blind spot, 52%"><img class="car__img" src="../assets/work/spacture-ai/sections/06-state-2.webp" alt="The customer in a blind spot at 52% confidence, alert “Customer remained in blind spot”" width="2560" height="1664" loading="lazy" decoding="async"></div><div class="car__slide" role="group" aria-roledescription="slide" aria-label="3 of 4" data-cap="Repeated shelf interaction, 66%"><img class="car__img" src="../assets/work/spacture-ai/sections/07-state-3.webp" alt="66% confidence, alert “Repeated shelf interaction”" width="2560" height="1664" loading="lazy" decoding="async"></div><div class="car__slide" role="group" aria-roledescription="slide" aria-label="4 of 4" data-cap="Concealment detected, 94%"><img class="car__img" src="../assets/work/spacture-ai/sections/08-state-4.webp" alt="94% confidence, a red alert “Concealment detected”" width="2560" height="1664" loading="lazy" decoding="async"></div></div>
             <button class="car__btn car__btn--prev" type="button" aria-label="Previous screen" data-car-prev disabled><svg viewBox="0 0 8 12" aria-hidden="true"><path d="M6.5 1 1.5 6l5 5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button><button class="car__btn car__btn--next" type="button" aria-label="Next screen" data-car-next><svg viewBox="0 0 8 12" aria-hidden="true"><path d="M1.5 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
           </div>
 
         </figure>
-        <div class="point" data-reveal><h3>Only then, how it works and where</h3><p>Once you&#x27;ve seen it work, the page explains the four capabilities behind it, and shows them in four very different stores: a luxury boutique, a supermarket, an electronics store and a pharmacy.</p></div>
+        <div class="point" data-reveal><h3>Then how it works, and where</h3><p>Four capabilities, shown in four very different stores.</p></div>
         <figure class="plate tallpair" data-reveal>
           <div class="plate__mat tallpair__grid" style="--cols:1.971fr 2.600fr">
             <div class="tallpair__stack"><img class="plate__img" src="../assets/work/spacture-ai/sections/12-luxury.webp" alt="Luxury: an isometric store floor in blue, tagged with dwell time at a display case and an associate approach" width="2560" height="1664" loading="lazy" decoding="async"><img class="plate__img" src="../assets/work/spacture-ai/sections/13-supermarket.webp" alt="Supermarket: twenty aisles in isometric view, tagged with a dwell spike and a basket left unattended" width="2560" height="1664" loading="lazy" decoding="async"><img class="plate__img" src="../assets/work/spacture-ai/sections/14-electronics.webp" alt="Electronics: dense shelves of high-value products in isometric view, tagged with a product handled three times and a queue forming at the counter" width="2560" height="1664" loading="lazy" decoding="async"><img class="plate__img" src="../assets/work/spacture-ai/sections/15-pharmacy.webp" alt="Pharmacy: regulated shelves and a short counter in isometric view, tagged with a restricted shelf reach and a 90-second counter wait" width="2560" height="1664" loading="lazy" decoding="async"></div>
@@ -178,10 +181,10 @@
           </div>
           
         </figure>
-        <div class="point" data-reveal><h3>And one clear ask</h3><p>The page ends on a question, &quot;What would you find if you could see it all?&quot;, then a demo button, the questions a buyer asks before booking one, and the footer.</p></div>
+        <div class="point" data-reveal><h3>And one clear ask</h3><p>A question, a demo button, the FAQ, then the footer.</p></div>
         <figure class="car" style="--ratio:2560 / 1664" aria-roledescription="carousel" aria-label="The end of the page" data-car data-reveal>
           <div class="car__frame">
-            <div class="car__track" tabindex="0" data-car-track><div class="car__slide" role="group" aria-roledescription="slide" aria-label="1 of 3" data-cap="One question, then Book a Demo"><img class="car__img" src="../assets/work/spacture-ai/sections/18-cta.webp" alt="“What would you find if you could see it all?” over a glassy store illustration, with Book a Demo and Contact Sales" width="2560" height="1664" loading="lazy" decoding="async"></div><div class="car__slide" role="group" aria-roledescription="slide" aria-label="2 of 3" data-cap="Seven questions a buyer asks before a demo"><img class="car__img" src="../assets/work/spacture-ai/sections/19-faq.webp" alt="F.A.Q, “The things worth knowing, before you get started”: seven questions in a list, from working with existing cameras to enterprise retailers, with Email us for anything else" width="2560" height="1644" loading="lazy" decoding="async"></div><div class="car__slide" role="group" aria-roledescription="slide" aria-label="3 of 3" data-cap="Links, legal, and the name once more"><img class="car__img" src="../assets/work/spacture-ai/sections/20-footer.webp" alt="The footer on a blue gradient: the Spacture AI logo and social links, page links, the legal line, and SPACTURE in large letters along the bottom" width="2560" height="1538" loading="lazy" decoding="async"></div></div>
+            <div class="car__track" tabindex="0" data-car-track><div class="car__slide" role="group" aria-roledescription="slide" aria-label="1 of 3" data-cap="One question, then Book a Demo"><img class="car__img" src="../assets/work/spacture-ai/sections/18-cta.webp" alt="“What would you find if you could see it all?” over a glassy store illustration, with Book a Demo and Contact Sales" width="2560" height="1664" loading="lazy" decoding="async"></div><div class="car__slide" role="group" aria-roledescription="slide" aria-label="2 of 3" data-cap="Seven questions a buyer asks before a demo"><img class="car__img" src="../assets/work/spacture-ai/sections/19-faq.webp" alt="F.A.Q, “The things worth knowing, before you get started”: seven questions in a list, with Email us for anything else" width="2560" height="1644" loading="lazy" decoding="async"></div><div class="car__slide" role="group" aria-roledescription="slide" aria-label="3 of 3" data-cap="Links, legal, and the name once more"><img class="car__img" src="../assets/work/spacture-ai/sections/20-footer.webp" alt="The footer on a blue gradient: the Spacture AI logo and social links, page links, the legal line, and SPACTURE in large letters along the bottom" width="2560" height="1538" loading="lazy" decoding="async"></div></div>
             <button class="car__btn car__btn--prev" type="button" aria-label="Previous screen" data-car-prev disabled><svg viewBox="0 0 8 12" aria-hidden="true"><path d="M6.5 1 1.5 6l5 5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button><button class="car__btn car__btn--next" type="button" aria-label="Next screen" data-car-next><svg viewBox="0 0 8 12" aria-hidden="true"><path d="M1.5 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
           </div>
 
@@ -189,7 +192,7 @@
       </section>
       <section class="cs-sec" id="motion" aria-labelledby="motion-h">
         <h2 class="sec-head" id="motion-h" data-reveal><span class="tag sec-head__label">Motion</span> <span class="sec-head__title">Movement that follows the story</span></h2>
-        <div class="prose" data-reveal><p>I kept motion to the places where it helps the story along: scenes changing behind the headline, cards stacking as you scroll through how it works, and a footer that reacts to your pointer.</p></div>
+        <div class="prose" data-reveal><p>Motion only where it moves the story along: scenes behind the headline, cards stacking, a footer that reacts.</p></div>
         <div class="motion" data-reveal><div class="motion__row"><figure class="plate motion__clip" style="--r:1.5385">
             <div class="plate__mat"><video class="motion__vid" src="../assets/work/spacture-ai/motion/hero.mp4" poster="../assets/work/spacture-ai/motion/hero.webp" width="1440" height="936" muted loop playsinline preload="none" aria-label="The first screen: store scenes change behind the headline, and the menu and buttons answer the pointer" data-motion></video></div>
             
@@ -206,17 +209,18 @@
       </section>
       <section class="cs-sec" id="learnings" aria-labelledby="learnings-h">
         <h2 class="sec-head" id="learnings-h" data-reveal><span class="tag sec-head__label">Learnings</span> <span class="sec-head__title">What I&#x27;d take into the next one</span></h2>
-        <div class="point" data-reveal><h3>Explain the problem before the product</h3><p>The more complex the technology, the more it helps to start with something the reader already feels. The product makes sense much faster once the problem is theirs.</p></div>
-        <div class="point" data-reveal><h3>Show it working instead of describing it</h3><p>Following one visit through four alerts did more than any list of features could.</p></div>
-        <div class="point" data-reveal><h3>Restraint makes the alerts land</h3><p>Keeping the palette quiet and using red only for real alerts meant the one moment that matters, &quot;Concealment detected&quot;, couldn&#x27;t be missed.</p></div>
+        <div class="point" data-reveal><h3>Problem before product</h3><p>Start with what the reader already feels.</p></div>
+        <div class="point" data-reveal><h3>Show it, don&#x27;t describe it</h3><p>One visit through four alerts beat any feature list.</p></div>
+        <div class="point" data-reveal><h3>Restraint makes the alerts land</h3><p>With red saved for alerts, &quot;Concealment detected&quot; can&#x27;t be missed.</p></div>
       </section>
       <nav class="cs-pager" aria-label="More projects" data-reveal>
-        <a class="cs-pager__link cs-pager__link--prev" href="spatiallite.html" rel="prev"><span class="cs-pager__pic"><img class="" src="../assets/projects/spatiallite-thumb.jpg" alt="" width="1672" height="941" loading="lazy" decoding="async"></span><span class="cs-pager__text"><span class="tag cs-pager__label"><svg viewBox="0 0 8 12" aria-hidden="true"><path d="M6.5 1 1.5 6l5 5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg> Previous</span><span class="cs-pager__name">SpatialLite</span></span></a>
-        <a class="cs-pager__link cs-pager__link--next" href="craft.html" rel="next"><span class="cs-pager__text"><span class="tag cs-pager__label">Next <svg viewBox="0 0 8 12" aria-hidden="true"><path d="M1.5 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span><span class="cs-pager__name">Craft</span></span><span class="cs-pager__pic"><img class="" src="../assets/projects/craft-thumb.jpg" alt="" width="1672" height="941" loading="lazy" decoding="async"></span></a>
+        <a class="cs-pager__link cs-pager__link--prev" href="spatiallite.html" rel="prev"><span class="cs-pager__pic"><img class="" src="../assets/projects/spatiallite-thumb.webp" alt="" width="1672" height="941" loading="lazy" decoding="async"></span><span class="cs-pager__text"><span class="tag cs-pager__label"><svg viewBox="0 0 8 12" aria-hidden="true"><path d="M6.5 1 1.5 6l5 5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg> Previous</span><span class="cs-pager__name">SpatialLite</span></span></a>
+        <a class="cs-pager__link cs-pager__link--next" href="craft.html" rel="next"><span class="cs-pager__text"><span class="tag cs-pager__label">Next <svg viewBox="0 0 8 12" aria-hidden="true"><path d="M1.5 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span><span class="cs-pager__name">Craft</span></span><span class="cs-pager__pic"><img class="" src="../assets/projects/craft-thumb.webp" alt="" width="1672" height="941" loading="lazy" decoding="async"></span></a>
       </nav>
       </div>
       </div>
     </article>
+    </div>
   </main>
 
     <footer class="foot" id="contact" data-foot>
