@@ -574,16 +574,30 @@
     const i = Math.max(0, Math.min(n - 1, Math.round(row.scrollLeft / stepNow())));
     scrollTo({ top: scrollForFrac(fracFor(i)), behavior: reduce.matches ? "auto" : "smooth" });
   }
-  row.addEventListener("touchstart", () => {
+  // a touch on the row is a swipe only once it moves more sideways than up
+  // or down; a vertical drag over the cards is the page's own scroll, which
+  // already drives the row, so it's left alone (no pause, no glide after)
+  let t0 = null;
+  row.addEventListener("touchstart", (e) => {
     if (!drive) return;
-    touching = swiping = true;
+    const t = e.touches[0];
+    t0 = { x: t.clientX, y: t.clientY };
+    touching = true;
     clearTimeout(settleTimer);
+  }, { passive: true });
+  row.addEventListener("touchmove", (e) => {
+    if (!drive || !t0 || swiping) return;
+    const t = e.touches[0];
+    const dx = Math.abs(t.clientX - t0.x), dy = Math.abs(t.clientY - t0.y);
+    if (dx > 8 && dx > dy) swiping = true;
+    else if (dy > 8) t0 = null; // vertical: not a swipe, for the rest of this touch
   }, { passive: true });
   const lift = () => {
     if (!touching) return;
     touching = false;
+    t0 = null;
     clearTimeout(settleTimer);
-    settleTimer = setTimeout(settle, 160);
+    if (swiping) settleTimer = setTimeout(settle, 160);
   };
   row.addEventListener("touchend", lift, { passive: true });
   row.addEventListener("touchcancel", lift, { passive: true });
