@@ -419,3 +419,8 @@ body::before {
 }
 @keyframes view-out { to { opacity: 0; } }
 @keyframes view-in { from { opacity: 0; translate: 0 10px; } }
+
+/* the arrows and crosses in round buttons: drawn, not typed, so every one
+   is the same size whatever the font (gallery, music, cards) */
+.icon { display: block; width: 18px; height: 18px; }
+

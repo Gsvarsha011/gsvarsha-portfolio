@@ -21,7 +21,7 @@ real, shareable URL; nothing is shown for them until then. For `figma`,
 say what it is: {"url": "...", "label": "View prototype"} or
 {"url": "...", "label": "Explore the Figma file"}.
 """
-import html, json, os, re, subprocess, sys
+import html, os, re, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "work")
@@ -94,11 +94,10 @@ def pull(t):
     return f'<p class="pull" data-reveal>{e(t)}</p>'
 
 
-def point(head, *ps, n=None):
-    """A bold one-line takeaway, then the paragraphs that explain it.
-    n: numbers it, for a run of problems or decisions."""
-    num = f'<span class="point__n">{n}.</span> ' if n else ""
-    return (f'<div class="point" data-reveal><h3>{num}{e(head)}</h3>'
+def point(head, *ps):
+    """A bold one-line takeaway, then a line or two that explains it. Never
+    numbered: a run of them reads as a list on its own."""
+    return (f'<div class="point" data-reveal><h3>{e(head)}</h3>'
             + "".join(f"<p>{e(p)}</p>" for p in ps) + "</div>")
 
 
@@ -115,18 +114,16 @@ def tbd(what, kind="Content"):
             f'<div class="tbd" data-reveal><span class="tag tbd__tag">{e(kind)} to add</span><p>{e(what)}</p></div>')
 
 
-def ruled(items):
-    return '<ol class="ruled" data-reveal>' + "".join(f"<li>{e(i)}</li>" for i in items) + "</ol>"
+def aims(items):
+    """A few short statements the work had to live up to, set quietly two
+    to a row on soft tiles: no numbers, no rules between them."""
+    return '<ul class="aims" data-reveal>' + "".join(f"<li>{e(i)}</li>" for i in items) + "</ul>"
 
 
-def split(cols):
-    """A labelled heading with a line under it, e.g. Craft's stage headings.
-    cols: (tag, heading, text). One only: text never runs in side-by-side
-    columns (it reads as a form, not a page); write prose instead."""
-    if len(cols) != 1:
-        sys.exit("split(): one column only; put side-by-side text into prose()")
-    inner = "".join(f'<div><span class="tag">{e(t)}</span><h3>{e(h)}</h3>{f"<p>{e(p)}</p>" if p else ""}</div>' for t, h, p in cols)
-    return f'<div class="split" style="--n:{len(cols)}" data-reveal>{inner}</div>'
+def split(heading, text=""):
+    """A stage heading that opens the run of screens after it, e.g. Craft's
+    stages. No label or number over it: the heading says it."""
+    return f'<div class="split" data-reveal><h3>{e(heading)}</h3>{f"<p>{e(text)}</p>" if text else ""}</div>'
 
 
 def caption_lines(fig, width):
@@ -346,16 +343,13 @@ def zoom(src, w, h, alt, pos="50% 50%", scale=1.3, note="", ratio="21 / 9"):
         </figure>'''
 
 
-def flow(steps, title, note=""):
-    """A journey drawn as steps in a row. steps: (name, question, shown):
-    shown=True for steps a screen on the page already shows."""
-    items = "".join(
-        f'<li class="{"is-shown" if shown else ""}"><span class="flow__n">{k + 1:02d}</span><b>{e(n)}</b><span>{e(q)}</span></li>'
-        for k, (n, q, shown) in enumerate(steps))
-    t = f" {e(note)}" if note else ""
-    return f'''<figure class="flow" style="--n:{len(steps)}" data-reveal>
+def flow(steps, title):
+    """A journey as one quiet line of steps: each name with its question
+    under it, a thin arrow between. No numbers, no boxes.
+    steps: (name, question)."""
+    items = "".join(f"<li><b>{e(n)}</b><span>{e(q)}</span></li>" for n, q in steps)
+    return f'''<figure class="flow" style="--n:{len(steps)}" aria-label="{e(title)}" data-reveal>
           <ol>{items}</ol>
-
         </figure>'''
 
 
@@ -500,10 +494,10 @@ PX = "../assets/work/spacture-ai/process/"
 A = "assets/case-studies/"
 # each project's home-card picture (index.html), for the next-project link
 THUMBS = {
-    "spatiallite": ("../assets/projects/spatiallite-thumb.jpg", 1672, 941),
-    "spacture-ai": ("../assets/projects/spacture-thumb.jpg", 1536, 1024),
-    "craft": ("../assets/projects/craft-thumb.jpg", 1672, 941),
-    "flex-academy": ("../assets/projects/flex-thumb.jpg", 1536, 1024),
+    "spatiallite": ("../assets/projects/spatiallite-thumb.webp", 1672, 941),
+    "spacture-ai": ("../assets/projects/spacture-thumb.webp", 1536, 1024),
+    "craft": ("../assets/projects/craft-thumb.webp", 1672, 941),
+    "flex-academy": ("../assets/projects/flex-thumb.webp", 1536, 1024),
 }  # where future Figma / FigJam exports go
 
 PROJECTS = []
@@ -515,69 +509,67 @@ PROJECTS.append(dict(
     kicker="Product design · PropVR",
     line="Designing how people move from a whole development down to a single home.",
     headline="Helping home buyers go from a city map to a single home, without getting lost",
-    intro=["SpatialLite (previously WebLite) is PropVR's browser-based tool for exploring real-estate developments. A buyer can start at a city map, open a master plan, pick a building and a floor, and end up looking at one unit's plan, all in one place.",
-           "I worked on how that journey holds together: the cards, the pins and plans you move through, and the unit-level screens at the end of it."],
+    intro=["SpatialLite (previously WebLite) is PropVR's browser tool for exploring real-estate developments, from a city map down to one unit's plan.",
+           "I designed how that journey holds together: the cards, pins and plans along the way."],
     facts=[("My role", "UX Designer"),
            ("Tools", "Figma, Figma Make"),
            ("Company", "PropVR")],
     live=None,
     figma=None,  # only if a shareable prototype exists and it's cleared to share
-    # office work: the sections after this one are locked with a password
-    # (tools/private-password.txt); a card asks for it to read on
-    private_after="journey",
+    # office work: only a preview is shown. The page stops after this
+    # section, with a line and a card to get in touch; the sections after it
+    # are kept here, unpublished, for when more can be shared
+    preview_until="journey",
     # not the home thumbnail: the journey's first level, from the product
     cover=(W + "location.webp", 2000, 1125, "SpatialLite's location view of Dubai: projects and landmarks pinned on a satellite map, with a list of project cards on the right and a city switcher at the bottom", "The location view: a city's projects on the map, with their cards beside it"),
     sections=[
         ("context", "Context", "Standing in for the site visit", lambda P=P: [
-            prose("A buyer can't always walk the site or step onto a balcony, so the product has to stand in for the visit: where the project is, what's around it, which tower, which floor, which home.",
-                  "SpatialLite runs for real-estate developers across the Middle East and India. Each one brings its own brand, imagery and inventory, but the way a buyer moves through it is the same product underneath."),
-            prose("SpatialLite started out as WebLite. As more developers and more kinds of projects came onto it, each part of the journey had grown to fit the project in front of it: a new card here, a different pin there. It worked, but it didn't feel like one product any more, and that's what I set out to fix."),
+            prose("A buyer can't always visit the site, so the product stands in for the visit: where the project is, what's around it, which tower, which floor, which home.",
+                  "As more developers came onto it, each part had grown to fit its own project. It worked, but it no longer felt like one product."),
         ]),
-        ("problem", "The problem", "Four kinds of view that had to feel like one journey", lambda P=P: [
-            prose("A buyer arrives with a broad question (where is this, and what's in it?) and leaves with a narrow one (which home, on which floor?). In between they pass through a satellite map, a master plan, a 3D building and a floor plan. Each of those views works differently, which makes it very easy to lose your place."),
-            point("Every level had to speak the same language",
-                  "A pin on the city map, on the master plan and on a building should all mean the same thing: something you can open. If one opens a card and another jumps straight to the next level, people stop trusting the pins.", n=1),
-            point("The way back had to stay in sight",
-                  "Buyers compare: this tower against that one, this floor against the next. Three levels deep, getting back up shouldn't take guessing.", n=2),
-            point("Cards had to stop being one-offs",
-                  "Project, community, unit and landmark cards each had their own layout and their own order of facts, so every new card had to be read from scratch.", n=3),
+        ("problem", "The problem", "Four views that had to feel like one journey", lambda P=P: [
+            prose("Buyers move through a satellite map, a master plan, a 3D building and a floor plan. Each works differently, so it's easy to lose your place."),
+            point("Pins had to mean the same thing everywhere", "Something you can open, on every level."),
+            point("The way back had to stay in sight", "Three levels deep, getting back up shouldn't take guessing."),
+            point("Cards had to stop being one-offs", "Every kind of card had its own layout and its own order of facts."),
         ]),
         ("journey", "The journey", "One path, from the city down to a unit", lambda P=P: [
-            prose("I started by laying the whole journey out as levels, and agreeing what every level must always give you: where you are, what you can open, and how to get back."),
-            flow([("Location", "Where is it?", True),
-                  ("Master plan", "What's in it?", True),
-                  ("Phase", "Which part?", True),
-                  ("Building", "Which tower?", True),
-                  ("Floor", "Which level?", True),
-                  ("Unit", "Which home?", True)],
-                 "The journey, level by level", "Filled steps are the ones this page's screens cover"),
-            point("It starts with the neighbourhood, not the building",
-                  "Before anyone cares about floor plans, they want to know where the project is and what's around it. So the first level is a map: the project outlined, with schools, hospitals, malls and landmarks pinned by kind. Choosing a landmark draws the route and shows how long it takes to get there."),
+            prose("I laid the journey out as levels. Each one always shows where you are, what you can open and how to get back."),
+            flow([("Location", "Where is it?"),
+                  ("Master plan", "What's in it?"),
+                  ("Phase", "Which part?"),
+                  ("Building", "Which tower?"),
+                  ("Floor", "Which level?"),
+                  ("Unit", "Which home?")],
+                 "The journey, level by level"),
+            point("It starts with the neighbourhood",
+                  "A map with the project outlined and landmarks pinned by kind. Choosing one draws the route and the travel time."),
             duo(plate(W + "location-amenities.webp", 2000, 1125, "SpatialLite's location view: the project outlined on a satellite map of Dubai, with pins for landmarks, healthcare, religious places, shopping, restaurants and education, and a row of category filters at the bottom",
-                      "Where it is", "The project, and what's around it by kind"),
+                      "Where it is"),
                 plate(W + "location-route.webp", 2000, 1125, "SpatialLite's location view with one landmark chosen: a route drawn from the project to it, and the landmark's card with its distance and travel times",
-                      "How far", "A landmark's route, distance and travel times")),
-            point("Then the same few things on every level",
-                  "From the master plan down, every screen has a breadcrumb at the top, the same rail of sections on the left, and pins that open a card before they take you anywhere. Once you've learned one level, you've learned them all."),
+                      "How far")),
+            point("The same few things on every level",
+                  "A breadcrumb, a rail of sections, and pins that open a card before they take you anywhere."),
             annot_pics([
                 (W + "master-plan.webp", 1920, 1080, "A SpatialLite master plan on desktop: a breadcrumb at the top, a section rail on the left, Phase 1 outlined with its pin, and its card open at the top right",
                  [(37.2, 3.6), (6.8, 50), (45.8, 37), (82.6, 21.3)]),
                 (W + "phone-floor.webp", 750, 1624, "SpatialLite on a phone: a building's floor plan with a floor selector on the right and a unit-type key at the top",
                  [(80, 43)]),
             ], "The journey, in two screens", [
-                ("Where you are", "A breadcrumb runs from the region down to the master plan, so every level above is one tap away."),
-                ("The same places, every time", "A rail of the development's sections (location, master plan, home, gallery, amenities) stays put as you move around it."),
-                ("A pin, then a boundary", "Each phase is a named pin. Choosing one outlines its boundary on the plan, so the selection shows on the map itself, not only in a panel."),
-                ("A card before a commitment", "The phase's card sums it up (picture, type, units, sizes, configurations) with one action, Explore, to go a level deeper."),
-                ("Floors as a ladder", "Inside a building, a floor selector steps through the levels while the plan follows, with unit types colour-coded in the key above."),
+                ("Where you are", "A breadcrumb back to every level above."),
+                ("The same places", "The rail of sections stays put."),
+                ("A pin, then a boundary", "Choosing a phase outlines it on the plan."),
+                ("A card first", "A summary and one action: Explore."),
+                ("Floors as a ladder", "Step through floors while the plan follows."),
             ]),
             point("And it ends at one home",
-                  "Pick a phase and its towers appear in 3D, each with a named pin. Pick a tower, then a floor, and you land on a unit's plan, drawn room by room, with its price, size, view and facing in a card beside it."),
+                  "Pick a phase, a tower and a floor, and land on a unit's plan with its price, size and view beside it."),
             duo(plate(W + "phase-buildings.webp", 2000, 1125, "SpatialLite's Phase 1 view: the phase's towers in 3D, each with a named pin, a prompt to choose one, and a filter panel on the right",
-                      "A building", "Phase 1's towers, each a named pin"),
+                      "A building"),
                 plate(W + "unit-plan.webp", 2000, 1125, "SpatialLite unit plan of Unit 245: the ground floor drawn room by room with dimensions, the unit's card at the top right with price, size, view and facing, a floor switcher at the bottom, and the unit's place on its floor in a small map",
-                      "A unit", "Its plan room by room, its card beside it")),
+                      "A unit")),
         ]),
+        # unpublished (after preview_until): kept for when more can be shared
         ("cards", "Cards", "The card is where people actually decide", lambda P=P: [
             prose("Maps and plans get people to a place, but the card is what they read before deciding to go deeper. That's why the cards went through more rounds than anything else."),
             point("One order for every card",
@@ -654,8 +646,8 @@ PROJECTS.append(dict(
     kicker="Live website · PropVR",
     line="Giving a working idea a more considered web experience.",
     headline="Designing and building the website for an AI studio for architects",
-    intro=["Craft is PropVR's creative studio for architecture, engineering and construction (AEC) teams. You give it a project and a goal, and it plans and runs the renders, panoramas, videos and edits you need.",
-           "I designed and built its website. There was no design hand-off: I worked straight in code with Claude and Cursor, with Figma for the pieces that needed it. I also worked on the UX of the dashboard, which isn't shown here."],
+    intro=["Craft is PropVR's AI creative studio for architecture, engineering and construction teams. Give it a project and a goal, and it plans and runs the renders, panoramas, videos and edits.",
+           "I designed and built its website straight in code with Claude and Cursor, with Figma where needed."],
     facts=[("My role", "UX Designer"),
            ("Tools", "Claude, Cursor, Figma"),
            ("Company", "PropVR")],
@@ -664,39 +656,32 @@ PROJECTS.append(dict(
     cover=(CS + "00-cover.webp", 2880, 1800, "Craft homepage: Creative Studio for AEC Workflows, with a before-and-after render comparison", "The live homepage"),
     sections=[
         ("context", "Context", "A product that worked, and a story that didn't come through yet", lambda P=P: [
-            prose("Craft already worked. It could make renders, panoramas and videos, edit one region of an image, and run agents that plan the work. The website had to explain all of that to architects, developers and marketing teams, many of whom already use tools like ChatGPT or Gemini for some of it."),
-            prose('Craft needed a website that could do the explaining on its own, for teams who had never seen a demo. Its job was to get an AEC team from "what is this?" to trying one real project, without a sales call in between.'),
+            prose("Craft already worked. The website had to explain it to architects, developers and marketers, many already using ChatGPT or Gemini, and get them to try one real project without a sales call."),
         ]),
         ("problem", "The problem", "Listed one by one, it looked like a toolbox", lambda P=P: [
-            point("Too many features, no thread",
-                  "Renders, panoramas, video, region edits, agents. Each one is useful, but a page that lists them reads like a toolbox, and a toolbox is easy to compare against free tools feature by feature.", n=1),
-            point("Visitors already had AI tools",
-                  "Most people landing on the page will have tried a general AI tool already. The site had to say plainly why this is different, instead of hoping they'd work it out.", n=2),
-            point("Different teams, different reasons",
-                  "An architect, a developer and a marketer care about different things. One generic message would land with none of them.", n=3),
-            pull("So the idea became: sell the workflow, not the toolbox. You describe an outcome, Craft plans it, and the pieces run in order."),
+            point("Too many features, no thread", "A list of features is easy to compare against free tools."),
+            point("Visitors already had AI tools", "The site had to say plainly why this is different."),
+            point("Different teams, different reasons", "One generic message would land with no one."),
+            pull("So: sell the workflow, not the toolbox."),
         ]),
-        ("process", "How I built it", "Designing in the browser, with AI doing the typing", lambda P=P: [
-            prose("Instead of finishing the design in Figma and handing it over, I built the site directly with Claude and Cursor. That made it cheap to try a new layout or a different section order and see it live in a few minutes.",
-                  "What it didn't do was decide anything for me. Which version was right, what came first, and what to cut were still my calls, and I made a lot of them."),
-            point('Generate, read, decide, repeat', "My loop was simple: build a version, read it top to bottom the way a visitor would, then decide by hand what to change, whether that was the order, a heading, or a section that didn't earn its place. The page went through many rounds like this before it felt right."),
+        ("process", "How I built it", "Designing in the browser", lambda P=P: [
+            prose("I built the site directly with Claude and Cursor, so trying a new layout took minutes. Which version was right, what came first and what to cut stayed my call."),
         ]),
         ("reading", "One section, up close", "How a single section explains itself", lambda P=P: [
-            prose("This is the section that carries the whole idea, so here's how it's put together."),
             annot(CS + "02-intent.webp", 2880, 1926, "Craft section: Describe the outcome. Review the workflow before it runs., with a brief card and a row of agent cards", "From intent to execution", [
-                (5, 22, "The heading is the sequence", "“Describe the outcome. Review the workflow before it runs.” Two sentences, two steps: the section explains itself before the visuals do."),
-                (62, 9, "The brief, as an object", "The goal sits in its own card with its inputs and a deadline, so it reads as something you hand over, not a prompt you type."),
-                (5, 62, "The plan, left to right", "Each agent is a card with its task and status, in order, so the plan reads as a sequence rather than a feature list."),
+                (5, 22, "The heading is the sequence", "Two sentences, two steps."),
+                (62, 9, "The brief, as an object", "A goal you hand over, not a prompt you type."),
+                (5, 62, "The plan, left to right", "Agents in order, so it reads as a sequence."),
             ]),
         ]),
         # the stages follow the live page's order, top to bottom
         ("website", "The website", "The homepage, top to bottom", lambda P=P: [
-            prose("I ordered the page the way I'd explain Craft to someone in person: show what it makes, show how it works, say why it's different, show what it means for your team, then prove it and ask."),
-            split([("Stage 01", "Show the result first", "Before any explanation, a before-and-after render. An architect sees a massing model turn into a finished image and understands what Craft does in a second.")]),
-            plate(CS + "01-before-after.webp", 2880, 1512, "The opening's before-and-after slider: a dark massing model on the left, the finished render of the same building on the right", "The output first", "The same building, before and after"),
-            split([("Stage 02", "Then show how it works", "The features become steps: a goal turns into a plan with inputs, agents, cost and approvals, and then one real project moves through the tools in order.")]),
-            plate(CS + "03-tower-b.webp", 2880, 1918, "Craft's tool flow for one project, Marina Heights Tower B: a list of production tools on the left, and a before-and-after of the chosen tool's output on the right", "One project, through the tools", "Watch Tower B move through the right tools, in the right order"),
-            split([("Stage 03", "Name the alternatives", "Visitors were going to compare it to ChatGPT or Gemini anyway, so the page does it for them, then shows what's different: agents that share one project, the tools it's coming to, and four things AEC work needs that general models get wrong.")]),
+            prose("Ordered the way I'd explain Craft in person: show it, explain it, compare it, then ask."),
+            split("Show the result first", "A before-and-after render explains Craft in a second."),
+            plate(CS + "01-before-after.webp", 2880, 1512, "The opening's before-and-after slider: a dark massing model on the left, the finished render of the same building on the right", "The output first"),
+            split("Then how it works", "One real project moving through the tools, in order."),
+            plate(CS + "03-tower-b.webp", 2880, 1918, "Craft's tool flow for one project, Marina Heights Tower B: a list of production tools on the left, and a before-and-after of the chosen tool's output on the right", "One project, through the tools"),
+            split("Name the alternatives", "The page makes the ChatGPT comparison for the visitor, then shows what's different."),
             board([
                 ("Why Craft", "Why use Craft instead of ChatGPT, Gemini or Higgsfield?", "", CS + "04-why.webp", 2880, 1826, "The comparison section: general AI assistants and creative media suites set beside Craft"),
                 ("The agent team", "Four agents today. One set of project facts.", "", CS + "05-agents.webp", 2880, 1826, "The agent team section: Ada, the lead agent, coordinating Scout, Bolt, Lex and Forge on one brief"),
@@ -705,13 +690,13 @@ PROJECTS.append(dict(
                 ("Media-native foundation", "Animate the frame, or change one thing and hold everything else.", "", CS + "08-media-b.webp", 2880, 1826, "Motion and region-locked editing examples: a pool render and a bedroom"),
                 ("Forge", "When the tool is missing, Craft will create it.", "A roadmap feature.", CS + "09-forge.webp", 2880, 1826, "The Forge roadmap section"),
             ]),
-            split([("Stage 04", "Speak to each team", "Only once the workflow is clear does the page split by team: what architects, developers, marketers and sales each get from the same project.")]),
+            split("Speak to each team", "What architects, developers, marketers and sales each get."),
             board([
                 ("Outcomes by team", "Five teams. Nobody re-briefs the project.", "", CS + "10-teams.webp", 2880, 2020, "Outcome cards by team, all starting from the same approved project"),
                 ("Value by stakeholder", "One project system. A different advantage for every team.", "Panels for architects, developers, marketers and sales.", CS + "11-stakeholders.webp", 2880, 2020, "Expanding panels by team"),
             ]),
-            split([("Stage 05", "Prove it, then ask", "Pricing set against costs a team already pays for, proof from PropVR's own production work, the questions teams ask before switching, and one small ask at the end: run one real project through it.")]),
-            plate(CS + "12-pricing.webp", 2880, 2220, "Pricing plans, with a link to compare them against the costs of today's studio work", "Pricing", "Compare Craft with the line items already approved"),
+            split("Prove it, then ask", "Pricing, proof from PropVR's own work, the FAQ, and one small ask."),
+            plate(CS + "12-pricing.webp", 2880, 2220, "Pricing plans, with a link to compare them against the costs of today's studio work", "Pricing"),
             board([
                 ("Customer zero", "Built inside a real AEC production pipeline.", "", CS + "13-pipeline.webp", 2880, 1212, "The customer-zero section, with figures from PropVR's own production use"),
                 ("The FAQ", "Questions AEC teams ask before switching.", "", CS + "14-faq.webp", 2880, 1212, "Six questions in a list, from what Craft is to whether project files train shared AI models"),
@@ -719,35 +704,31 @@ PROJECTS.append(dict(
             ]),
         ]),
         ("phone", "On a phone", "The same story on a small screen", lambda P=P: [
-            prose("The order stays the same on a phone. Side-by-side comparisons stack, and the cards become a single column you scroll through."),
             phones([(CS + "phone-hero.webp", 1170, 2532, "Craft on a phone: the opening, with the headline, two buttons and a render"),
                     (CS + "phone-run.webp", 1170, 2532, "Craft on a phone: Describe the outcome, with the brief card and the plan"),
                     (CS + "phone-why.webp", 1170, 2532, "Craft on a phone: Why use Craft, with the comparison cards stacked"),
                     (CS + "phone-proof.webp", 1170, 2532, "Craft on a phone: Four things general image models get wrong, with the capabilities listed")],
-                   "On a phone", "The opening, the workflow, the comparison and the proof"),
+                   "On a phone"),
         ]),
         ("learnings", "Learnings", "What I'd take into the next one", lambda P=P: [
-            point("AI makes the building fast, not the deciding",
-                  "Trying a new layout took minutes. Choosing between them, and knowing what to cut, took as long as it always does."),
-            point("Order is half the message",
-                  "Getting the order right (show it, explain it, compare it, then ask) did more for this page than any single section."),
-            point('Code is a great place to design, if you stay the designer', 'Working straight in the browser meant I saw real spacing, real type and real motion from the start. The trick was not letting the speed decide for me.'),
+            point("AI makes building fast, not deciding", "Trying layouts took minutes; choosing still took judgement."),
+            point("Order is half the message", "Show, explain, compare, ask did more than any single section."),
+            point("Stay the designer", "Code shows real spacing and motion early, as long as the speed doesn't decide for you."),
         ]),
     ],
 ))
 
 # ===================== Spacture AI: website redesign assignment ==========
 # Designed in Figma. The HTML builds in SPACTURE/ are Claude-made versions,
-# not this design, so nothing here is taken from them: the screens are
-# slots for Figma frames until they are exported.
+# not this design, so nothing here is taken from them.
 P = "Spacture AI"
 PROJECTS.append(dict(
     slug="spacture-ai", name=P, mark="S",
     kicker="Website redesign · Assignment",
     line="Making an AI security product easier to understand.",
     headline="Redesigning a security AI website so a store owner gets it in one scroll",
-    intro=["Spacture AI uses computer vision to help retailers spot theft and suspicious behaviour through the cameras they already have. It's a powerful product, and that makes it hard to explain quickly.",
-           "I redesigned its homepage as an assignment in the 10K Designers C8 cohort. It isn't Spacture's live website. I did everything on my own, from research and structure to the copy and the visual design."],
+    intro=["Spacture AI uses computer vision to help retailers spot theft through the cameras they already have. Powerful, and hard to explain quickly.",
+           "I redesigned its homepage on my own as a 10K Designers C8 assignment, from research to visual design. It isn't Spacture's live site."],
     facts=[("My role", "UX Designer"),
            ("Team", "Solo"),
            ("Tools", "Figma"),
@@ -761,90 +742,80 @@ PROJECTS.append(dict(
   <link rel="stylesheet" href="../css/spacture-hero.css">
   <link rel="stylesheet" href="../css/spacture-system.css">""",
     sections=[
-        ("research", "Research", "Before any screens, I wanted to know who's buying", lambda P=P: [
-            prose("I started on a Figma board, not a page. I wrote down the brief, built two personas around what a store owner or security head is afraid of and what they want, drafted the copy, and sketched the site's structure by hand."),
-            point('The fear that shaped the page: finding out too late', 'Both personas I built, the people who\'d buy it and the people who\'d use it every day, shared one fear: realising something had happened only after the stock was gone. That fear became the page\'s opening, "Every moment looks ordinary. Until they connect."'),
+        ("research", "Research", "Before any screens, who's buying?", lambda P=P: [
+            prose("I started on a Figma board: the brief, two personas, copy drafts and a hand-sketched structure."),
+            point("The fear that shaped the page",
+                  'Both personas feared finding out too late. That became the opening: "Every moment looks ordinary. Until they connect."'),
             plate(PX + "research-board.webp", 1948, 956, "A Figma board of research: the brief and problem, sticky notes, two user personas, a fear and desire breakdown, copywriting drafts and a hand-drawn information architecture",
-                  "The research board", "Brief, personas, copy and the site's structure"),
+                  "The research board"),
             plate(PX + "references-moodboard.webp", 1890, 516, "A second board: wireframe sketches, a column of existing security sites, and a wide moodboard of dark blue and teal security websites",
-                  "References and moodboard", "Existing sites, early wireframes and the moodboard"),
+                  "References and moodboard"),
         ]),
         ("challenge", "The problem", "Buyers think in stores, not in AI models", lambda P=P: [
-            point("Stores already have cameras",
-                  "What they don't have is someone watching every feed at the moment something happens. That gap is the real problem, and it's what a store owner already feels.", n=1),
-            point("\"Computer vision\" doesn't mean anything to them",
-                  "Leading with the technology makes the visitor do the work of figuring out why it matters. I wanted the technology to show up as the answer, not the pitch.", n=2),
-            pull("So the page had to go: why it matters, how it works, what it looks like, in that order."),
-            flow([("The gap", "Why should I care?", False),
-                  ("The mechanism", "How does it work?", False),
-                  ("The product", "What does it look like?", False),
-                  ("The next step", "What do I do now?", False)],
+            point("Stores already have cameras", "What's missing is someone watching every feed at the right moment."),
+            point('"Computer vision" means nothing to them', "The technology should be the answer, not the pitch."),
+            flow([("The gap", "Why should I care?"),
+                  ("The mechanism", "How does it work?"),
+                  ("The product", "What does it look like?"),
+                  ("The next step", "What do I do now?")],
                  "The order the page explains itself in"),
         ]),
         ("direction", "The direction", "Four things the page had to do", lambda P=P: [
-            prose("Before designing, I wrote down what the page had to get right. Every section had to earn its place against these."),
-            ruled(["A clear value proposition, before any mention of AI.",
-                   "The product shown in use from the first screen.",
-                   "A logical progression: the problem, how it works, what a team does with it.",
-                   "One clear next step, repeated where a visitor is ready."]),
+            aims(["Value first, before any mention of AI",
+                  "The product in use from the first screen",
+                  "The problem, how it works, then what you do with it",
+                  "One clear next step, wherever you're ready"]),
         ]),
         ("versions", "Iterations", "It didn't start blue", lambda P=P: [
-            prose("My first directions were dark green and teal. The final page settled on a deep blue, with red kept only for real alerts. On the right of the canvas are the colour, component and hero frames that got it there."),
-            point('Why blue won', 'Green and teal felt technical. A deep blue felt calmer and more trustworthy, which suits a product people rely on to keep watch, and it let the red alerts stand out as the only loud colour on the page.'),
+            prose("The first directions were dark green and teal. A deep blue felt calmer and more trustworthy, and left red for real alerts only."),
             plate(PX + "old-iterations.webp", 1582, 600, "The Figma canvas: a row of frames under the label Old iteration on the left, and on the right the colour, component, hero, banner and phone frames that led to the final page",
-                  "Old iterations", "Left, the early directions; right, the frames that became the final page"),
+                  "Old iterations"),
         ]),
         ("system", "Type and colour", "Two typefaces and one blue", lambda P=P: [
-            prose("Plus Jakarta Sans for headlines and buttons, Inter for everything you read. Ten colours, built around one blue, with red saved for alerts."),
             sx_board(),
         ]),
-        ("homepage", "The homepage", "Telling it as one shopper's visit", lambda P=P: [
-            # the moments that carry the story, top to bottom (no whole-page
-            # overview: it only repeated them); every other section is in the
-            # prototype (set "figma" above)
+        ("homepage", "The homepage", "Told as one shopper's visit", lambda P=P: [
+            # the moments that carry the story, top to bottom
             point("It opens with a feeling, not a feature",
-                  "\"Every moment looks ordinary. Until they connect.\" Before any product appears, the page follows one visit through a store, timestamped from entry to exit, and ends on the thing every store owner fears: the signs were already there."),
+                  "One visit through a store, timestamped, ending on: the signs were already there."),
             carousel([(SX + "01-ordinary.webp", 2560, 1664, "Dark frame with the line “Every moment looks ordinary.”, the words moment and ordinary in blue", None, "Every moment looks ordinary"),
                       (SX + "02-connect.webp", 2560, 1664, "The same line, now followed by “Until they connect.”", None, "Until they connect"),
                       (SX + "03-signals.webp", 2560, 1664, "“A visit is never a single event”: a path through a store, timestamped at Entered, Browsing, Paused, Returned and Exit, ending in “The signs were already there.”", None, "One visit, timestamped from entry to exit")],
                      "The opening"),
             point("Then the product, one alert at a time",
-                  "The same visit is shown again, this time through Spacture's dashboard. Confidence climbs from 38% to 94% across four alerts, so you see how the product thinks instead of reading about it. (The numbers are the design's own example, not real data.)"),
-            carousel([(SX + "05-state-1.webp", 2560, 1664, "A tilted Spacture camera dashboard tracking customer #41 at 38% confidence, beside the alert “Customer entered store”, step 1 of 4", None, "Customer entered store, 38% confidence"),
-                      (SX + "06-state-2.webp", 2560, 1664, "Step 2 of 4: the customer in a blind spot at 52% confidence, alert “Customer remained in blind spot”", None, "In a blind spot, 52%"),
-                      (SX + "07-state-3.webp", 2560, 1664, "Step 3 of 4: 66% confidence, alert “Repeated shelf interaction”", None, "Repeated shelf interaction, 66%"),
-                      (SX + "08-state-4.webp", 2560, 1664, "Step 4 of 4: 94% confidence, a red alert “Concealment detected”", None, "Concealment detected, 94%")],
+                  "Confidence climbs from 38% to 94% across four alerts. (The design's example numbers, not real data.)"),
+            carousel([(SX + "05-state-1.webp", 2560, 1664, "A tilted Spacture camera dashboard tracking customer #41 at 38% confidence, beside the alert “Customer entered store”", None, "Customer entered store, 38% confidence"),
+                      (SX + "06-state-2.webp", 2560, 1664, "The customer in a blind spot at 52% confidence, alert “Customer remained in blind spot”", None, "In a blind spot, 52%"),
+                      (SX + "07-state-3.webp", 2560, 1664, "66% confidence, alert “Repeated shelf interaction”", None, "Repeated shelf interaction, 66%"),
+                      (SX + "08-state-4.webp", 2560, 1664, "94% confidence, a red alert “Concealment detected”", None, "Concealment detected, 94%")],
                      "One visit, four alerts"),
-            point("Only then, how it works and where",
-                  "Once you've seen it work, the page explains the four capabilities behind it, and shows them in four very different stores: a luxury boutique, a supermarket, an electronics store and a pharmacy."),
+            point("Then how it works, and where",
+                  "Four capabilities, shown in four very different stores."),
             tallpair([(SX + "12-luxury.webp", 2560, 1664, "Luxury: an isometric store floor in blue, tagged with dwell time at a display case and an associate approach"),
                       (SX + "13-supermarket.webp", 2560, 1664, "Supermarket: twenty aisles in isometric view, tagged with a dwell spike and a basket left unattended"),
                       (SX + "14-electronics.webp", 2560, 1664, "Electronics: dense shelves of high-value products in isometric view, tagged with a product handled three times and a queue forming at the counter"),
                       (SX + "15-pharmacy.webp", 2560, 1664, "Pharmacy: regulated shelves and a short counter in isometric view, tagged with a restricted shelf reach and a 90-second counter wait")],
                      (SX + "09-behaviour.webp", 2560, 5046, "“Behaviour Intelligence, built into every camera”: four stacked cards, Behaviour Detection, Context Awareness, Multi-Camera Tracking and Actionable Incidents, each with a small diagram"),
-                     "How it works, and where", "Four capabilities on the right; four kinds of store on the left"),
-            # the end of the page, in its order: the ask, the FAQ, the footer
+                     "How it works, and where"),
             point("And one clear ask",
-                  "The page ends on a question, \"What would you find if you could see it all?\", then a demo button, the questions a buyer asks before booking one, and the footer."),
+                  "A question, a demo button, the FAQ, then the footer."),
             carousel([(SX + "18-cta.webp", 2560, 1664, "“What would you find if you could see it all?” over a glassy store illustration, with Book a Demo and Contact Sales", "The ask", "One question, then Book a Demo"),
-                      (SX + "19-faq.webp", 2560, 1644, "F.A.Q, “The things worth knowing, before you get started”: seven questions in a list, from working with existing cameras to enterprise retailers, with Email us for anything else", "The FAQ", "Seven questions a buyer asks before a demo"),
+                      (SX + "19-faq.webp", 2560, 1644, "F.A.Q, “The things worth knowing, before you get started”: seven questions in a list, with Email us for anything else", "The FAQ", "Seven questions a buyer asks before a demo"),
                       (SX + "20-footer.webp", 2560, 1538, "The footer on a blue gradient: the Spacture AI logo and social links, page links, the legal line, and SPACTURE in large letters along the bottom", "The footer", "Links, legal, and the name once more")],
                      "The end of the page"),
         ]),
         # screen recordings of the built page, in its order
         ("motion", "Motion", "Movement that follows the story", lambda P=P: [
-            prose("I kept motion to the places where it helps the story along: scenes changing behind the headline, cards stacking as you scroll through how it works, and a footer that reacts to your pointer."),
+            prose("Motion only where it moves the story along: scenes behind the headline, cards stacking, a footer that reacts."),
             motion([[(SM + "hero.mp4", SM + "hero.webp", 1440, 936, "The first screen: store scenes change behind the headline, and the menu and buttons answer the pointer", "The first screen", "The scenes change"),
                      (SM + "cards.mp4", SM + "cards.webp", 1440, 936, "Behaviour Intelligence: the four capability cards stack on one another as the page scrolls", "The cards", "They stack as you scroll")],
                     [(SM + "faq.mp4", SM + "faq.webp", 1440, 936, "The FAQ: a question opens in place, then the page scrolls on to the footer", "The FAQ", "A question opens in place"),
                      (SM + "footer.mp4", SM + "footer.webp", 1440, 936, "The footer: the large SPACTURE wordmark reacts as the pointer moves along it", "The footer", "The wordmark reacts")]]),
         ]),
         ("learnings", "Learnings", "What I'd take into the next one", lambda P=P: [
-            point("Explain the problem before the product",
-                  "The more complex the technology, the more it helps to start with something the reader already feels. The product makes sense much faster once the problem is theirs."),
-            point("Show it working instead of describing it",
-                  "Following one visit through four alerts did more than any list of features could."),
-            point('Restraint makes the alerts land', 'Keeping the palette quiet and using red only for real alerts meant the one moment that matters, "Concealment detected", couldn\'t be missed.'),
+            point("Problem before product", "Start with what the reader already feels."),
+            point("Show it, don't describe it", "One visit through four alerts beat any feature list."),
+            point("Restraint makes the alerts land", 'With red saved for alerts, "Concealment detected" can\'t be missed.'),
         ]),
     ],
 ))
@@ -858,8 +829,8 @@ PROJECTS.append(dict(
     kicker="Website design · Assignment",
     line="Helping short-term rental operators see their next step.",
     headline="A landing page for short-term rental operators who've outgrown doing everything themselves",
-    intro=["Flex Academy teaches the playbook, systems and know-how behind running a short-term rental business, from the team behind The Flex.",
-           "I designed its landing page as an assignment. It hasn't launched. The page is written for one reader: someone already running 5 to 30 units, for whom every booking, cleaner and invoice still goes through them."],
+    intro=["Flex Academy teaches the playbook and systems behind running a short-term rental business, from the team behind The Flex.",
+           "I designed its landing page as an assignment (it hasn't launched), for one reader: an operator with 5 to 30 units who still handles everything themselves."],
     facts=[("My role", "Product Designer"),
            ("Team", "Solo"),
            ("Tools", "Figma, Figma Make"),
@@ -868,54 +839,51 @@ PROJECTS.append(dict(
     figma=None,
     cover=(FS + "00-hero.webp", 2880, 1513, "Flex Academy homepage: Your next 10 units shouldn't feel like your first, with a small picture set into the headline, and a button to register for a free webinar", "The first screen"),
     sections=[
-        ("research", "Research", "Who's this for, and what else are they already trying?", lambda P=P: [
-            prose("I started in FigJam with the brief, Flex's business model, a table of competitors, what an operator wants and what's hurting them, a moodboard, and a first pass at the page's structure."),
-            plate(FX + "research-board.webp", 1570, 566, "The FigJam research board: the design brief, Flex's business model, a competitor table, the 5–30 unit operator's wants and pain points, a moodboard of bold type-led websites, and the page's information architecture", "The research board", "Brief, business model, competitors, audience, moodboard and structure"),
+        ("research", "Research", "Who's this for, and what are they already trying?", lambda P=P: [
+            prose("In FigJam: the brief, Flex's business model, competitors, the operator's wants and pains, a moodboard and a first structure."),
+            plate(FX + "research-board.webp", 1570, 566, "The FigJam research board: the design brief, Flex's business model, a competitor table, the 5–30 unit operator's wants and pain points, a moodboard of bold type-led websites, and the page's information architecture", "The research board"),
             point("Everyone covers one piece of the job",
-                  "Free videos, courses, masterminds and operating software each cover one part. None of them takes an operator from learning how to do it to actually running it that way. That became the gap for Flex to fill."),
+                  "Videos, courses, masterminds and software each cover a part. None takes an operator from learning it to running it that way."),
             pull("This reader doesn't want another course. They want to stop being the bottleneck."),
-            point('Where the insights came from', 'The brief, a close look at what competitors offer, and what operators themselves say they want and struggle with. Mapping those side by side on one board made the gap between learning and running a business easy to see.'),
         ]),
         ("audiences", "Audience", "Three possible readers, and why I picked one", lambda P=P: [
-            prose("I started wide, with three segments, and narrowed twice."),
             funnel([("Segments", [("Side-hustlers", "1–3 units"), ("Operators", "5–30 units"), ("Property professionals", "Agents, developers, landlords")]),
                     ("Personas", [("Launch", "The 9-to-5 Leaver"), ("Scale", "The Early Operator")]),
                     ("This page", [("The Early Operator", "5–30 units, ready to grow")])],
                    "From three segments to one reader"),
             point("Two people, two different questions",
-                  "Someone leaving a nine-to-five is still asking whether a rental business works at all. An operator with twelve units already knows it does, and is buried in running it. One page for both would say too little to either, so this page is for the operator."),
+                  "A beginner asks whether it works at all; an operator with twelve units is buried in running it. This page is for the operator."),
         ]),
         ("structure", "Structure", "The page follows the questions in their head", lambda P=P: [
-            prose("I ordered the page by the questions an operator asks before they'd sign up for anything: is this for me, is this my problem, how does it fix it, and what do I do now."),
-            flow([("The promise", "Is this for me?", False),
-                  ("The challenge", "Is this my problem?", False),
-                  ("The programme", "How does it fix it?", False),
-                  ("The next step", "What do I do now?", False)],
+            flow([("The promise", "Is this for me?"),
+                  ("The challenge", "Is this my problem?"),
+                  ("The programme", "How does it fix it?"),
+                  ("The next step", "What do I do now?")],
                  "The four steps of the page"),
             point("One line to set it up",
-                  "“Your next 10 units shouldn’t feel like your first.” The headline speaks to someone who's already done this, and frames the move from managing properties one by one to running a business that scales."),
-            plate(FX + "page-structure.webp", 880, 1250, "The page's structure as a flow: Hero, Proof, The Problem, The Shift, The Founders, The Method, The Programme, What you get, Results, Who it's not for, FAQ and Final CTA, with two actions from the hero: Book a free strategy call and Get the STR Scaling Checklist", "The page's structure", "Twelve sections, with two ways to act from the first"),
+                  "“Your next 10 units shouldn’t feel like your first.” It speaks to someone who's done this before."),
+            plate(FX + "page-structure.webp", 880, 1250, "The page's structure as a flow: Hero, Proof, The Problem, The Shift, The Founders, The Method, The Programme, What you get, Results, Who it's not for, FAQ and Final CTA, with two actions from the hero: Book a free strategy call and Get the STR Scaling Checklist", "The page's structure", narrow=True),
         ]),
         # the page's sections in its own order, under the four steps above
         ("homepage", "The homepage", "Top to bottom, in four steps", lambda P=P: [
-            split([("Step 01", "Is this for me?", "The headline answers first. Then the numbers and the three things the founders do, so it's clear this comes from people who actually run rentals at scale.")]),
+            split("Is this for me?", "The headline, then the numbers and the founders' three disciplines."),
             board([
                 ("Built at scale", "Built from a business that already operates at scale.", "", FS + "01-scale.webp", 2880, 1553, "Three figures, 6 cities in operation, 150+ corporate partners and 130+ channels, above a row of the cities The Flex runs in"),
                 ("Three disciplines", "Same founders, three disciplines.", "", FS + "02-founders.webp", 2880, 1553, "Three cards: We operate, We built the tools, and We teach the playbook"),
             ]),
-            split([("Step 02", "Is this my problem?", "At twelve units, every channel, cleaner and invoice still goes through one person. This section names that out loud, in black, so it stands apart from the rest of the page.")]),
-            plate(FS + "03-challenge.webp", 2880, 1742, "A black section: Build a business that doesn't depend on you, a 0% load-on-you meter, and a list of what lands on the operator, from Airbnb to finance", "The problem", "Build a business that doesn't depend on you"),
-            split([("Step 03", "How does it fix it?", "Four stages, twelve weeks on your own portfolio, the people who built it, and everything that's included.")]),
+            split("Is this my problem?", "Twelve units, and everything still goes through one person. Set in black to stand apart."),
+            plate(FS + "03-challenge.webp", 2880, 1742, "A black section: Build a business that doesn't depend on you, a 0% load-on-you meter, and a list of what lands on the operator, from Airbnb to finance", "The problem"),
+            split("How does it fix it?", "Four stages, twelve weeks, the founders, and what's included."),
             board([
                 ("The Machine", "Four stages, in the order an operator needs them.", "", FS + "04-machine.webp", 2880, 2072, "We teach you how to build The Machine: four cards, Source, Structure, Systemise and Scale, with Source open"),
                 ("The Operating System", "12 weeks, on your own portfolio.", "", FS + "05-system.webp", 2880, 2072, "12 weeks to build your Operating System: a row of twelve week markers above four phases, Foundation, Operations, The Machine and Scale"),
                 ("The founders", "They didn't study the playbook. They built it.", "", FS + "06-built.webp", 2880, 2072, "A photo of the two founders beside their story and their names"),
             ]),
-            plate(FS + "07-included.webp", 2880, 978, "Everything you need to build and operate. Not a course login: chips for live sessions, founder access, playbooks, community, technology and real-world knowledge", "What's included", "Everything you need to build and operate"),
-            split([("Step 04", "What do I do now?", "The proof, who it isn't for (an honest filter builds more trust than another promise), the questions left, then one action.")]),
+            plate(FS + "07-included.webp", 2880, 978, "Everything you need to build and operate. Not a course login: chips for live sessions, founder access, playbooks, community, technology and real-world knowledge", "What's included"),
+            split("What do I do now?", "Proof, an honest who-it's-not-for, the FAQ, then one action."),
             board([
                 ("Results", "Results, once they're real. Not before.", "", FS + "08-results.webp", 2880, 1292, "Results, once they're real: three proof cards from the businesses behind the programme"),
-                ("Who it's not for", "This isn't for everyone.", "", FS + "09-not-for.webp", 2000, 896, "This isn't for everyone: a list of who it's not for, beside a blue card of who it might be for"),
+                ("Who it's not for", "This isn't for everyone.", "", FS + "09-not-for.webp", 2880, 1290, "This isn't for everyone: a list of who it's not for, beside a blue card of who it might be for"),
             ]),
             board([
                 ("The FAQ", "Straight answers.", "", FS + "10-faq.webp", 2880, 1743, "Straight answers: seven questions in a list, from cost to whether there's a guarantee"),
@@ -924,39 +892,36 @@ PROJECTS.append(dict(
         ]),
         # where the first screen's three actions lead
         ("flows", "The three actions", "Three ways in, for three levels of readiness", lambda P=P: [
-            prose("Not every visitor is ready for the same thing, so the first screen offers three actions. Each one leads to its own short flow."),
-            point("A free webinar, for the curious",
-                  "Three steps: a short form, a confirmation, and the event added to your calendar."),
+            point("A free webinar, for the curious", "A form, a confirmation, and it's in your calendar."),
             phones([(FF + "webinar-1.webp", 631, 391, "Save your seat: a short form for name, email and country"),
                     (FF + "webinar-2.webp", 630, 391, "You're registered, with the webinar's date, time and timezone"),
                     (FF + "webinar-3.webp", 631, 391, "Added to your calendar, with the webinar's details")],
-                   "Free webinar", "Register, confirmed, then added to the calendar", n=3, stack=True),
+                   "Free webinar", n=3),
             point("A strategy call, for the ready",
-                  "The longest flow, on purpose. It asks about your portfolio, your goal and your budget before you pick a time, so the call starts with context."),
-            phones([(FF + "call-1.webp", 305, 190, "Let's talk about your next stage of growth: what a 20–30 minute call covers"),
-                    (FF + "call-2.webp", 306, 190, "First, tell us about your portfolio: a choice of unit ranges"),
-                    (FF + "call-3.webp", 306, 190, "Where are you trying to go? A target portfolio size and where you're based"),
-                    (FF + "call-4.webp", 306, 190, "Let's understand what you need next: a budget range and contact details"),
-                    (FF + "call-5.webp", 306, 221, "Find a time that works for you: a calendar and a list of times"),
-                    (FF + "call-6.webp", 306, 180, "You're booked, with the call's date, time and length")],
-                   "Free strategy call", "Portfolio, goal, budget and a time, then booked", n=3, stack=True),
-            point("A checklist, for everyone else",
-                  "Not ready for a call? One email field gets you the STR Scaling Checklist, with a nudge to book a call when you are."),
+                  "The longest on purpose: portfolio, goal and budget first, so the call starts with context."),
+            carousel([(FF + "call-1.webp", 1440, 895, "Free strategy call: Let's talk about your next stage of growth, with what the 20–30 minute call covers", None, "What the call covers"),
+                      (FF + "call-2.webp", 1440, 895, "Step 1 of 3, First, tell us about your portfolio: a choice of unit ranges", None, "Your portfolio today"),
+                      (FF + "call-3.webp", 1440, 895, "Step 2 of 3, Where are you trying to go? A target portfolio size and where you're based", None, "Where you want to go"),
+                      (FF + "call-4.webp", 1440, 895, "Step 3 of 3, Let's understand what you need next: a budget range and contact details", None, "Budget and details"),
+                      (FF + "call-5.webp", 1440, 1040, "Find a time that works for you: a summary of the call, a calendar and a list of times", None, "Pick a time"),
+                      (FF + "call-6.webp", 1440, 849, "You're booked, with the call's date, time, length and email", None, "Booked")],
+                     "Free strategy call"),
+            point("A checklist, for everyone else", "One email field, with a nudge to book a call later."),
             phones([(FF + "checklist-1.webp", 621, 386, "Not ready for a strategy call? Start with the systems check: the free STR Scaling Checklist"),
                     (FF + "checklist-2.webp", 621, 386, "Where should we send it? One email field"),
                     (FF + "checklist-3.webp", 621, 386, "Your checklist is on its way, with a next step to book a call")],
-                   "STR checklist", "For anyone not ready for a call", n=3, stack=True),
+                   "STR checklist", n=3),
         ]),
         ("phone", "On a phone", "The same page on a small screen", lambda P=P: [
             mockups([(FP + "hero.webp", 758, 1530, "Flex Academy on a phone: the headline, three pictures and the three actions"),
                      (FP + "problem.webp", 758, 1530, "On a phone: Build a business that doesn't depend on you, with the load-on-you meter"),
                      (FP + "machine.webp", 758, 1530, "On a phone: The Machine's four stages as stacked cards, with Source open"),
                      (FP + "founders.webp", 758, 1530, "On a phone: They didn't study the playbook. They built it, with the founders' photo and story")],
-                    "On a phone", "The opening, the problem, The Machine and the founders"),
+                    "On a phone"),
         ]),
         # screen recordings of the prototype, in the page's order
         ("motion", "Motion", "Small things that make it feel alive", lambda P=P: [
-            prose("A picture that keeps changing inside the headline, a ticker of the cities The Flex runs in, and cards that open on hover. Enough to make the page feel run by real people, without getting in the way of reading."),
+            prose("A changing picture in the headline, a ticker of cities and cards that open on hover: alive, without getting in the way."),
             motion([[(FM + "headline.mp4", FM + "headline.webp", 1440, 724, "The first screen: the picture set into the headline keeps changing, and the buttons fill on hover", "The first screen", "A picture changes inside the headline")],
                     [(FM + "cities.mp4", FM + "cities.webp", 1440, 724, "The row of cities moving sideways as a ticker, under the three figures", "The cities", "A ticker that keeps moving"),
                      (FM + "disciplines.mp4", FM + "disciplines.webp", 1440, 724, "The three discipline cards: hovering one fades in a photograph", "The disciplines", "A picture on hover")],
@@ -964,11 +929,9 @@ PROJECTS.append(dict(
                      (FM + "founders.mp4", FM + "founders.webp", 1440, 724, "The founders' photo fades from colour to grey, then the page moves on to rows of drifting chips", "The founders", "Photo fades, chips drift")]]),
         ]),
         ("learnings", "Learnings", "What I'd take into the next one", lambda P=P: [
-            point("A different reader means a different page",
-                  "Writing for the operator instead of the beginner didn't just change the words. It changed what comes first, what gets proof, and which actions are on offer."),
-            point("Saying who it's not for helps",
-                  "An honest \"this isn't for everyone\" does more for trust than one more promise."),
-            point('Proof beats promises', "For a reader who's already been sold courses before, real figures from a business that already operates at scale did more than any headline could."),
+            point("A different reader, a different page", "It changed what comes first, what gets proof and which actions are offered."),
+            point("Say who it's not for", "An honest filter builds more trust than another promise."),
+            point("Proof beats promises", "Real figures from a working business did more than any headline."),
         ]),
     ],
 ))
@@ -1028,41 +991,42 @@ def page(p, i):
     n = len(PROJECTS)
     nxt = PROJECTS[(i + 1) % n]
     name = p["name"]
-    # the intro: a small-caps label over each answer, the introduction first
-    row = lambda k, v, cls="": f'<div{cls}><dt class="tag">{e(k)}</dt><dd>{v}</dd></div>'
-    facts = row("Introduction", "".join(f"<p>{e(t)}</p>" for t in p["intro"]), ' class="cs-intro__wide"')
-    facts += "".join(
+    # the facts, beside the title: a small label over each answer
+    row = lambda k, v: f'<div><dt>{e(k)}</dt><dd>{v}</dd></div>'
+    facts = "".join(
         row(k, e(v)) if v else f'<!-- ADD: {e(name)}: {e(k.lower())} -->\n          ' + row(k, '<span class="facts__todo">To add</span>')
         for k, v in p["facts"])
     if p.get("live"):
         host = re.sub(r"^https?://|/$", "", p["live"])
         facts += row("Live site", f'<a href="{e(p["live"])}" target="_blank" rel="noopener">{e(host)} '
                                   f'<span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a>')
+    intro = "".join(f"<p>{e(t)}</p>" for t in p["intro"])
     links = figma_link(p)
 
-    # the cover: a real screen, or a slot for one until it arrives
+    # the cover: a real screen, or a slot for one until it arrives. It sits
+    # in the hero's band, flush with the band's bottom edge
     if p.get("cover_html"):
         cover = p["cover_html"]
     elif p["cover"]:
         src, w, h, alt, cap = p["cover"]
-        cover = f'''<figure class="plate cs-cover" data-reveal>
+        cover = f'''<figure class="plate cs-cover">
           <div class="plate__mat">{img(src, w, h, alt, lazy=False)}</div>
-
         </figure>'''
     else:
         kind, what = p.get("cover_ph", ("ADD FIGMA FRAME", "The homepage's first screen"))
         cover = ph(name, kind, what, A + p["slug"] + "/cover.png", "16 / 10",
                    title="Cover").replace('class="plate', 'class="plate cs-cover', 1)
+    cover = cover.replace(" data-reveal>", ">", 1)
+    # the cover's shape, so the hero can size it to fit one screen
+    ratio = p["cover"][1] / p["cover"][2] if p.get("cover") else 2000 / 1300
 
-    # office work: the sections after private_after go into the page locked,
-    # encrypted with the password in tools/private-password.txt
-    # (tools/seal.mjs); js/private.js opens them once it's entered
-    sections, rest = p["sections"], []
-    if p.get("private_after"):
-        k = [sid for sid, *_ in sections].index(p["private_after"]) + 1
-        sections, rest = sections[:k], sections[k:]
-    toc_item = lambda sid, label: f'<li><a href="#{sid}">{e(label)}</a></li>'
-    toc = "".join(toc_item(sid, label) for sid, label, _, _ in sections)
+    # office work: only a preview. The page stops after preview_until, with a
+    # line asking people to get in touch; the rest isn't published at all
+    sections, preview = p["sections"], bool(p.get("preview_until"))
+    if preview:
+        k = [sid for sid, *_ in sections].index(p["preview_until"]) + 1
+        sections = sections[:k]
+    toc = "".join(f'<li><a href="#{sid}">{e(label)}</a></li>' for sid, label, _, _ in sections)
 
     def section(sid, label, title, blocks):
         body = "\n        ".join(blocks())
@@ -1073,27 +1037,27 @@ def page(p, i):
       </section>'''
     secs = [section(*sec) for sec in sections]
 
-    sealed = ""
-    if rest:
-        toc += '<li class="toc__locked" data-locked-toc><a href="#more">Read more</a></li>'
-        password = open(os.path.join(HERE, "private-password.txt"), encoding="utf-8").read().strip()
-        payload = json.dumps({"toc": "".join(toc_item(sid, label) for sid, label, _, _ in rest),
-                              "html": "".join(section(*sec) for sec in rest)})
-        box = subprocess.run(["node", os.path.join(HERE, "seal.mjs")], input=json.dumps({"password": password, "text": payload}),
-                             capture_output=True, text=True, check=True).stdout
-        sealed = f'\n  <script type="application/json" data-sealed>{box}</script>'
-        secs.append(f'''
-      <section class="cs-sec cs-private" id="more" aria-labelledby="more-h" data-private>
-        <h2 class="cs-private__title" id="more-h">Enter password to read more</h2>
-        <form class="cs-private__form" data-private-form>
-          <label class="visually-hidden" for="case-password">Password</label>
-          <input class="cs-private__input" id="case-password" type="password" autocomplete="off" placeholder="Password" required data-private-input>
-          <button class="cs-private__btn" type="submit">Read more</button>
-        </form>
-        <p class="cs-private__error" role="alert" data-private-error></p>
-        <p class="cs-private__ask">Don’t have it? <a data-link="email" data-subject="{e(name)}: could I have the password?">Email me</a> or <a data-link="linkedin">message me on LinkedIn</a>.</p>
-      </section>
-      <div data-unsealed></div>''')
+    contact = ""
+    if preview:
+        secs.append('''
+      <section class="cs-sec cs-more" id="more" aria-label="More on request">
+        <p class="cs-more__line" data-reveal>This is a small preview of my work. <button class="cs-more__link" type="button" data-contact-open>Get in touch</button> to know more.</p>
+      </section>''')
+        # the Spatial Key card's look (css/projects.css), opened by js/case.js
+        mail = ('<svg viewBox="0 0 16 12" focusable="false"><rect x="0.75" y="0.75" width="14.5" height="10.5" rx="2" fill="none" stroke="currentColor" stroke-width="1.3"/>'
+                '<path d="M1.5 1.8 8 6.6l6.5-4.8" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>')
+        contact = f'''
+      <dialog class="keycard keycard--contact" aria-labelledby="contact-title" data-contact tabindex="-1">
+        <button class="keycard__close" type="button" aria-label="Close" data-contact-close><svg class="icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="m4 4 8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+        <span class="keycard__lock" aria-hidden="true">{mail}</span>
+        <h2 class="keycard__title" id="contact-title">There's more to {e(name)}.</h2>
+        <p class="keycard__line">I'm happy to walk you through the rest.</p>
+        <div class="keycard__actions">
+          <a class="keycard__btn keycard__btn--main" data-link="email" data-subject="{e(name)}: could you walk me through it?">Email me</a>
+          <a class="keycard__btn" data-link="linkedin">LinkedIn <span aria-hidden="true">↗</span></a>
+        </div>
+        <p class="keycard__address" data-email-plain></p>
+      </dialog>'''
 
     # previous and next, each with its own home-card picture, as on the home page
     prv = PROJECTS[(i - 1) % n]
@@ -1111,42 +1075,49 @@ def page(p, i):
               '<path d="M1.8 4.2c0-.7.5-1.2 1.2-1.2h3.3l1.5 1.7H13c.7 0 1.2.5 1.2 1.2v6.4c0 .7-.5 1.2-1.2 1.2H3c-.7 0-1.2-.5-1.2-1.2z"/></svg>')
     body = f'''
   <main id="main">
+    <div class="cs-hero" style="--r:{ratio:.4f}">
+      <div class="wrap cs-hero__in">
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <ol><li><a href="../index.html#work">{folder}Work</a></li><li aria-current="page">{e(name)}</li></ol>
+        </nav>
+        {cover}
+      </div>
+    </div>
+    <div class="cs-sheet">
     <article class="wrap cs-article">
-      <nav class="crumbs" aria-label="Breadcrumb">
-        <ol><li><a href="../index.html#work">{folder}Work</a></li><li aria-current="page">{e(name)}</li></ol>
-      </nav>
+      <!-- Intro and facts: set them in this project's "intro" and "facts" in
+           tools/make-cases.py; a value of None shows "To add".
+           Prototype or Figma link: set "figma" there. -->
+      <header class="cs-head" data-reveal>
+        <dl class="cs-facts">{facts}</dl>
+        <div class="cs-head__main">
+          <p class="tag cs-head__eyebrow">{e(name)} <span aria-hidden="true">·</span> {e(p["kicker"])}</p>
+          <h1>{e(p["headline"])}</h1>
+          <div class="cs-head__intro">{intro}</div>
+          {links}
+        </div>
+      </header>
       <div class="cs-body">
       <nav class="toc" aria-label="{e(name)} case study contents" data-toc>
         <p class="tag toc__title">Contents</p>
         <ol>{toc}</ol>
       </nav>
       <div class="cs-story">
-      <header class="cs-head" data-reveal>
-        <p class="tag cs-head__eyebrow">{e(name)} <span aria-hidden="true">·</span> {e(p["kicker"])}</p>
-        <h1>{e(p["headline"])}</h1>
-        <!-- Intro and facts: set them in this project's "intro" and "facts" in
-             tools/make-cases.py; a value of None shows "To add".
-             Prototype or Figma link: set "figma" there. -->
-        <dl class="cs-intro">{facts}</dl>
-        {links}
-      </header>
-      {cover}
-{"".join(secs)}{sealed}
+{"".join(secs)}
       <nav class="cs-pager" aria-label="More projects" data-reveal>
         {pager(prv, "prev")}
         {pager(nxt, "next")}
       </nav>
       </div>
-      </div>
+      </div>{contact}
     </article>
+    </div>
   </main>
 
 '''
     # the cover is the first thing seen as the page opens
     preload = f'\n  <link rel="preload" as="image" href="{p["cover"][0]}">' if p.get("cover") else ""
     head = HEAD.format(title=e(name), desc=e(f"{name}: {p['line']}"), extra=preload + p.get("head_extra", ""))
-    if p.get("private_after"):
-        head = head.replace('<script defer src="../js/case.js">', '<script defer src="../js/private.js"></script>\n  <script defer src="../js/case.js">')
     return head + "\n" + DOCK + "\n" + body + FOOTER + "\n</body>\n</html>\n"
 
 

@@ -530,6 +530,7 @@ function initGallery(section, collections, reduce) {
       el.style.setProperty("--ar", name === "photography" && at % 2 === 0 ? "1.5" : "0.8");
     } else {
       el = document.createElement("img");
+      el.draggable = false; // the swipe, not the browser's image drag
       el.src = it.src;
       el.alt = it.alt;
       if (it.w && it.h) {
@@ -575,8 +576,12 @@ function initGallery(section, collections, reduce) {
   $("[data-g-close]").addEventListener("click", close);
   $("[data-g-prev]").addEventListener("click", () => show(at - 1, -1));
   $("[data-g-next]").addEventListener("click", () => show(at + 1, 1));
-  // a click around the picture closes it
-  g.addEventListener("click", (e) => { if (e.target === g) close(); });
+  // a click around the picture closes it (not the end of a swipe)
+  let swiped = false;
+  g.addEventListener("click", (e) => {
+    if (swiped) { swiped = false; return; }
+    if (e.target === g) close();
+  });
 
   // keys: ← → to move, Esc to close, Tab stays inside
   g.addEventListener("keydown", (e) => {
@@ -590,15 +595,58 @@ function initGallery(section, collections, reduce) {
       else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
     }
   });
-  // touch: swipe the picture
-  let sx = null;
-  media.addEventListener("pointerdown", (e) => { sx = e.clientX; });
-  media.addEventListener("pointerup", (e) => {
-    if (sx === null) return;
-    const dx = e.clientX - sx;
-    sx = null;
-    if (Math.abs(dx) > 40) show(at + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1);
+  // swipe, as in a photos app: the picture follows the finger sideways; let
+  // go far enough (or fast enough) and it slides off as the next one slides
+  // in from that side, otherwise it springs back
+  let drag = null;
+  const pic = () => media.firstElementChild;
+  g.addEventListener("pointerdown", (e) => {
+    if (e.button > 0 || e.target.closest("button")) return;
+    drag = { id: e.pointerId, x: e.clientX, y: e.clientY, dx: 0, t: performance.now(), on: false };
   });
+  g.addEventListener("pointermove", (e) => {
+    if (!drag || e.pointerId !== drag.id) return;
+    drag.dx = e.clientX - drag.x;
+    if (!drag.on) {
+      if (Math.abs(drag.dx) < 8 || Math.abs(drag.dx) < Math.abs(e.clientY - drag.y)) return;
+      drag.on = true;
+      g.setPointerCapture(e.pointerId);
+    }
+    const el = pic();
+    if (!el) return;
+    el.classList.remove("is-in");
+    el.style.transition = "none";
+    el.style.transform = `translateX(${drag.dx}px)`;
+    el.style.opacity = String(1 - Math.min(Math.abs(drag.dx) / innerWidth, 1) * 0.5);
+  });
+  const endDrag = (e) => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const { dx, t, on } = drag;
+    drag = null;
+    if (!on) return;
+    swiped = true;
+    const el = pic();
+    if (!el) return;
+    const fast = Math.abs(dx) / (performance.now() - t) > 0.5;
+    if (e.type === "pointerup" && (Math.abs(dx) > innerWidth * 0.18 || (fast && Math.abs(dx) > 24))) {
+      const dir = dx < 0 ? 1 : -1;
+      if (reduce.matches) { show(at + dir); return; }
+      el.style.transition = "transform 0.2s ease-in, opacity 0.2s ease-in";
+      el.style.transform = `translateX(${-dir * innerWidth * 0.6}px)`;
+      el.style.opacity = "0";
+      setTimeout(() => {
+        show(at + dir, dir);
+        const next = pic();
+        if (next) next.style.setProperty("--from", `${Math.round(innerWidth * 0.35)}px`);
+      }, 170);
+    } else {
+      el.style.transition = "transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease";
+      el.style.transform = "";
+      el.style.opacity = "";
+    }
+  };
+  g.addEventListener("pointerup", endDrag);
+  g.addEventListener("pointercancel", endDrag);
 }
 
 // =====================================================================

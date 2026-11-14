@@ -63,69 +63,73 @@
   </header>
 
   <main id="main">
+    <div class="cs-hero" style="--r:1.6000">
+      <div class="wrap cs-hero__in">
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <ol><li><a href="../index.html#work"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linejoin="round" aria-hidden="true"><path d="M1.8 4.2c0-.7.5-1.2 1.2-1.2h3.3l1.5 1.7H13c.7 0 1.2.5 1.2 1.2v6.4c0 .7-.5 1.2-1.2 1.2H3c-.7 0-1.2-.5-1.2-1.2z"/></svg>Work</a></li><li aria-current="page">Craft</li></ol>
+        </nav>
+        <figure class="plate cs-cover">
+          <div class="plate__mat"><img class="plate__img" src="../assets/work/craft/sections/00-cover.webp" alt="Craft homepage: Creative Studio for AEC Workflows, with a before-and-after render comparison" width="2880" height="1800" fetchpriority="high" decoding="async"></div>
+        </figure>
+      </div>
+    </div>
+    <div class="cs-sheet">
     <article class="wrap cs-article">
-      <nav class="crumbs" aria-label="Breadcrumb">
-        <ol><li><a href="../index.html#work"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linejoin="round" aria-hidden="true"><path d="M1.8 4.2c0-.7.5-1.2 1.2-1.2h3.3l1.5 1.7H13c.7 0 1.2.5 1.2 1.2v6.4c0 .7-.5 1.2-1.2 1.2H3c-.7 0-1.2-.5-1.2-1.2z"/></svg>Work</a></li><li aria-current="page">Craft</li></ol>
-      </nav>
+      <!-- Intro and facts: set them in this project's "intro" and "facts" in
+           tools/make-cases.py; a value of None shows "To add".
+           Prototype or Figma link: set "figma" there. -->
+      <header class="cs-head" data-reveal>
+        <dl class="cs-facts"><div><dt>My role</dt><dd>UX Designer</dd></div><div><dt>Tools</dt><dd>Claude, Cursor, Figma</dd></div><div><dt>Company</dt><dd>PropVR</dd></div><div><dt>Live site</dt><dd><a href="https://craft.propvr.ai/" target="_blank" rel="noopener">craft.propvr.ai <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a></dd></div></dl>
+        <div class="cs-head__main">
+          <p class="tag cs-head__eyebrow">Craft <span aria-hidden="true">·</span> Live website · PropVR</p>
+          <h1>Designing and building the website for an AI studio for architects</h1>
+          <div class="cs-head__intro"><p>Craft is PropVR&#x27;s AI creative studio for architecture, engineering and construction teams. Give it a project and a goal, and it plans and runs the renders, panoramas, videos and edits.</p><p>I designed and built its website straight in code with Claude and Cursor, with Figma where needed.</p></div>
+          
+        </div>
+      </header>
       <div class="cs-body">
       <nav class="toc" aria-label="Craft case study contents" data-toc>
         <p class="tag toc__title">Contents</p>
         <ol><li><a href="#context">Context</a></li><li><a href="#problem">The problem</a></li><li><a href="#process">How I built it</a></li><li><a href="#reading">One section, up close</a></li><li><a href="#website">The website</a></li><li><a href="#phone">On a phone</a></li><li><a href="#learnings">Learnings</a></li></ol>
       </nav>
       <div class="cs-story">
-      <header class="cs-head" data-reveal>
-        <p class="tag cs-head__eyebrow">Craft <span aria-hidden="true">·</span> Live website · PropVR</p>
-        <h1>Designing and building the website for an AI studio for architects</h1>
-        <!-- Intro and facts: set them in this project's "intro" and "facts" in
-             tools/make-cases.py; a value of None shows "To add".
-             Prototype or Figma link: set "figma" there. -->
-        <dl class="cs-intro"><div class="cs-intro__wide"><dt class="tag">Introduction</dt><dd><p>Craft is PropVR&#x27;s creative studio for architecture, engineering and construction (AEC) teams. You give it a project and a goal, and it plans and runs the renders, panoramas, videos and edits you need.</p><p>I designed and built its website. There was no design hand-off: I worked straight in code with Claude and Cursor, with Figma for the pieces that needed it. I also worked on the UX of the dashboard, which isn&#x27;t shown here.</p></dd></div><div><dt class="tag">My role</dt><dd>UX Designer</dd></div><div><dt class="tag">Tools</dt><dd>Claude, Cursor, Figma</dd></div><div><dt class="tag">Company</dt><dd>PropVR</dd></div><div><dt class="tag">Live site</dt><dd><a href="https://craft.propvr.ai/" target="_blank" rel="noopener">craft.propvr.ai <span aria-hidden="true">↗</span><span class="visually-hidden"> (opens in a new tab)</span></a></dd></div></dl>
-        
-      </header>
-      <figure class="plate cs-cover" data-reveal>
-          <div class="plate__mat"><img class="plate__img" src="../assets/work/craft/sections/00-cover.webp" alt="Craft homepage: Creative Studio for AEC Workflows, with a before-and-after render comparison" width="2880" height="1800" fetchpriority="high" decoding="async"></div>
-
-        </figure>
 
       <section class="cs-sec" id="context" aria-labelledby="context-h">
         <h2 class="sec-head" id="context-h" data-reveal><span class="tag sec-head__label">Context</span> <span class="sec-head__title">A product that worked, and a story that didn&#x27;t come through yet</span></h2>
-        <div class="prose" data-reveal><p>Craft already worked. It could make renders, panoramas and videos, edit one region of an image, and run agents that plan the work. The website had to explain all of that to architects, developers and marketing teams, many of whom already use tools like ChatGPT or Gemini for some of it.</p></div>
-        <div class="prose" data-reveal><p>Craft needed a website that could do the explaining on its own, for teams who had never seen a demo. Its job was to get an AEC team from &quot;what is this?&quot; to trying one real project, without a sales call in between.</p></div>
+        <div class="prose" data-reveal><p>Craft already worked. The website had to explain it to architects, developers and marketers, many already using ChatGPT or Gemini, and get them to try one real project without a sales call.</p></div>
       </section>
       <section class="cs-sec" id="problem" aria-labelledby="problem-h">
         <h2 class="sec-head" id="problem-h" data-reveal><span class="tag sec-head__label">The problem</span> <span class="sec-head__title">Listed one by one, it looked like a toolbox</span></h2>
-        <div class="point" data-reveal><h3><span class="point__n">1.</span> Too many features, no thread</h3><p>Renders, panoramas, video, region edits, agents. Each one is useful, but a page that lists them reads like a toolbox, and a toolbox is easy to compare against free tools feature by feature.</p></div>
-        <div class="point" data-reveal><h3><span class="point__n">2.</span> Visitors already had AI tools</h3><p>Most people landing on the page will have tried a general AI tool already. The site had to say plainly why this is different, instead of hoping they&#x27;d work it out.</p></div>
-        <div class="point" data-reveal><h3><span class="point__n">3.</span> Different teams, different reasons</h3><p>An architect, a developer and a marketer care about different things. One generic message would land with none of them.</p></div>
-        <p class="pull" data-reveal>So the idea became: sell the workflow, not the toolbox. You describe an outcome, Craft plans it, and the pieces run in order.</p>
+        <div class="point" data-reveal><h3>Too many features, no thread</h3><p>A list of features is easy to compare against free tools.</p></div>
+        <div class="point" data-reveal><h3>Visitors already had AI tools</h3><p>The site had to say plainly why this is different.</p></div>
+        <div class="point" data-reveal><h3>Different teams, different reasons</h3><p>One generic message would land with no one.</p></div>
+        <p class="pull" data-reveal>So: sell the workflow, not the toolbox.</p>
       </section>
       <section class="cs-sec" id="process" aria-labelledby="process-h">
-        <h2 class="sec-head" id="process-h" data-reveal><span class="tag sec-head__label">How I built it</span> <span class="sec-head__title">Designing in the browser, with AI doing the typing</span></h2>
-        <div class="prose" data-reveal><p>Instead of finishing the design in Figma and handing it over, I built the site directly with Claude and Cursor. That made it cheap to try a new layout or a different section order and see it live in a few minutes.</p><p>What it didn&#x27;t do was decide anything for me. Which version was right, what came first, and what to cut were still my calls, and I made a lot of them.</p></div>
-        <div class="point" data-reveal><h3>Generate, read, decide, repeat</h3><p>My loop was simple: build a version, read it top to bottom the way a visitor would, then decide by hand what to change, whether that was the order, a heading, or a section that didn&#x27;t earn its place. The page went through many rounds like this before it felt right.</p></div>
+        <h2 class="sec-head" id="process-h" data-reveal><span class="tag sec-head__label">How I built it</span> <span class="sec-head__title">Designing in the browser</span></h2>
+        <div class="prose" data-reveal><p>I built the site directly with Claude and Cursor, so trying a new layout took minutes. Which version was right, what came first and what to cut stayed my call.</p></div>
       </section>
       <section class="cs-sec" id="reading" aria-labelledby="reading-h">
         <h2 class="sec-head" id="reading-h" data-reveal><span class="tag sec-head__label">One section, up close</span> <span class="sec-head__title">How a single section explains itself</span></h2>
-        <div class="prose" data-reveal><p>This is the section that carries the whole idea, so here&#x27;s how it&#x27;s put together.</p></div>
         <figure class="plate annot" data-reveal>
           <div class="plate__mat"><div class="annot__pic"><img class="plate__img" src="../assets/work/craft/sections/02-intent.webp" alt="Craft section: Describe the outcome. Review the workflow before it runs., with a brief card and a row of agent cards" width="2880" height="1926" loading="lazy" decoding="async"><span class="annot__pin" style="--x:5%;--y:22%" aria-hidden="true">1</span><span class="annot__pin" style="--x:62%;--y:9%" aria-hidden="true">2</span><span class="annot__pin" style="--x:5%;--y:62%" aria-hidden="true">3</span></div></div>
-          <figcaption><ol><li><div><b>The heading is the sequence</b><p>“Describe the outcome. Review the workflow before it runs.” Two sentences, two steps: the section explains itself before the visuals do.</p></div></li><li><div><b>The brief, as an object</b><p>The goal sits in its own card with its inputs and a deadline, so it reads as something you hand over, not a prompt you type.</p></div></li><li><div><b>The plan, left to right</b><p>Each agent is a card with its task and status, in order, so the plan reads as a sequence rather than a feature list.</p></div></li></ol></figcaption>
+          <figcaption><ol><li><div><b>The heading is the sequence</b><p>Two sentences, two steps.</p></div></li><li><div><b>The brief, as an object</b><p>A goal you hand over, not a prompt you type.</p></div></li><li><div><b>The plan, left to right</b><p>Agents in order, so it reads as a sequence.</p></div></li></ol></figcaption>
         </figure>
       </section>
       <section class="cs-sec" id="website" aria-labelledby="website-h">
         <h2 class="sec-head" id="website-h" data-reveal><span class="tag sec-head__label">The website</span> <span class="sec-head__title">The homepage, top to bottom</span></h2>
-        <div class="prose" data-reveal><p>I ordered the page the way I&#x27;d explain Craft to someone in person: show what it makes, show how it works, say why it&#x27;s different, show what it means for your team, then prove it and ask.</p></div>
-        <div class="split" style="--n:1" data-reveal><div><span class="tag">Stage 01</span><h3>Show the result first</h3><p>Before any explanation, a before-and-after render. An architect sees a massing model turn into a finished image and understands what Craft does in a second.</p></div></div>
+        <div class="prose" data-reveal><p>Ordered the way I&#x27;d explain Craft in person: show it, explain it, compare it, then ask.</p></div>
+        <div class="split" data-reveal><h3>Show the result first</h3><p>A before-and-after render explains Craft in a second.</p></div>
         <figure class="plate" data-reveal>
           <div class="plate__mat"><img class="plate__img" src="../assets/work/craft/sections/01-before-after.webp" alt="The opening&#x27;s before-and-after slider: a dark massing model on the left, the finished render of the same building on the right" width="2880" height="1512" loading="lazy" decoding="async"></div>
           
         </figure>
-        <div class="split" style="--n:1" data-reveal><div><span class="tag">Stage 02</span><h3>Then show how it works</h3><p>The features become steps: a goal turns into a plan with inputs, agents, cost and approvals, and then one real project moves through the tools in order.</p></div></div>
+        <div class="split" data-reveal><h3>Then how it works</h3><p>One real project moving through the tools, in order.</p></div>
         <figure class="plate" data-reveal>
           <div class="plate__mat"><img class="plate__img" src="../assets/work/craft/sections/03-tower-b.webp" alt="Craft&#x27;s tool flow for one project, Marina Heights Tower B: a list of production tools on the left, and a before-and-after of the chosen tool&#x27;s output on the right" width="2880" height="1918" loading="lazy" decoding="async"></div>
           
         </figure>
-        <div class="split" style="--n:1" data-reveal><div><span class="tag">Stage 03</span><h3>Name the alternatives</h3><p>Visitors were going to compare it to ChatGPT or Gemini anyway, so the page does it for them, then shows what&#x27;s different: agents that share one project, the tools it&#x27;s coming to, and four things AEC work needs that general models get wrong.</p></div></div>
+        <div class="split" data-reveal><h3>Name the alternatives</h3><p>The page makes the ChatGPT comparison for the visitor, then shows what&#x27;s different.</p></div>
         <figure class="car" style="--ratio:2880 / 1826" aria-roledescription="carousel" aria-label="Why Craft" data-car data-reveal>
           <div class="car__frame">
             <div class="car__track" tabindex="0" data-car-track><div class="car__slide" role="group" aria-roledescription="slide" aria-label="1 of 6" data-cap="Why use Craft instead of ChatGPT, Gemini or Higgsfield?"><img class="car__img" src="../assets/work/craft/sections/04-why.webp" alt="The comparison section: general AI assistants and creative media suites set beside Craft" width="2880" height="1826" loading="lazy" decoding="async"></div><div class="car__slide" role="group" aria-roledescription="slide" aria-label="2 of 6" data-cap="Four agents today. One set of project facts."><img class="car__img" src="../assets/work/craft/sections/05-agents.webp" alt="The agent team section: Ada, the lead agent, coordinating Scout, Bolt, Lex and Forge on one brief" width="2880" height="1826" loading="lazy" decoding="async"></div><div class="car__slide" role="group" aria-roledescription="slide" aria-label="3 of 6" data-cap="Craft is coming to the tools your team already works in."><img class="car__img" src="../assets/work/craft/sections/06-integrations.webp" alt="Plugin cards for AutoCAD, Revit, 3ds Max, Unreal Engine, SketchUp and Maya" width="2880" height="1826" loading="lazy" decoding="async"></div><div class="car__slide" role="group" aria-roledescription="slide" aria-label="4 of 6" data-cap="Four things general image models get wrong."><img class="car__img" src="../assets/work/craft/sections/07-media-a.webp" alt="Four capabilities listed, above panoramic enhancement and generated detail examples" width="2880" height="1824" loading="lazy" decoding="async"></div><div class="car__slide" role="group" aria-roledescription="slide" aria-label="5 of 6" data-cap="Animate the frame, or change one thing and hold everything else."><img class="car__img" src="../assets/work/craft/sections/08-media-b.webp" alt="Motion and region-locked editing examples: a pool render and a bedroom" width="2880" height="1826" loading="lazy" decoding="async"></div><div class="car__slide" role="group" aria-roledescription="slide" aria-label="6 of 6" data-cap="When the tool is missing, Craft will create it. A roadmap feature."><img class="car__img" src="../assets/work/craft/sections/09-forge.webp" alt="The Forge roadmap section" width="2880" height="1826" loading="lazy" decoding="async"></div></div>
@@ -133,7 +137,7 @@
           </div>
 
         </figure>
-        <div class="split" style="--n:1" data-reveal><div><span class="tag">Stage 04</span><h3>Speak to each team</h3><p>Only once the workflow is clear does the page split by team: what architects, developers, marketers and sales each get from the same project.</p></div></div>
+        <div class="split" data-reveal><h3>Speak to each team</h3><p>What architects, developers, marketers and sales each get.</p></div>
         <figure class="car" style="--ratio:2880 / 2020" aria-roledescription="carousel" aria-label="Outcomes by team" data-car data-reveal>
           <div class="car__frame">
             <div class="car__track" tabindex="0" data-car-track><div class="car__slide" role="group" aria-roledescription="slide" aria-label="1 of 2" data-cap="Five teams. Nobody re-briefs the project."><img class="car__img" src="../assets/work/craft/sections/10-teams.webp" alt="Outcome cards by team, all starting from the same approved project" width="2880" height="2020" loading="lazy" decoding="async"></div><div class="car__slide" role="group" aria-roledescription="slide" aria-label="2 of 2" data-cap="One project system. A different advantage for every team. Panels for architects, developers, marketers and sales."><img class="car__img" src="../assets/work/craft/sections/11-stakeholders.webp" alt="Expanding panels by team" width="2880" height="2020" loading="lazy" decoding="async"></div></div>
@@ -141,7 +145,7 @@
           </div>
 
         </figure>
-        <div class="split" style="--n:1" data-reveal><div><span class="tag">Stage 05</span><h3>Prove it, then ask</h3><p>Pricing set against costs a team already pays for, proof from PropVR&#x27;s own production work, the questions teams ask before switching, and one small ask at the end: run one real project through it.</p></div></div>
+        <div class="split" data-reveal><h3>Prove it, then ask</h3><p>Pricing, proof from PropVR&#x27;s own work, the FAQ, and one small ask.</p></div>
         <figure class="plate" data-reveal>
           <div class="plate__mat"><img class="plate__img" src="../assets/work/craft/sections/12-pricing.webp" alt="Pricing plans, with a link to compare them against the costs of today&#x27;s studio work" width="2880" height="2220" loading="lazy" decoding="async"></div>
           
@@ -156,7 +160,6 @@
       </section>
       <section class="cs-sec" id="phone" aria-labelledby="phone-h">
         <h2 class="sec-head" id="phone-h" data-reveal><span class="tag sec-head__label">On a phone</span> <span class="sec-head__title">The same story on a small screen</span></h2>
-        <div class="prose" data-reveal><p>The order stays the same on a phone. Side-by-side comparisons stack, and the cards become a single column you scroll through.</p></div>
         <figure class="plate" data-reveal>
           <div class="plate__mat phones" style="--n:4"><img class="plate__img" src="../assets/work/craft/sections/phone-hero.webp" alt="Craft on a phone: the opening, with the headline, two buttons and a render" width="1170" height="2532" loading="lazy" decoding="async"><img class="plate__img" src="../assets/work/craft/sections/phone-run.webp" alt="Craft on a phone: Describe the outcome, with the brief card and the plan" width="1170" height="2532" loading="lazy" decoding="async"><img class="plate__img" src="../assets/work/craft/sections/phone-why.webp" alt="Craft on a phone: Why use Craft, with the comparison cards stacked" width="1170" height="2532" loading="lazy" decoding="async"><img class="plate__img" src="../assets/work/craft/sections/phone-proof.webp" alt="Craft on a phone: Four things general image models get wrong, with the capabilities listed" width="1170" height="2532" loading="lazy" decoding="async"></div>
           
@@ -164,17 +167,18 @@
       </section>
       <section class="cs-sec" id="learnings" aria-labelledby="learnings-h">
         <h2 class="sec-head" id="learnings-h" data-reveal><span class="tag sec-head__label">Learnings</span> <span class="sec-head__title">What I&#x27;d take into the next one</span></h2>
-        <div class="point" data-reveal><h3>AI makes the building fast, not the deciding</h3><p>Trying a new layout took minutes. Choosing between them, and knowing what to cut, took as long as it always does.</p></div>
-        <div class="point" data-reveal><h3>Order is half the message</h3><p>Getting the order right (show it, explain it, compare it, then ask) did more for this page than any single section.</p></div>
-        <div class="point" data-reveal><h3>Code is a great place to design, if you stay the designer</h3><p>Working straight in the browser meant I saw real spacing, real type and real motion from the start. The trick was not letting the speed decide for me.</p></div>
+        <div class="point" data-reveal><h3>AI makes building fast, not deciding</h3><p>Trying layouts took minutes; choosing still took judgement.</p></div>
+        <div class="point" data-reveal><h3>Order is half the message</h3><p>Show, explain, compare, ask did more than any single section.</p></div>
+        <div class="point" data-reveal><h3>Stay the designer</h3><p>Code shows real spacing and motion early, as long as the speed doesn&#x27;t decide for you.</p></div>
       </section>
       <nav class="cs-pager" aria-label="More projects" data-reveal>
-        <a class="cs-pager__link cs-pager__link--prev" href="spacture-ai.html" rel="prev"><span class="cs-pager__pic"><img class="" src="../assets/projects/spacture-thumb.jpg" alt="" width="1536" height="1024" loading="lazy" decoding="async"></span><span class="cs-pager__text"><span class="tag cs-pager__label"><svg viewBox="0 0 8 12" aria-hidden="true"><path d="M6.5 1 1.5 6l5 5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg> Previous</span><span class="cs-pager__name">Spacture AI</span></span></a>
-        <a class="cs-pager__link cs-pager__link--next" href="flex-academy.html" rel="next"><span class="cs-pager__text"><span class="tag cs-pager__label">Next <svg viewBox="0 0 8 12" aria-hidden="true"><path d="M1.5 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span><span class="cs-pager__name">Flex Academy</span></span><span class="cs-pager__pic"><img class="" src="../assets/projects/flex-thumb.jpg" alt="" width="1536" height="1024" loading="lazy" decoding="async"></span></a>
+        <a class="cs-pager__link cs-pager__link--prev" href="spacture-ai.html" rel="prev"><span class="cs-pager__pic"><img class="" src="../assets/projects/spacture-thumb.webp" alt="" width="1536" height="1024" loading="lazy" decoding="async"></span><span class="cs-pager__text"><span class="tag cs-pager__label"><svg viewBox="0 0 8 12" aria-hidden="true"><path d="M6.5 1 1.5 6l5 5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg> Previous</span><span class="cs-pager__name">Spacture AI</span></span></a>
+        <a class="cs-pager__link cs-pager__link--next" href="flex-academy.html" rel="next"><span class="cs-pager__text"><span class="tag cs-pager__label">Next <svg viewBox="0 0 8 12" aria-hidden="true"><path d="M1.5 1l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span><span class="cs-pager__name">Flex Academy</span></span><span class="cs-pager__pic"><img class="" src="../assets/projects/flex-thumb.webp" alt="" width="1536" height="1024" loading="lazy" decoding="async"></span></a>
       </nav>
       </div>
       </div>
     </article>
+    </div>
   </main>
 
     <footer class="foot" id="contact" data-foot>

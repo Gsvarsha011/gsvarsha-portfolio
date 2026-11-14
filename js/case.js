@@ -26,8 +26,9 @@
  * Blocks rise in once as they come into view. With reduced motion, or
  * without IntersectionObserver, everything is simply there.
  *
- * On a page with a locked part (js/private.js), this waits until that has
- * had its chance to open (window.caseReady), so it sets up what's in it too.
+ * A preview that stops early (SpatialLite): "Get in touch" opens a small
+ * card with Email and LinkedIn ([data-contact], the Spatial Key card's look;
+ * the addresses come from js/outro.js).
  */
 const initCase = () => {
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -129,6 +130,19 @@ const initCase = () => {
     vids.forEach((v) => vio.observe(v));
   }
 
+  /* ---------- the contact card ---------- */
+  const card = document.querySelector("[data-contact]");
+  if (card) {
+    document.querySelectorAll("[data-contact-open]").forEach((b) => b.addEventListener("click", () => {
+      card.showModal();
+      card.focus(); // the card, not its close button
+    }));
+    card.querySelector("[data-contact-close]").addEventListener("click", () => card.close());
+    card.addEventListener("click", (e) => {
+      if (e.target === card) card.close(); // the backdrop
+    });
+  }
+
   /* ---------- rising in ---------- */
   const items = document.querySelectorAll("[data-reveal]");
   if (reduce || !hasIO || !items.length) return;
@@ -142,4 +156,4 @@ const initCase = () => {
   }, { rootMargin: "0px 0px -6% 0px", threshold: 0.08 });
   items.forEach((el) => io.observe(el));
 };
-(window.caseReady || Promise.resolve()).then(initCase);
+initCase();

@@ -190,7 +190,7 @@ slows as each project comes into focus but never stops between them.
   `css/projects.css`) let the neighbours show.
 - Reduced motion, or no WebGL 2: a plain row of landscape cards you swipe
   through, the next one peeking in.
-- Every card shows a device mockup (`assets/projects/*-thumb.jpg`).
+- Every card shows a device mockup (`assets/projects/*-thumb.webp`). Every image on the site is WebP.
 - Spatial Key has a picture but no case study: it sits under a pane of
   frosted glass, edge to edge with no outline (`.card3__seal`), with a lock in the middle and "Connect to
   have a look?", and the card leads to Contact. The lens paints the same
@@ -212,18 +212,19 @@ blocks. One system, adapted per project: the contents beside the story,
 which opens with the head and then the cover; its screens sit wide in soft
 frames and its words centred between them.
 
-- **Trail:** "Work / the project" at the top (a folder icon, Work links
-  back to the home page's work).
+- **Hero:** a quiet grey band across the page (`.cs-hero`): the trail
+  ("Work / the project", a folder icon, Work links back to the home page's
+  work), then the cover rising out of the band's bottom edge, rounded on
+  top only.
 - **Cover:** the real opening screen, under the head, in a frame the
   width of the story (Spacture AI: its first screen with the background video). Not the
   home-card thumbnail. `cover=None` shows a slot for the homepage's first
   screen instead.
-- **Head**, at the top of the story, in the reading column: the project and
-  `kicker` in small terracotta capitals, then `headline`, a plain sentence
-  about what the work did (not just the name); then the intro, small-caps
-  labels over each answer: Introduction (`intro`, a paragraph or two in the
-  first person), then the `facts` two to a row (My role, Team, Tools, and
-  Company / Context / Audience). A fact set to `None` shows "To add" (with
+- **Head**, under the band: the `facts` (My role, Team, Tools, and
+  Company / Context / Audience) in the contents' column on the left, beside
+  the project and `kicker` in small grey capitals, `headline` (a plain
+  sentence about what the work did) and `intro` (two short paragraphs, first
+  person). On tablets and phones the facts follow the intro, side by side. A fact set to `None` shows "To add" (with
   an `ADD:` comment) until you confirm it. The live site is a fact row only when `live` is set (Craft:
   craft.propvr.ai, checked), and a Figma button only when `figma` is set
   with a real, shareable URL and an accurate label ("View prototype" or
@@ -239,7 +240,11 @@ frames and its words centred between them.
   menu, scrolling sideways; once it sticks, its frosted paper reaches up to
   the top of the screen (`.toc[data-stuck]`, js/case.js), so the header and
   the bar read as one strip with nothing showing through between them.
-- **Sections:** each opens with its label in small terracotta capitals and
+- **Black and grey only:** nothing inside a case study is terracotta
+  (`.case main` maps `--terra` to ink); the header and footer keep it.
+  The images carry the page and the words stay short: a line or two of
+  prose per section, points of one sentence, and nothing numbered.
+- **Sections:** each opens with its label in small grey capitals and
   its title under it, with a hairline between sections, like pages of
   documentation. The story is one 860px column (`--story`), centred in
   the room beside the contents: text (17px) and screens both fill it, on
@@ -254,10 +259,11 @@ frames and its words centred between them.
 - **Previous / next**, at the end: each project's home-card picture beside
   "Previous" or "Next" and its name, wrapping round from the last to the
   first (`.cs-pager`; the pictures drop on phones).
-- **Blocks:** `lead`, `prose`, `point` (a bold one-line takeaway, then its
-  paragraphs; `n=` numbers it), `quote` (what someone said, and who),
-  `pull` (one sentence said a little louder), `ruled` (a numbered
-  list), `split` (a stage heading that groups the screens after it),
+- **Blocks:** `lead`, `prose`, `point` (a bold one-line takeaway, then a
+  line that explains it; never numbered), `quote` (what someone said, and
+  who), `pull` (one sentence said a little louder), `aims` (short
+  statements on soft tiles, two to a row), `split(heading, text)` (a stage
+  heading that groups the screens after it, no label or number),
   `plate` (a real image), `duo`/`row3`, `labelled` (before / after), `annot` (a screen
   with numbered pins and notes; `annot_pics` spreads one set of notes over
   several screens, e.g. a desktop and a phone), `carousel` (screens that belong together, one at a time in a frame:
@@ -265,8 +271,8 @@ frames and its words centred between them.
   own caption under it; swipeable, and as wide as fits the screen's
   height), `board` (a run of a page's sections as a carousel, each captioned
   with its label and heading), `tallpair` (a tall screen on the right, wide ones stacked on the left, one frame and one caption, the columns sized so both sides match), `seq` (versions in order), `zoom` (a close-up), `flow`
-  (a journey or a page's order as steps in a row; filled steps are ones a
-  screen on the page shows), `funnel` (narrowing down, e.g. Flex Academy's
+  (a journey or a page's order: one quiet line of names, each with its
+  question, a thin arrow between, no numbers or boxes), `funnel` (narrowing down, e.g. Flex Academy's
   segments to personas to one reader), and `ph`. `plate(..., narrow=True)` keeps a long page section to about half
   the column.
 - **Motion & interactions:** SpatialLite, Spacture AI and Flex Academy have this
@@ -295,7 +301,7 @@ frames and its words centred between them.
   address as plain text. Addresses come from LINKS in `js/outro.js`.
 - **Flex Academy's flows and phones:** "The three actions" shows where each
   first-screen button leads (`assets/work/flex-academy/flows/`, set with
-  `phones(..., n=3, stack=True)`). "On a phone" uses `mockups()`: the phones in
+  `phones(..., n=3)`; the strategy call's six screens are a carousel). "On a phone" uses `mockups()`: the phones in
   `assets/work/flex-academy/phones/` are cut out on transparency and sit
   straight on the page, with no frame.
 - **Moving around:** a nav link or a contents link jumps straight to its
@@ -345,28 +351,15 @@ thumbnails stay on the home page: no case study reuses its own thumbnail,
 so SpatialLite's cover, journey screen and close-ups are `ph` slots that
 say which screen goes in each.
 
-SpatialLite is office work, so only its start is open: Context, The
-problem and The journey. After that the page fades out into "Enter password
-to read more", with a password box and a line asking people to email or
-message for it. Everything after The journey (and its place in the contents) is in
-the page encrypted, so without the password it can't be read, not even in
-the page's code.
-
-- **The password** is in `tools/private-password.txt`. To change it, edit
-  that file and run `python3 tools/make-cases.py` again.
-- **How it's locked:** `private_after="journey"` in `tools/make-cases.py`
-  picks where the lock starts. The generator encrypts the rest with
-  `tools/seal.mjs` (needs Node), and `js/private.js` opens it in the
-  browser. The right password reloads the page at Cards and keeps it
-  open for that tab; a wrong one says so. Opening it needs https (or
-  localhost).
-- **Removing the lock:** delete `private_after` and run the generator.
-- **When publishing,** upload only `index.html`, `css/`, `js/`, `fonts/`,
-  `vendor/`, `assets/` and `work/`. Never upload `tools/` (it holds the
-  password), `incoming/`, `share/` or the `backup-…` folder (an old, unlocked
-  copy of the page is in it). The screens in the locked part are still
-  plain files in `assets/`: they can't be found from the page, but anyone
-  who knew a file's exact address could open it.
+SpatialLite is office work, so only a preview is published: Context, The
+problem and The journey. After that the page says "This is a small preview
+of my work. Get in touch to know more."; Get in touch opens a card in the
+Spatial Key card's look with Email (subject filled in) and LinkedIn
+(`[data-contact]`, `js/case.js`; addresses from LINKS in `js/outro.js`).
+`preview_until="journey"` in `tools/make-cases.py` picks where it stops;
+the sections after it stay in the generator, unpublished. The screens they
+use are still plain files in `assets/`, so leave out of the upload any you
+don't want reachable by address.
 
 SpatialLite's screens never show the client's logo (only SpatialLite;
 the other projects keep their own logos): `tools/swap-logo.js`

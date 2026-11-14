@@ -232,7 +232,17 @@
   .hero {
     --name-size: min(19vw, 12svh);
     --type-y: 25%;
-    --roles-y: 19%;
+    /* PRODUCT DESIGNER fits the width, and sits high enough that the
+       introduction has room between it and your head */
+    --roles-size: min(var(--t-h1), 7.6vw);
+    --roles-y: 15%;
+  }
+  .motion .intro {
+    width: min(21rem, calc(100vw - 2 * var(--inset) - 40px));
+    padding: 12px 16px 13px;
+    border-radius: 18px 18px 18px 6px;
+    font-size: var(--t-small);
+    line-height: 1.5;
   }
   .hero__identity {
     grid-template-columns: 1fr;

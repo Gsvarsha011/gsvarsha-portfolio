@@ -404,6 +404,20 @@ a.card3__body:not([href]) { cursor: default; }
   .work-live .work__about { max-width: 46vw; }
 }
 
+/* the row (phones and tablets): a quieter header over each card, the name
+   and under it what kind of work, in plain small type, not capitals */
+.work-row .card3__head { display: grid; justify-content: start; gap: 4px; margin-bottom: 12px; }
+.work-row .card3__name { font-size: var(--t-h3); }
+.work-row .card3__kind {
+  font-size: var(--t-small);
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* the swipe row with the script: only the current project's notes */
 .work-row .about:not([data-current]) { display: none; }
 .work-row .about__cat::before { content: none; }
@@ -528,6 +542,29 @@ a.card3__body:not([href]) { cursor: default; }
 @media (max-width: 760px) {
   .card3__cta { padding: 8px 12px 9px; font-size: var(--t-label); }
   .card3__head { margin-bottom: 10px; }
+  /* a plain swipe row (js/projects.js): flat cards, each snapping to the
+     middle with the next one peeking in, and the dots under it */
+  .work-row .work__cards {
+    gap: 12px;
+    padding-left: calc((100% - 82vw) / 2);
+    padding-right: calc((100% - 82vw) / 2);
+    scroll-padding: 0;
+  }
+  .work-row .work__cards .card3 { flex-basis: 82vw; }
+
+  .work-row .work__dots { display: flex; justify-content: center; gap: 6px; margin-top: 6px; }
+  /* with the hero's handover: one full screen of paper, the gallery in its
+     middle, so nothing of the laptop shows through under the row */
+  .motion.work-row:not(.work-rowdrive) .work__stage {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100vh;
+    min-height: 100svh;
+    padding-top: 72px;
+    padding-bottom: 24px;
+    background: var(--paper);
+  }
 }
 
 /* ---------- the lens (WebGL, js/projects.js) ----------
