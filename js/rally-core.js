@@ -168,6 +168,8 @@
     serveShort: { angle: 0.55, target: (d) => C.NET_X + d * 54 },
     clear: { angle: 0.74, target: (d) => (d > 0 ? C.COURT_R - 13 : C.COURT_L + 13) },
     lift: { angle: 0.92, target: (d) => (d > 0 ? C.COURT_R - 30 : C.COURT_L + 30) },
+    // a lift or clear that falls short, mid-court: an invitation to smash
+    short: { angle: 0.98, target: (d) => C.NET_X + d * 62 },
     drive: { angle: 0.18, target: (d) => C.NET_X + d * 88 },
     drop: { angle: 0.42, target: (d) => C.NET_X + d * 22 },
     // the visitor's sharper versions
@@ -267,7 +269,7 @@
   }
 
   // a hit leaves from the shuttle's position toward the other side
-  function launch(g, p, v) {
+  function launch(g, p, v, shot) {
     const s = g.shuttle;
     s.serve = g.rallyHits === 0; // the serve is judged by its own lines
     s.held = null;
@@ -281,7 +283,7 @@
       g.me.plan = null;
       g.me.reactAt = g.t + 0.12;
     }
-    g.events.push({ type: "hit", x: s.x, y: s.y, by: p.id });
+    g.events.push({ type: "hit", x: s.x, y: s.y, by: p.id, shot });
     if (p.id === "you") {
       // GS reads the shot after a human-ish moment
       const m = g.ai;
@@ -304,13 +306,21 @@
     return true;
   }
 
+  // A smash is on (for either player) when the shuttle is met overhead, high
+  // (usually off a jump), and not from deep at the back, where it would sit
+  // up and be easy to return. Nobody presses anything extra for it.
+  const SMASH_HEIGHT = 38;  // contact height above the floor
+  const SMASH_DEPTH = 75;  // furthest from the net a smash is played
+  function canSmash(p, kind, x, y) {
+    return kind === "overhead" && C.GROUND - y >= SMASH_HEIGHT && Math.abs(x - C.NET_X) <= SMASH_DEPTH;
+  }
+
   // the visitor only presses one key, so the shot is chosen for them, and
-  // chosen well: a smash off a high shuttle, a tight drop when GS is at the
+  // chosen well: a smash whenever one is on, a tight drop when GS is at the
   // back, a deep clear when GS is up at the net
-  function choosePlayerShot(g, kind, contactY) {
-    const high = C.GROUND - contactY;
+  function choosePlayerShot(g, p, kind, x, y) {
+    if (canSmash(p, kind, x, y)) return "smash";
     const gsDeep = g.gs.x > C.HOME.gs - 4;
-    if (kind === "overhead" && high > 31) return "smash";
     if (gsDeep) return "dropTight";
     return kind === "overhead" ? "clearDeep" : "lift";
   }
@@ -330,7 +340,7 @@
       else type = sw.serveType || "serveHigh";
       s.x = p.x + p.f * 8;
       s.y = C.GROUND - 16 - p.h;
-      launch(g, p, shotVelocity(type, s.x, s.y, p.f, p.id === "gs" ? (g.rand() - 0.5) * 10 : 0, 1));
+      launch(g, p, shotVelocity(type, s.x, s.y, p.f, p.id === "gs" ? (g.rand() - 0.5) * 10 : 0, 1), type);
     }
 
     if (inStrike && !sw.done && s.live && s.last !== p.id && (s.x - C.NET_X) * p.side > -2) {
@@ -355,20 +365,20 @@
       if (best <= reach) {
         sw.done = true;
         const q = clamp(1 - best / reach, 0, 1) * 0.6 + 0.4;
-        let v;
+        let v, type;
         if (p.id === "you") {
-          const type = choosePlayerShot(g, sw.kind, s.y);
+          type = choosePlayerShot(g, p, sw.kind, s.x, s.y);
           v = shotVelocity(type, s.x, s.y, p.f, (g.rand() * 2 - 1) * (1 - q) * 44, q);
         } else {
           const plan = g.ai.plan || {};
-          let type = plan.shot || "clear";
+          type = plan.shot || "clear";
           let ex = (g.rand() - 0.5) * 10;
           // a loose shot: long past the line, or short into the tape
           if (g.ai.err === "loose") ex += g.rand() < 0.55 ? 34 * -p.f + g.rand() * 14 * -p.f : -(70 + g.rand() * 20) * -p.f;
-          if (type === "smash" && C.GROUND - s.y < 34) type = "drive";
+          if (type === "smash" && !canSmash(p, sw.kind, s.x, s.y)) type = "drive";
           v = shotVelocity(type, s.x, s.y, p.f, ex, Math.max(q, 0.85));
         }
-        launch(g, p, v);
+        launch(g, p, v, type);
       }
     }
     if (sw.t >= SWING_TIME) p.swing = null;
@@ -404,13 +414,16 @@
   /* ---------- GS ---------- */
 
   // Difficulty. Your legs move on their own, so the game is all timing.
-  // GS's error rate is fixed (about one shot in seven); how often it wins is
-  // set by how often it goes for a winner (SHARP) and its speed. Tuned with
-  // tools/rally-sim.cjs: with a typical human timing spread (±40–60 ms) GS
-  // wins roughly 60–75% of rallies.
+  // GS's error rate is fixed (about one shot in seven). How often it wins is
+  // set mostly by SHORT_LIFT (how often it leaves you a smash), then SHARP,
+  // SMASH_GS and its speed. Tuned with tools/rally-sim.cjs: at a typical
+  // human timing spread (±50 ms) GS wins about 51% of rallies and 55% of
+  // games. More SHORT_LIFT makes GS easier to beat.
   const MISTAKE = 0.14;
-  const SHARP = 0.45;    // how often GS goes for a winner
-  const GS_SPEED = 1; // GS's top speed and read, relative to yours
+  const SHARP = 0.45;       // how often GS goes for a winner
+  const GS_SPEED = 1;       // GS's top speed and read, relative to yours
+  const SMASH_GS = 0.5;     // how often GS takes a smash when one is on
+  const SHORT_LIFT = 0.225; // how often GS's lift or clear falls short (smash it!)
   function rollMistake(g) {
     if (g.rand() > MISTAKE) return null;
     const r = g.rand();
@@ -453,7 +466,7 @@
           const lead = C.WINDUP + u * C.STRIKE;
           const travel = Math.abs(x - p.x) / speed + 0.1;
           const slack = t - lead - travel - (opts.slack || 0);
-          const c = { t, x, kind, jumpH, lead, u, hy, slack };
+          const c = { t, x, kind, jumpH, lead, u, hy, slack, cx: sim.x };
           if (slack >= 0) {
             const score = (kind === "overhead" ? 30 : 0) + hy + (jumpH ? 6 : 0) - t * 4 + Math.min(slack, 0.15) * 120;
             if (!best || score > best.score) best = { ...c, score };
@@ -469,9 +482,10 @@
   function chooseGSShot(g, c) {
     const deep = g.you.x < (C.COURT_L + C.NET_X) / 2 - 6;
     const r = g.rand();
-    if (c.kind === "overhead" && c.jumpH && c.hy > 40) return r < SHARP ? "smash" : "clear";
-    if (c.kind === "overhead") return deep && r < SHARP ? "drop" : r < 0.7 ? "clear" : "drive";
-    return deep && r < SHARP ? "drop" : "lift";
+    const back = (shot) => (g.rand() < SHORT_LIFT ? "short" : shot);
+    if (canSmash(g.gs, c.kind, c.cx, C.GROUND - c.hy)) return r < SMASH_GS ? "smash" : back("clear");
+    if (c.kind === "overhead") return deep && r < SHARP ? "drop" : r < 0.7 ? back("clear") : "drive";
+    return deep && r < SHARP ? "drop" : back("lift");
   }
 
   function updateGS(g, dt) {
@@ -543,10 +557,19 @@
     let goal = C.HOME.you;
     if (g.state === "rally" && s.live && s.last === "gs" && g.t >= me.reactAt) {
       if (!me.plan) {
-        me.plan = plan(g, you, { speed: 1, jumpOk: false });
-        if (!me.plan.leave) me.plan.at = g.t + me.plan.t; // when to hit, for the curious
+        me.plan = plan(g, you, { speed: 1 });
+        // a jump that doesn't set up a smash isn't worth it: stay grounded
+        if (!me.plan.leave && me.plan.jumpH && !canSmash(you, me.plan.kind, me.plan.cx, C.GROUND - me.plan.hy)) me.plan = plan(g, you, { speed: 1, jumpOk: false });
+        if (!me.plan.leave) {
+          me.plan.at = g.t + me.plan.t; // when to hit, for the curious
+          // the legs only leave the floor when the jump sets up a smash
+          me.plan.jumpAt = me.plan.jumpH && canSmash(you, me.plan.kind, me.plan.cx, C.GROUND - me.plan.hy) ? me.plan.at - 0.24 : null;
+        }
       }
-      if (!me.plan.leave) goal = me.plan.x;
+      if (!me.plan.leave) {
+        goal = me.plan.x;
+        if (me.plan.jumpAt !== null && g.t >= me.plan.jumpAt) { jump(you); me.plan.jumpAt = null; }
+      }
     } else if (g.state === "rally" && s.last === "you") goal = C.HOME.you + 8;
     if (g.state === "serve" && s.held === "you") movePlayer(g, you, dt, 0); // the server stays put
     else {

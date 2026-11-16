@@ -583,11 +583,20 @@ even score and the left on an odd one; a serve must land past the
 opponent's short service line and inside the back line, or it's a fault;
 one hit per side; lines are in.
 
-GS's error rate is fixed (about one shot in seven). `SHARP` and `GS_SPEED`
-set how often it wins: with typical human timing (±40–60 ms) it takes about
-58–76% of rallies, around 67% at ±50 ms. Mashing Space doesn't work (GS
-wins ~98% against it). Tune with
-`node tools/rally-sim.cjs "$PWD/js/rally-core.js" [timing-sigma]`.
+Smashes: either player smashes on their own when a smash is on: the
+shuttle is met overhead, at least `SMASH_HEIGHT` up (usually off a jump),
+and no further than `SMASH_DEPTH` from the net. There's no smash key; your
+legs jump for it only when the jump sets up a smash. GS takes about half
+the smashes it's offered (`SMASH_GS`), and about one in five of its lifts
+and clears falls short mid-court (`SHORT_LIFT`), which is your chance.
+
+Balance: at typical human timing (±50 ms) GS wins about 51% of rallies and
+**55% of games** (the visitor 45%). Sharper players win more: at ±30 ms
+the visitor wins almost every game, and at ±70 ms almost none. GS's error
+rate is fixed (about one shot in seven); turn `SHORT_LIFT` up to make GS
+easier, down to make it harder. Mashing Space doesn't work. Tune with
+`node tools/rally-sim.cjs "$PWD/js/rally-core.js" [timing-sigma] [games] [seed]`
+(with `games`, it plays whole games and reports who won them).
 
 ## Changing things
 
