@@ -366,9 +366,14 @@
     return { canvas, draw, resize };
   }
 
+  // on the last project the section says so (data-end): the "Scroll down"
+  // hint under the gallery shows (css/projects.css)
+  const markEnd = (i) => section.toggleAttribute("data-end", i === n - 1);
+
   function setCurrent(i) {
     if (i === current) return;
     current = i;
+    markEnd(i);
     if (counter) counter.textContent = String(i + 1).padStart(2, "0");
     cards.forEach((c, j) => {
       c.toggleAttribute("data-current", j === i);
@@ -467,6 +472,7 @@
     const i = Math.max(0, Math.min(n - 1, Math.round(row.scrollLeft / step)));
     if (i === current) return;
     current = i;
+    markEnd(i);
     if (counter) counter.textContent = String(i + 1).padStart(2, "0");
     abouts.forEach((a, j) => a.toggleAttribute("data-current", j === i));
     [...dots.children].forEach((d, j) => d.toggleAttribute("data-on", j === i));
@@ -532,7 +538,9 @@
   function measureStage() {
     if (!drive) { section.style.removeProperty("--stage-h"); return; }
     const cs = getComputedStyle(stage);
-    const span = dots.getBoundingClientRect().bottom - topEl.getBoundingClientRect().top;
+    // (to the foot of the "Scroll down" hint under the dots, when there is one)
+    const foot = section.querySelector(".work__hint") || dots;
+    const span = foot.getBoundingClientRect().bottom - topEl.getBoundingClientRect().top;
     const h = Math.ceil(span + parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom));
     if (h === stageH) return;
     stageH = h;
@@ -772,6 +780,25 @@
     const iw = img.naturalWidth * k, ih = img.naturalHeight * k;
     ctx.drawImage(img, x + (w - iw) / 2, y + (h - ih) / 2, iw, ih);
   }
+  // the way in's arrow (an inline Phosphor icon, 256 x 256), drawn where it
+  // sits in el's own untransformed box (el at its offsetLeft/Top), in the
+  // current fill colour. Its place is read from the screen and scaled back,
+  // so a card's tilt or size doesn't move it.
+  const iconPaths = new Map();
+  const iconPath = (d) => { if (!iconPaths.has(d)) iconPaths.set(d, new Path2D(d)); return iconPaths.get(d); };
+  function paintIconIn(ctx, el) {
+    const icon = el.querySelector("svg");
+    if (!icon) return;
+    const er = el.getBoundingClientRect(), ir = icon.getBoundingClientRect();
+    if (!er.width || !ir.width) return;
+    const k = el.offsetWidth / er.width;
+    const size = ir.width * k;
+    ctx.save();
+    ctx.translate(el.offsetLeft + (ir.left - er.left) * k, el.offsetTop + (ir.top - er.top) * k);
+    ctx.scale(size / 256, size / 256);
+    icon.querySelectorAll("path").forEach((p) => ctx.fill(iconPath(p.getAttribute("d"))));
+    ctx.restore();
+  }
   // a card's own contents, in its untransformed box: the header line,
   // then the panel with its screen (and its way in, when it's in focus)
   function paintCard(ctx, li, withCta = true, withPanel = true) {
@@ -799,6 +826,7 @@
         ctx.fill();
         const m = fontOf(ctx, ccs);
         ctx.fillText(cta.textContent.trim(), cta.offsetLeft + parseFloat(ccs.paddingLeft), baselineIn({ y: cta.offsetTop, h: cta.offsetHeight }, m));
+        paintIconIn(ctx, cta);
       }
       ctx.restore();
       return;
@@ -832,6 +860,7 @@
       ctx.fill();
       const m = fontOf(ctx, ccs);
       ctx.fillText(cta.textContent.trim(), cta.offsetLeft + parseFloat(ccs.paddingLeft), baselineIn({ y: cta.offsetTop, h: cta.offsetHeight }, m));
+      paintIconIn(ctx, cta);
     }
     ctx.restore();
   }
@@ -875,7 +904,8 @@
   // step by step back up to the pane (every browser can do that; not every
   // canvas has filters, and one big step leaves blocks). drawShot(c) draws
   // the screen in the panel's own box.
-  const SHACKLE = new Path2D("M3.2 6V4.2a2.8 2.8 0 0 1 5.6 0V6");
+  // Phosphor lock-simple (Fill), as on the card (256 x 256)
+  const LOCK = new Path2D("M80,80V56a48,48,0,0,1,96,0V80H160V56a32,32,0,0,0-64,0V80ZM48,80H208a16,16,0,0,1,16,16V208a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V96A16,16,0,0,1,48,80Z");
   function paintSeal(ctx, body, drawShot) {
     const seal = body.querySelector(".card3__seal");
     if (!seal) return;
@@ -920,16 +950,12 @@
       ctx.beginPath();
       ctx.arc(cx, cy, d / 2 - 0.5, 0, Math.PI * 2);
       ctx.stroke();
-      const s = (d * 0.38) / 12; // the icon: 38% of the ring, from its 12 x 14 box
+      const s = (d * 0.38) / 256; // the icon: 38% of the ring, from its 256 x 256 box
       ctx.save();
-      ctx.translate(cx - 6 * s, cy - 7 * s);
+      ctx.translate(cx - 128 * s, cy - 128 * s);
       ctx.scale(s, s);
-      ctx.strokeStyle = ctx.fillStyle = "#F3EFE7";
-      ctx.lineWidth = 1.3;
-      ctx.lineCap = "round";
-      ctx.stroke(SHACKLE);
-      roundRect(ctx, 1.5, 6, 9, 7, 1.6);
-      ctx.fill();
+      ctx.fillStyle = "#F3EFE7";
+      ctx.fill(LOCK);
       ctx.restore();
     }
     // the line, centred under it
@@ -993,6 +1019,15 @@
         roundRect(ctx, r.left - origin.left, r.top - origin.top, r.width, r.height, r.height / 2);
         ctx.fill();
         paintText(ctx, cta, origin);
+        const icon = cta.querySelector("svg");
+        if (icon) {
+          const ir = icon.getBoundingClientRect();
+          ctx.save();
+          ctx.translate(ir.left - origin.left, ir.top - origin.top);
+          ctx.scale(ir.width / 256, ir.height / 256);
+          icon.querySelectorAll("path").forEach((p) => ctx.fill(iconPath(p.getAttribute("d"))));
+          ctx.restore();
+        }
       }
     }
     if (live) {

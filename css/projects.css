@@ -194,7 +194,7 @@ a.card3__body:not([href]) { cursor: default; }
   white-space: nowrap;
 }
 .card3--locked:hover .card3__shackle,
-.card3--locked:focus-visible .card3__shackle { translate: 0 -1.6px; }
+.card3--locked:focus-visible .card3__shackle { translate: 0 -34px; }
 
 /* ---------- the notes and the project index ---------- */
 
@@ -663,7 +663,7 @@ html:has(.keycard[open]) { overflow: hidden; }
 /* the lock opens as the card does */
 .keycard__shackle { transform-box: fill-box; transform-origin: 100% 100%; }
 .keycard[open] .keycard__shackle { animation: keycard-unlock 0.6s var(--ease-out) 0.25s both; }
-@keyframes keycard-unlock { to { transform: translateY(-1.8px) rotate(24deg); } }
+@keyframes keycard-unlock { to { transform: translateY(-38px) rotate(24deg); } }
 .keycard__title {
   font-family: var(--display);
   font-weight: 400;
@@ -693,5 +693,47 @@ html:has(.keycard[open]) { overflow: hidden; }
 .keycard a:focus-visible, .keycard button:focus-visible { outline: 2px solid var(--terra); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) {
   .keycard[open], .keycard[open]::backdrop { animation: none; }
-  .keycard[open] .keycard__shackle { animation: none; transform: translateY(-1.8px) rotate(24deg); }
+  .keycard[open] .keycard__shackle { animation: none; transform: translateY(-38px) rotate(24deg); }
+}
+
+/* ---------- "Scroll down": the page goes on below ----------
+   Shown once the last project is in focus (data-end, js/projects.js). The
+   words stay still; only the thin arrow drifts down and back. On roomy
+   screens it sits at the foot of the stage; in the row (tablets, phones)
+   it follows the dots. */
+.work__hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin: 22px auto 0;
+  font-size: var(--t-small);
+  line-height: 1;
+  color: #24221F;
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease, visibility 0s linear 0.4s;
+}
+.work[data-end] .work__hint {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.5s ease 0.15s, visibility 0s;
+}
+.work__hint-arrow { display: block; width: 14px; height: 14px; }
+.work[data-end] .work__hint-arrow { animation: work-hint 1.5s ease-in-out infinite; }
+@keyframes work-hint {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+.work-live .work__hint {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: clamp(24px, 4.5svh, 44px);
+  margin: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .work[data-end] .work__hint-arrow { animation: none; }
 }

@@ -423,4 +423,6 @@ body::before {
 /* the arrows and crosses in round buttons: drawn, not typed, so every one
    is the same size whatever the font (gallery, music, cards) */
 .icon { display: block; width: 18px; height: 18px; }
+/* icons beside words (Phosphor Light, inline SVG): one glyph's size */
+.i-ph { display: inline-block; flex: none; width: 1em; height: 1em; vertical-align: -0.14em; }
 

@@ -436,25 +436,6 @@ button.tile { cursor: pointer; }
   .tile__media::after { opacity: 1; }
 }
 /* and that it opens, top right, on hover */
-.tile__go {
-  position: absolute;
-  z-index: 2;
-  top: clamp(12px, 1.4vw, 18px);
-  right: clamp(12px, 1.4vw, 18px);
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: rgba(251, 249, 245, 0.92);
-  font-size: 16px;
-  color: var(--ink);
-  opacity: 0;
-  translate: -4px 4px;
-  transition: opacity 0.3s ease, translate 0.4s var(--ease-out);
-}
-.tile:hover .tile__go,
-.tile:focus-visible .tile__go { opacity: 1; translate: 0 0; }
 /* rising in once, each as it comes into view (js/about.js adds .is-in) */
 .beyond.is-live .tile { opacity: 0; transform: translateY(24px); }
 .beyond.is-live .tile.is-in {
@@ -868,7 +849,6 @@ html:has(.songs[open], .rally[open]) { overflow: hidden; }
   .bento > .tile--f { grid-area: 4 / 2 / 5 / 3; }
   /* smaller tags and arrow on the small tiles */
   .bento .tile__tag { left: 12px; bottom: 10px; }
-  .bento .tile__go { display: none; }
 }
 @media (max-width: 760px) {
   .gallery__media img { --k: 94vmin; width: min(var(--k) * var(--sq, 1), calc(100vw - 24px), calc(100svh - 190px) * var(--ar, 1)); }
@@ -880,7 +860,7 @@ html:has(.songs[open], .rally[open]) { overflow: hidden; }
 /* ---------- reduced motion: nothing slides, tilts or shivers ---------- */
 @media (prefers-reduced-motion: reduce) {
   .beat__line .w > span,
-  .tile__media, .tile__disc, .tile__go, .tile__tag, .tile__media::after { transition: none; }
+  .tile__media, .tile__disc, .tile__tag, .tile__media::after { transition: none; }
   .gallery:not([hidden]) { animation: none; }
   .gallery__media > .is-in,
   .songs[open], .songs .track__eq i { animation: none !important; }
