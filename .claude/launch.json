@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "portfolio",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-c", "import http.server as h\nclass N(h.SimpleHTTPRequestHandler):\n  def end_headers(s):\n    s.send_header('Cache-Control','no-store'); super().end_headers()\n  def log_message(s,*a): pass\nh.ThreadingHTTPServer(('',8794),N).serve_forever()"],
+      "port": 8794
+    }
+  ]
+}

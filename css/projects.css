@@ -334,7 +334,10 @@ a.card3__body:not([href]) { cursor: default; }
 
 /* ---------- live: the stage sticks and the cards travel ---------- */
 
-.work-live .work { padding: 0; height: calc(100svh + 4 * 78svh + 24svh); }
+/* one project's worth of scroll (js/projects.js eases the rest of the way
+   when the scroll stops between two) */
+.work { --work-step: 240px; }
+.work-live .work { padding: 0; height: calc(100svh + (var(--n, 5) - 1) * var(--work-step) + 24svh); }
 .work-live .work__stage {
   position: sticky;
   top: 0;
@@ -425,7 +428,8 @@ a.card3__body:not([href]) { cursor: default; }
 /* ---------- the handover from the hero ----------
    Roomy screens (.work-live): the carousel starts tucked under the end of
    the hero: it reaches the top of the screen just as the camera arrives at
-   the laptop (hero progress 0.885 of its 460svh run = 53svh before its
+   the laptop (hero progress 0.885, which js/hero.js timeline() puts
+   about 45svh before the end of its 360svh run, before its
    end). It waits invisible there, then fades in exactly over the laptop
    screen, which already shows its opening view (js/hero.js sets
    --handover).
@@ -438,11 +442,11 @@ a.card3__body:not([href]) { cursor: default; }
    page at the same spot and simply scrolls on. */
 .motion.work-live .work {
   z-index: 5;
-  margin-top: calc(-100vh - 53vh);
-  margin-top: calc(-100svh - 53svh);
+  margin-top: calc(-100vh - 45vh);
+  margin-top: calc(-100svh - 45svh);
 }
 .motion.work-live .work[data-waiting] { visibility: hidden; }
-.motion.work-live .work { height: calc(100svh + 4 * 78svh + 24svh + 30svh); }
+.motion.work-live .work { height: calc(100svh + (var(--n, 5) - 1) * var(--work-step) + 24svh + 30svh); }
 .motion.work-live .work__stage { opacity: var(--handover, 1); }
 /* a backdrop only while it covers the end of the hero; after that the
    page's own paper and grain show through, so there is no seam */
@@ -481,10 +485,10 @@ a.card3__body:not([href]) { cursor: default; }
    row stick in the middle of the screen while the page's scroll slides the
    row; only that block sticks (--stage-h, measured), so About follows right
    under it, with no empty paper. The section is just tall enough for the
-   ride: (100svh + the block) / 2, plus 55svh per project after the first.
+   ride: (100svh + the block) / 2, plus --work-step per project after the first.
    The row doesn't snap by itself (the script settles a swipe on a project). */
 .motion.work-rowdrive .work {
-  height: calc((100svh + var(--stage-h, 100svh)) / 2 + (var(--n, 5) - 1) * 55svh);
+  height: calc((100svh + var(--stage-h, 100svh)) / 2 + (var(--n, 5) - 1) * var(--work-step));
   padding-bottom: 0;
 }
 .motion.work-rowdrive .work__stage,
@@ -543,7 +547,7 @@ a.card3__body:not([href]) { cursor: default; }
   .card3__cta { padding: 8px 12px 9px; font-size: var(--t-label); }
   .card3__head { margin-bottom: 10px; }
   /* a plain swipe row (js/projects.js): flat cards, each snapping to the
-     middle with the next one peeking in, and the dots under it */
+     middle with the next one peeking in */
   .work-row .work__cards {
     gap: 12px;
     padding-left: calc((100% - 82vw) / 2);
@@ -552,7 +556,9 @@ a.card3__body:not([href]) { cursor: default; }
   }
   .work-row .work__cards .card3 { flex-basis: 82vw; }
 
-  .work-row .work__dots { display: flex; justify-content: center; gap: 6px; margin-top: 6px; }
+  /* no dots on phones: the cards peeking in at the sides say there's more */
+  .work-row .work__dots,
+  .motion.work-rowdrive .work__dots { display: none; }
   /* no drop shadow: the row scrolls sideways, which clips it to a hard
      grey edge under the cards */
   .work-row .card3__body { box-shadow: 0 0 0 1px rgba(36, 34, 31, 0.07); }
@@ -606,6 +612,10 @@ a.card3__body:not([href]) { cursor: default; }
 .work-rowlens .work__cards .card3 { flex-basis: min(70vw, 460px); }
 .work-rowlens .card3__head { opacity: clamp(0, calc((var(--f, 1) - 0.5) * 2), 1); transition: none; }
 .work-rowlens .card3__cta { opacity: clamp(0, calc((var(--f, 1) - 0.6) * 2.5), 1); }
+
+/* over the gallery the header keeps its paper tint, without the stacked
+   blur (costly over cards that move every frame; only paper is there) */
+.work-pinned .dock__blur i { display: none; }
 
 /* ---------- Spatial Key's card (js/projects.js) ----------
    Over the projects, which stay where they are underneath. */
@@ -698,7 +708,7 @@ html:has(.keycard[open]) { overflow: hidden; }
 
 /* ---------- "Scroll down": the page goes on below ----------
    Shown once the last project is in focus (data-end, js/projects.js). The
-   words stay still; only the thin arrow drifts down and back. On roomy
+   words and the chevron under them stay still. On roomy
    screens it sits at the foot of the stage; in the row (tablets, phones)
    it follows the dots. */
 .work__hint {
@@ -722,18 +732,10 @@ html:has(.keycard[open]) { overflow: hidden; }
   transition: opacity 0.5s ease 0.15s, visibility 0s;
 }
 .work__hint-arrow { display: block; width: 14px; height: 14px; }
-.work[data-end] .work__hint-arrow { animation: work-hint 1.5s ease-in-out infinite; }
-@keyframes work-hint {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(6px); }
-}
 .work-live .work__hint {
   position: absolute;
   left: 0;
   right: 0;
   bottom: clamp(24px, 4.5svh, 44px);
   margin: 0;
-}
-@media (prefers-reduced-motion: reduce) {
-  .work[data-end] .work__hint-arrow { animation: none; }
 }
