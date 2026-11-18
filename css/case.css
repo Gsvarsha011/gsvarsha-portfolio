@@ -17,7 +17,7 @@
                     round previous / next buttons), .tallpair (a tall screen
                     beside wide ones), .seq (versions in order), .motion
                     (screen recordings in rows), .phones (phone screens)
-     .cs-pager    previous and next, each with its home-card picture
+     .more        more projects: the other four, as cards
    then the site's own footer (css/outro.css, js/outro.js,
    js/footer.bundle.js). Tokens from css/base.css. js/case.js: the
    contents' current section, the carousels, the recordings playing, and
@@ -647,35 +647,76 @@
 .funnel__col:last-child li { background: var(--ink); box-shadow: none; color: var(--paper); }
 .funnel__col:last-child li span { color: rgba(243, 239, 231, 0.6); }
 
-/* ---------- previous and next ---------- */
-.cs-pager {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 24px;
-  margin: clamp(72px, 11vh, 128px) 0 0;
+/* ---------- more projects: the other four, as cards ---------- */
+.more { margin: clamp(80px, 12vh, 140px) 0 0; padding-bottom: clamp(64px, 10vh, 112px); }
+.more__title {
+  margin: 0 0 clamp(20px, 2.4vw, 28px);
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(36, 34, 31, 0.12);
+  color: var(--muted);
+  font-weight: inherit;
 }
-.cs-pager__link {
-  display: flex;
-  align-items: center;
-  gap: clamp(14px, 1.4vw, 20px);
-  min-width: 0;
+.more__list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(16px, 2vw, 28px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.more__card { display: block; color: var(--ink); text-decoration: none; }
+.more__pic {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+  border-radius: 10px;
+  background: #E9E1D5;
+  box-shadow: var(--frame);
+}
+.more__pic img { display: block; width: 100%; height: 100%; object-fit: cover; transition: scale 0.9s var(--ease-out); }
+.more__text { display: block; }
+.more__name { display: block; margin-top: 14px; font-size: var(--t-lead); line-height: 1.3; transition: color 0.3s ease; }
+.more__kind { display: block; margin-top: 4px; font-size: var(--t-small); line-height: 1.4; color: var(--muted); }
+.more__card:hover .more__pic img { scale: 1.05; }
+.more__card:hover .more__name { color: var(--terra); }
+.more__card:focus-visible { outline: 2px solid var(--ink); outline-offset: 6px; border-radius: 10px; }
+/* Spatial Key: frosted glass and a lock, as on the home page */
+.more__seal {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(243, 239, 231, 0.35);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+.more__lock {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(243, 239, 231, 0.85);
+  box-shadow: 0 1px 2px rgba(36, 34, 31, 0.08);
   color: var(--ink);
-  text-decoration: none;
 }
-.cs-pager__link--next { margin-left: auto; text-align: right; }
-.cs-pager__text { display: grid; gap: 6px; min-width: 0; }
-.cs-pager__label { display: inline-flex; align-items: center; gap: 10px; color: var(--muted); }
-.cs-pager__link--next .cs-pager__label { justify-content: flex-end; }
-.cs-pager__label svg { width: 15px; height: 15px; transition: transform 0.35s var(--ease-out); }
-.cs-pager__name { font-size: var(--t-lead); line-height: 1.3; transition: color 0.3s ease; }
-.cs-pager__pic { flex: none; overflow: hidden; width: clamp(72px, 6.4vw, 96px); aspect-ratio: 16 / 10; border-radius: 6px; background: #E9E1D5; box-shadow: var(--frame); }
-.cs-pager__pic img { display: block; width: 100%; height: 100%; object-fit: cover; transition: scale 0.9s var(--ease-out); }
-.cs-pager__link:hover .cs-pager__name { color: var(--terra); }
-.cs-pager__link--prev:hover svg { transform: translateX(-3px); }
-.cs-pager__link--next:hover svg { transform: translateX(3px); }
-.cs-pager__link:hover .cs-pager__pic img { scale: 1.06; }
-.cs-pager__link:focus-visible { outline: 2px solid var(--terra); outline-offset: 6px; border-radius: 6px; }
+.more__lock svg { width: 40%; height: auto; overflow: visible; }
+.more__shackle { transition: translate 0.4s var(--ease-out); }
+.more__card--locked:hover .more__shackle,
+.more__card--locked:focus-visible .more__shackle { translate: 0 -26px; }
+@media (max-width: 900px) {
+  .more__list { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 32px; }
+}
+@media (max-width: 480px) {
+  .more__list { gap: 24px 14px; }
+  .more__name { margin-top: 10px; font-size: var(--t-body); }
+  .more__kind { font-size: var(--t-label); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .more__pic img, .more__shackle { transition: none; }
+}
+}
 
 /* focus, for everything else */
 .case main a:focus-visible { outline: 2px solid var(--terra); outline-offset: 3px; border-radius: 3px; }
@@ -740,7 +781,6 @@
   .aims { grid-template-columns: 1fr; }
   .aims li { min-height: 0; }
   .flow ol { grid-template-columns: 1fr 1fr; row-gap: 18px; }
-  .cs-pager__pic { display: none; }
   .cs-intro { gap: 20px 32px; }
   /* the buttons sit inside the frame */
   .car__btn { --size: 38px; }

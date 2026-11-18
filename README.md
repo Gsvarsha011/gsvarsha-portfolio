@@ -268,9 +268,11 @@ frames and its words centred between them.
   terracotta box on the page saying what goes there (team, feedback,
   quotes, outcomes, numbers). Replace it with `prose`, `point` or `quote`
   once you have the words.
-- **Previous / next**, at the end: each project's home-card picture beside
-  "Previous" or "Next" and its name, wrapping round from the last to the
-  first (`.cs-pager`; the pictures drop on phones).
+- **More projects**, at the end, above the footer: the other projects as
+  cards in the home page's order, each with its home-card picture, name and
+  kind (`.more`; four across, two on tablets and phones). Spatial Key sits
+  under frosted glass with a lock and leads to Connect. The names and kinds
+  are in `KINDS` in tools/make-cases.py.
 - **Blocks:** `lead`, `prose`, `point` (a bold one-line takeaway, then a
   line that explains it; never numbered), `quote` (what someone said, and
   who), `pull` (one sentence said a little louder), `aims` (short

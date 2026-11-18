@@ -229,8 +229,10 @@ def annot_ph(project, kind, what, path, ratio, title, notes, note=""):
     return box.replace(caption(what), f"<figcaption><ol>{items}</ol></figcaption>")
 
 
-CHEV = '<svg viewBox="0 0 8 12" aria-hidden="true"><path d="{}" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>'
-CHEV_L, CHEV_R = CHEV.format("M6.5 1 1.5 6l5 5"), CHEV.format("M1.5 1l5 5-5 5")
+# carets, as on the published pages
+CHEV = '<svg viewBox="0 0 256 256" fill="currentColor" aria-hidden="true" focusable="false"><path d="{}"/></svg>'
+CHEV_L = CHEV.format("M164.24,203.76a6,6,0,1,1-8.48,8.48l-80-80a6,6,0,0,1,0-8.48l80-80a6,6,0,0,1,8.48,8.48L88.49,128Z")
+CHEV_R = CHEV.format("M180.24,132.24l-80,80a6,6,0,0,1-8.48-8.48L167.51,128,91.76,52.24a6,6,0,0,1,8.48-8.48l80,80A6,6,0,0,1,180.24,132.24Z")
 
 
 def carousel(slides, title=None):
@@ -499,6 +501,13 @@ THUMBS = {
     "craft": ("../assets/projects/craft-thumb.webp", 1672, 941),
     "flex-academy": ("../assets/projects/flex-thumb.webp", 1536, 1024),
 }  # where future Figma / FigJam exports go
+# what each project is, as its home card says, in the home page's order
+KINDS = {
+    "spatiallite": "Product design · PropTech",
+    "spacture-ai": "Website redesign · AI",
+    "craft": "Website design & implementation",
+    "flex-academy": "Website design",
+}
 
 PROJECTS = []
 
@@ -988,8 +997,6 @@ DOCK = i0[i0.index('  <div class="dock__blur"'):i0.index("  </header>") + len(" 
 
 
 def page(p, i):
-    n = len(PROJECTS)
-    nxt = PROJECTS[(i + 1) % n]
     name = p["name"]
     # the facts, beside the title: a small label over each answer
     row = lambda k, v: f'<div><dt>{e(k)}</dt><dd>{v}</dd></div>'
@@ -1059,17 +1066,24 @@ def page(p, i):
         <p class="keycard__address" data-email-plain></p>
       </dialog>'''
 
-    # previous and next, each with its own home-card picture, as on the home page
-    prv = PROJECTS[(i - 1) % n]
+    # More projects: every other project as a card, in home-page order,
+    # each with its home-card picture. Spatial Key has no case study, so its
+    # card sits under frosted glass with a lock and leads to Connect below
+    lock = ('<svg viewBox="0 0 256 256" fill="currentColor" focusable="false"><path class="more__shackle" d="M80,80V56a48,48,0,0,1,96,0V80H160V56a32,32,0,0,0-64,0V80Z"/>'
+            '<path d="M48,80H208a16,16,0,0,1,16,16V208a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V96A16,16,0,0,1,48,80Z"/></svg>')
 
-    def pager(q, way):
+    def more_card(q):
         t_src, t_w, t_h = THUMBS[q["slug"]]
-        pic = f'<span class="cs-pager__pic">{img(t_src, t_w, t_h, "", cls="")}</span>'
-        label = (CHEV_L + " Previous") if way == "prev" else ("Next " + CHEV_R)
-        text = (f'<span class="cs-pager__text"><span class="tag cs-pager__label">{label}</span>'
-                f'<span class="cs-pager__name">{e(q["name"])}</span></span>')
-        inner = pic + text if way == "prev" else text + pic
-        return f'<a class="cs-pager__link cs-pager__link--{way}" href="{q["slug"]}.html" rel="{way}">{inner}</a>'
+        return (f'<li><a class="more__card" href="{q["slug"]}.html">'
+                f'<span class="more__pic">{img(t_src, t_w, t_h, "", cls="")}</span>'
+                f'<span class="more__text"><span class="more__name">{e(q["name"])}</span><span class="more__kind">{e(KINDS[q["slug"]])}</span></span></a></li>')
+    by_slug = {q["slug"]: q for q in PROJECTS}
+    others = [more_card(by_slug[s]) for s in KINDS if s != p["slug"]]
+    others.append(f'<li><a class="more__card more__card--locked" href="#contact" aria-label="Spatial Key is a private project. Connect to have a look">'
+                  f'<span class="more__pic">{img("../assets/projects/spatial-key-thumb.webp", 1672, 941, "", cls="")}'
+                  f'<span class="more__seal" aria-hidden="true"><span class="more__lock">{lock}</span></span></span>'
+                  f'<span class="more__text"><span class="more__name">Spatial Key</span><span class="more__kind">Private project</span></span></a></li>')
+    more = "".join(others)
 
     folder = ('<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linejoin="round" aria-hidden="true">'
               '<path d="M1.8 4.2c0-.7.5-1.2 1.2-1.2h3.3l1.5 1.7H13c.7 0 1.2.5 1.2 1.2v6.4c0 .7-.5 1.2-1.2 1.2H3c-.7 0-1.2-.5-1.2-1.2z"/></svg>')
@@ -1104,12 +1118,12 @@ def page(p, i):
       </nav>
       <div class="cs-story">
 {"".join(secs)}
-      <nav class="cs-pager" aria-label="More projects" data-reveal>
-        {pager(prv, "prev")}
-        {pager(nxt, "next")}
-      </nav>
       </div>
-      </div>{contact}
+      </div>
+      <nav class="more" aria-labelledby="more-h" data-reveal>
+        <h2 class="tag more__title" id="more-h">More projects</h2>
+        <ul class="more__list">{more}</ul>
+      </nav>{contact}
     </article>
     </div>
   </main>
