@@ -106,7 +106,7 @@
 
 /* ---------- the scroll sequence ---------- */
 
-.motion .hero { height: 560vh; height: 560svh; }
+.motion .hero { height: 460vh; height: 460svh; }
 .motion .hero__pin {
   position: sticky;
   top: 0;

@@ -68,7 +68,10 @@ the `<head>` script of `index.html`. To see it again, open a new tab or add
 
 ## The sequence
 
-The hero is 560svh tall and its pin sticks for 460svh. Everything is a
+The hero is 460svh tall and its pin sticks for 360svh. The scroll plays
+the timeline unevenly (`timeline()` in `js/hero.js`): the name and roles
+quickly (~100svh to the middle of the hold), the camera and the lid with
+more room (~260svh). Everything is a
 function of scroll progress (eased slightly), so it also plays backwards.
 
 | Progress | What happens |
@@ -131,7 +134,16 @@ versions; the case-study links are empty until those pages exist.
 After the hero, `#work` is a gallery that travels through a curved field of
 focus as you scroll (`js/projects.js`, `css/projects.css`). The section is
 tall and its stage sticks inside it; scrolling moves the row sideways. It
-slows as each project comes into focus but never stops between them.
+never rests between two projects. The scroll is the browser's own; when
+it stops part-way between two, the page eases the rest of the way (soft at
+both ends, about half a second; `settleRow` / `easeTo` in
+`js/projects.js`), on to the next project once you're a quarter of the way
+there, otherwise back. Any new scroll, swipe, key or touch stops it at
+once. A single mouse-wheel click moves exactly one project; a sideways
+trackpad swipe moves the row just as an up-down scroll does (same amount,
+at once, with its momentum), then settles the same way.
+On phones the
+lens bends more gently (`uWarp` 0.1, `uK` 0.32 in `draw()`; desktop 0.5 and 0.15, so on desktop the cards beside the one in focus run right off the screen's edges and no further project peeks in).
 
 - **The lens.** The cards are drawn in WebGL on one canvas behind the
   gallery (`createLens` in `js/projects.js`), as if the row ran round the
@@ -177,8 +189,8 @@ slows as each project comes into focus but never stops between them.
 - It is also what the 3D laptop shows: `paintWork` draws the gallery's
   opening view onto the laptop's screen, and the real gallery fades in over
   it as the camera arrives.
-- Phones and short windows: the same lens over a row. The heading, the row
-  and a line of dots (the current project a terracotta dash) stick in the
+- Phones and short windows: the same lens over a row (phones included). The
+  heading and the row (plus a line of dots on tablets; none on phones) stick in the
   middle of the screen while the page's scroll slides the row, eased like
   desktop so it rests on each project (`.work-rowdrive`, `driveRow`); a
   sideways swipe moves it too, the page's scroll follows, and when the swipe

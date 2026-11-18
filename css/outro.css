@@ -289,8 +289,13 @@
 /* phones */
 @media (max-width: 600px) {
   .foot { --me-w: 190px; }
-  .fpanel { padding-top: 40px; padding-bottom: calc(var(--me-w) * 1.05 + 110px); }
+  .fpanel { padding-top: 40px; padding-bottom: calc(var(--me-w) * 1.05 + 150px); }
   .foot__say { max-width: min(14rem, calc(100vw - 90px)); }
+  /* the © on its own line along the bottom, centred, with clear room
+     between it and you (and the racket) above it */
+  .foot__me { bottom: 44px; }
+  .sig { bottom: 88px; }
+  .fpanel__copy { left: 0; right: 0; bottom: 18px; text-align: center; }
 }
 @media (max-width: 400px) {
   .fchip { width: 46px; height: 46px; }

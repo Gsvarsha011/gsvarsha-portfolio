@@ -11,7 +11,7 @@
 // On a first visit the greeting (js/loader.js) plays first; when it rolls
 // away the name rises and the desk builds itself in (introAt / setIntro).
 //
-// Timeline (progress through the pin):
+// Timeline (progress, mapped from the scroll by timeline() below):
 //   0.03 – 0.20   the name rolls up and out
 //   0.09 – 0.27   the roles roll in, the introduction rises in
 //   0.27 – 0.40   hold
@@ -212,14 +212,25 @@ initAbout();
     hey.style.setProperty("--by", `${(s.y + bubbleBox.dy).toFixed(1)}px`);
   }
 
+  // The scroll doesn't play the timeline evenly: the opening (the name, the
+  // roles, the introduction) moves along quickly, and the camera's swing and
+  // the lid opening get more room, so they never feel rushed. The two speeds
+  // meet in the middle of the hold (KNEE), where nothing is moving.
+  // Pin 360svh: up to the knee ~100svh, the rest ~260svh.
+  const KNEE_S = 0.275, KNEE_P = 0.33;
+  const timeline = (s) => (s <= KNEE_S ? (s / KNEE_S) * KNEE_P : KNEE_P + ((s - KNEE_S) / (1 - KNEE_S)) * (1 - KNEE_P));
   function progress() {
     const r = hero.getBoundingClientRect();
     const total = r.height - pin.offsetHeight;
-    return total > 0 ? clamp01(-r.top / total) : 0;
+    return total > 0 ? timeline(clamp01(-r.top / total)) : 0;
   }
 
   function draw(now, dt) {
     const t = motion ? now / 1000 : 4.0;
+    // once the projects cover the hero (from 0.93 on, their stage has its
+    // own paper), nothing here can be seen: draw nothing at all, not even
+    // the moving paper, so the projects have the whole frame to themselves
+    if (motion && painted && pSmooth >= 0.93 && !dirty && introAt(now) >= 1) return;
     if (paper) {
       paper.uniforms.uTime.value = t;
       paper.uniforms.uGrainTick.value = Math.floor(t * 10) % 1000;

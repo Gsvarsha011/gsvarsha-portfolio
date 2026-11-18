@@ -61,8 +61,8 @@
     });
   }
   const roomy = matchMedia("(min-width: 900px) and (min-height: 620px)");
-  // phones: flat cards, no lens (it distorts too much at this size); the
-  // page's scroll still moves the row from one project to the next
+  // phones: the same lens over the row as tablets, so the neighbours curve
+  // away at the sides as you move from one project to the next
   const phone = matchMedia("(max-width: 760px)");
 
   // Opened straight from disk (file://), WebGL may not read the cards'
@@ -193,7 +193,7 @@
       in vec2 aPos;
       uniform vec2 uView;
       uniform vec4 uCard; // centre x, centre y, width, height (px, flat)
-      uniform float uFlat, uWarp;
+      uniform float uFlat, uWarp, uK, uShape;
       out vec2 vUv;
       out float vD;
       void main() {
@@ -208,7 +208,7 @@
         // slope but the bend itself starts from nothing: no visible crease
         // where the flat middle ends.
         float t = max(0.0, d - uFlat) / (1.0 - uFlat);
-        float k = 0.55, w = 0.35;
+        float k = uK, w = 0.35;
         float lost = (t - (1.0 - exp(-k * t)) / k) * smoothstep(0.0, w, t);
         float dd = d - (1.0 - uFlat) * lost;
         p.x = half_ + side * dd * half_;
@@ -216,7 +216,13 @@
         // towards a ceiling it never passes, so whatever lies past the
         // edge of the screen doesn't flare (smooth everywhere, no kink)
         float s = max(0.0, dd - uFlat) / (1.0 - uFlat);
-        p.y = uCard.y + (p.y - uCard.y) * (1.0 + uWarp * (1.0 - exp(-1.5 * s * s)) / (1.0 - exp(-1.5)));
+        // uShape 0 (phones): eases in and levels off towards the edge.
+        // uShape 1 (desktop): like the inside of a cylinder, flat at the
+        // card's inner edge and curving out faster and faster towards the
+        // screen's edge (kept within reason past it)
+        float sc = min(s, 1.6);
+        float grow = mix((1.0 - exp(-1.5 * s * s)) / (1.0 - exp(-1.5)), sc * sc, uShape);
+        p.y = uCard.y + (p.y - uCard.y) * (1.0 + uWarp * grow);
         vUv = aPos;
         vD = dd;
         gl_Position = vec4(p.x / uView.x * 2.0 - 1.0, 1.0 - p.y / uView.y * 2.0, 0.0, 1.0);
@@ -227,30 +233,35 @@
       in float vD;
       uniform sampler2D uTex;
       uniform vec2 uSize;     // the card, css px
-      uniform float uDpr, uRadius, uMaxBlur, uBlurFrom, uFadeFrom;
+      uniform float uDpr, uRadius, uMaxBlur, uBlurFrom, uFadeFrom, uFade;
       out vec4 outColor;
       void main() {
         float b = uMaxBlur * smoothstep(uBlurFrom, 0.98, vD); // blur, css px
         // sharp and blurred, always both, blended by b: no seam where the
         // blur begins
         vec4 sharp = texture(uTex, vUv);
-        float lod = log2(1.0 + b * uDpr * 0.6);
-        vec2 r = vec2(b) / uSize;
-        vec4 blurred = textureLod(uTex, vUv, lod) * 2.0;
-        for (int i = 0; i < 12; i++) {
-          float a = 6.2831853 * (float(i) + 0.5) / 12.0;
-          float k = (i % 2 == 0) ? 1.0 : 0.55;
-          blurred += textureLod(uTex, vUv + vec2(cos(a), sin(a)) * r * k, lod);
+        vec4 c = sharp;
+        // (most of the screen is sharp: only blur where there is blur, so
+        // each frame costs little and the glide stays smooth)
+        if (b > 0.02) {
+          float lod = log2(1.0 + b * uDpr * 0.6);
+          vec2 r = vec2(b) / uSize;
+          vec4 blurred = textureLod(uTex, vUv, lod) * 2.0;
+          for (int i = 0; i < 12; i++) {
+            float a = 6.2831853 * (float(i) + 0.5) / 12.0;
+            float k = (i % 2 == 0) ? 1.0 : 0.55;
+            blurred += textureLod(uTex, vUv + vec2(cos(a), sin(a)) * r * k, lod);
+          }
+          blurred /= 14.0;
+          c = mix(sharp, blurred, smoothstep(0.0, 1.2, b));
         }
-        blurred /= 14.0;
-        vec4 c = mix(sharp, blurred, smoothstep(0.0, 1.2, b));
         // the card's rounded edge, softer as it blurs
         vec2 px = vUv * uSize;
         vec2 q = abs(px - uSize * 0.5) - (uSize * 0.5 - uRadius);
         float sd = length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - uRadius;
         float soft = max(0.6, b * 0.9);
         float mask = 1.0 - smoothstep(-soft, soft, sd);
-        float fade = smoothstep(uFadeFrom, 1.0, vD) * 0.35;
+        float fade = smoothstep(uFadeFrom, 1.0, vD) * uFade;
         float a = mask * (1.0 - fade);
         outColor = vec4(c.rgb * a, a);
       }`;
@@ -284,7 +295,7 @@
     gl.enableVertexAttribArray(aPos);
     gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
     const U = {};
-    for (const k of ["uView", "uCard", "uFlat", "uWarp", "uTex", "uSize", "uDpr", "uRadius", "uMaxBlur", "uBlurFrom", "uFadeFrom"]) U[k] = gl.getUniformLocation(prog, k);
+    for (const k of ["uView", "uCard", "uFlat", "uWarp", "uK", "uShape", "uTex", "uSize", "uDpr", "uRadius", "uMaxBlur", "uBlurFrom", "uFadeFrom", "uFade"]) U[k] = gl.getUniformLocation(prog, k);
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
@@ -327,12 +338,26 @@
       const flat = Math.min(0.9, (CW / 2 + GAP * 0.5) / (W / 2));
       gl.uniform2f(U.uView, W, H);
       gl.uniform1f(U.uFlat, flat);
-      gl.uniform1f(U.uWarp, 0.3);
+      // phones: a gentler bend, so the cards at the sides don't look
+      // stretched (less height at the edge, a softer turn)
+      const small = phone.matches && !live;
+      // desktop: the row curves round you like the inside of a cylinder.
+      // The cards beside the one in focus are barely squeezed, so each runs
+      // from its inner edge right off the side of the screen (no further
+      // project peeks in), growing taller towards the edge (about 1.5x
+      // there, its top and bottom curving out from the inner edge) and
+      // softening and fading into the paper as they go
+      gl.uniform1f(U.uWarp, small ? 0.1 : 0.5);
+      gl.uniform1f(U.uK, small ? 0.32 : 0.15);
+      gl.uniform1f(U.uShape, small ? 0 : 1);
       gl.uniform1f(U.uDpr, dpr);
       gl.uniform1f(U.uRadius, 14);
-      gl.uniform1f(U.uMaxBlur, 4);
-      gl.uniform1f(U.uBlurFrom, Math.min(0.9, flat + (1 - flat) * 0.45));
-      gl.uniform1f(U.uFadeFrom, Math.min(0.95, flat + (1 - flat) * 0.6));
+      gl.uniform1f(U.uMaxBlur, small ? 4 : 5);
+      gl.uniform1f(U.uFade, small ? 0.35 : 0.18);
+      // (desktop: clear for most of the side cards, softening with blur only
+      // towards the screen's edge, and only a slight fade right at it)
+      gl.uniform1f(U.uBlurFrom, small ? Math.min(0.9, flat + (1 - flat) * 0.45) : flat + (1 - flat) * 0.55);
+      gl.uniform1f(U.uFadeFrom, small ? Math.min(0.95, flat + (1 - flat) * 0.6) : flat + (1 - flat) * 0.8);
       gl.uniform2f(U.uSize, CW, BODY);
       gl.uniform1i(U.uTex, 0);
       gl.activeTexture(gl.TEXTURE0);
@@ -443,8 +468,9 @@
     const target = rowAt(progress());
     const dt = Math.min(0.05, Math.max(0.001, (now - lastT) / 1000));
     lastT = now;
-    if (shown === null) shown = target;
-    else shown += (target - shown) * (1 - Math.exp(-dt * 6.5));
+    // the scroll itself is already smooth (and the snap glides it): the
+    // row follows it exactly, with no lag
+    shown = target;
     if (Math.abs(target - shown) < 0.0004) shown = target;
     place(shown);
     if (shown !== target) {
@@ -580,7 +606,7 @@
     if (touching) return;
     swiping = false;
     const i = Math.max(0, Math.min(n - 1, Math.round(row.scrollLeft / stepNow())));
-    scrollTo({ top: scrollForFrac(fracFor(i)), behavior: reduce.matches ? "auto" : "smooth" });
+    scrollToProject(i);
   }
   // a touch on the row is a swipe only once it moves more sideways than up
   // or down; a vertical drag over the cards is the page's own scroll, which
@@ -619,6 +645,163 @@
     }
   }, { passive: true });
 
+  /* ---------- one project at a time ----------
+     The scroll is the browser's own (smooth, with its momentum). Only when
+     it comes to rest part-way between two projects does the page ease the
+     rest of the way, gently (easeInOut, soft at both ends), on to the next
+     project in the direction you were going once you're a quarter of the
+     way there, otherwise back. Any new scroll, swipe, key or touch stops
+     the ease at once, so it never fights you. The hero above and About
+     below are never touched. */
+  const settleEase = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+  let easing = false, easeRaf = 0, lastY = scrollY, lastDirY = 0, fingers = 0, idleTimer = 0;
+  // where the row is in project steps (may run past 0 above the first, or
+  // past n - 1 below the last)
+  function rawNow() {
+    if (live) {
+      const r = section.getBoundingClientRect();
+      const L = lead();
+      const total = section.offsetHeight - innerHeight - L;
+      return total > 0 ? ((-r.top - L) / total) * (n - 1) : 0;
+    }
+    if (drive) {
+      const total = driveTotal();
+      return total > 0 ? (-section.getBoundingClientRect().top / total) * (n - 1) : 0;
+    }
+    return null;
+  }
+  // the scroll (from the section's top) that shows project i in place
+  function offsetFor(i) {
+    if (drive) return (i / (n - 1)) * driveTotal();
+    const L = lead();
+    return L + (i / (n - 1)) * (section.offsetHeight - innerHeight - L);
+  }
+  const settling = () => (live || drive) && !reduce.matches && n > 1;
+  function stopEase() {
+    if (!easing) return;
+    cancelAnimationFrame(easeRaf);
+    easing = false;
+  }
+  function easeTo(y) {
+    stopEase();
+    const y0 = scrollY, d = y - y0;
+    if (Math.abs(d) < 1) return;
+    if (reduce.matches) { scrollTo({ top: y, behavior: "instant" }); return; }
+    // a short way: a little over half a second; further: up to 0.9s
+    const dur = Math.min(900, 520 + Math.abs(d) * 0.9);
+    const t0 = performance.now();
+    easing = true;
+    const frame = (now) => {
+      if (!easing) return;
+      const t = Math.min(1, (now - t0) / dur);
+      scrollTo({ top: y0 + d * settleEase(t), behavior: "instant" });
+      // the row follows this very frame (not only on the scroll event)
+      if (live) { shown = rowAt(progress()); place(shown); }
+      else if (drive) driveRow();
+      if (t < 1) easeRaf = requestAnimationFrame(frame);
+      else { easing = false; lastY = scrollY; }
+    };
+    easeRaf = requestAnimationFrame(frame);
+  }
+  // the page's scroll to project i, eased
+  function scrollToProject(i) {
+    i = Math.max(0, Math.min(n - 1, i));
+    easeTo(section.getBoundingClientRect().top + scrollY + offsetFor(i));
+  }
+  // at rest between two projects: ease on (or back)
+  function settleRow() {
+    if (!settling() || easing || fingers > 0 || touching || swiping) return;
+    if (document.querySelector("dialog[open]")) return;
+    const raw = rawNow();
+    if (raw === null || raw <= 0.003 || raw >= n - 1.003) return; // not between two
+    const lo = Math.floor(raw), f = raw - lo;
+    if (f < 0.003 || f > 0.997) return; // already on one
+    const to = lastDirY > 0 ? (f > 0.25 ? lo + 1 : lo) : lastDirY < 0 ? (f < 0.75 ? lo : lo + 1) : Math.round(raw);
+    scrollToProject(to);
+  }
+  const queueSettle = (wait) => {
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(settleRow, wait);
+  };
+  addEventListener("scroll", () => {
+    if (easing) return; // its own steps
+    const y = scrollY;
+    if (y !== lastY) lastDirY = Math.sign(y - lastY);
+    lastY = y;
+    // (a pause in the scroll; scrollend, where there is one, says it sooner)
+    queueSettle(hasScrollEnd ? 260 : 140);
+  }, { passive: true });
+  const hasScrollEnd = "onscrollend" in window;
+  if (hasScrollEnd) addEventListener("scrollend", () => { if (!easing) queueSettle(30); });
+  // anything you do stops the ease
+  addEventListener("wheel", stopEase, { passive: true });
+  addEventListener("keydown", stopEase);
+  addEventListener("mousedown", stopEase);
+  addEventListener("touchstart", (e) => { fingers = e.touches.length; stopEase(); clearTimeout(idleTimer); }, { passive: true });
+  const liftAll = (e) => { fingers = e.touches.length; if (!fingers) queueSettle(200); };
+  addEventListener("touchend", liftAll, { passive: true });
+  addEventListener("touchcancel", liftAll, { passive: true });
+
+  // while the gallery fills the screen (html.work-pinned), the header's
+  // stacked blur rests: there's only paper behind it there, and blurring a
+  // picture that changes every frame is costly (css/projects.css)
+  function markPinned() {
+    const r = section.getBoundingClientRect();
+    const on = (live || drive) && r.top <= 1 && r.bottom >= innerHeight - 1;
+    if (on !== root.classList.contains("work-pinned")) root.classList.toggle("work-pinned", on);
+  }
+  addEventListener("scroll", markPinned, { passive: true });
+
+  // A mouse wheel's single click (a lone, large step; a trackpad sends a
+  // stream of small ones) moves exactly one project, glided by the browser:
+  // with the room each project has, one click on its own wouldn't reach
+  // the next one's snap. Up from the first and down from the last, the
+  // page scrolls on as usual.
+  let lastWheel = 0;
+  addEventListener("wheel", (e) => {
+    const now = performance.now();
+    const gap = now - lastWheel;
+    lastWheel = now;
+    if (!live || e.ctrlKey || (side && now - sideT < 180)) return; // mid sideways swipe
+    if (Math.abs(e.deltaX) >= Math.abs(e.deltaY)) return;
+    const notch = e.deltaMode === 1 || Math.abs(e.deltaY) >= 60;
+    if (!notch || gap < 200) return;
+    const r = section.getBoundingClientRect();
+    if (r.top > 1 || r.bottom < innerHeight - 1) return; // not pinned
+    const raw = rawNow();
+    const here = Math.max(0, Math.min(n - 1, Math.round(raw)));
+    const to = here + Math.sign(e.deltaY);
+    if (to < 0 || to > n - 1 || raw < -0.05) return;
+    e.preventDefault();
+    scrollToProject(to);
+  }, { passive: false });
+
+  // A sideways swipe on a trackpad moves the row exactly as an up-down
+  // scroll does: the page scrolls by the same amount, at once, with the
+  // trackpad's own momentum, and when it stops between two projects the
+  // same soft settle eases it onto one (settleRow). It stays within the
+  // projects, and while the gallery fills the screen a sideways swipe never
+  // reaches the browser, so it can't trigger Back / Forward.
+  let side = false, sideT = 0;
+  addEventListener("wheel", (e) => {
+    if (!live || e.ctrlKey) return;
+    const now = performance.now();
+    if (now - sideT > 180) side = false;
+    const sideways = Math.abs(e.deltaX) > Math.abs(e.deltaY);
+    if (!sideways && !side) return;
+    const r = section.getBoundingClientRect();
+    if (r.top > 1 || r.bottom < innerHeight - 1) return; // not pinned
+    e.preventDefault();
+    side = true;
+    sideT = now;
+    const dx = e.deltaX * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? innerWidth : 1);
+    if (!dx) return;
+    const base = section.getBoundingClientRect().top + scrollY;
+    const lo = Math.min(scrollY, base + offsetFor(0)), hi = Math.max(scrollY, base + offsetFor(n - 1));
+    const y = Math.max(lo, Math.min(hi, scrollY + dx));
+    if (y !== scrollY) scrollTo({ top: y, behavior: "instant" });
+  }, { passive: false });
+
   function setMode() {
     live = !reduce.matches && roomy.matches;
     root.classList.toggle("work-live", live);
@@ -637,7 +820,7 @@
     // from a file:// page); otherwise the cards bend in CSS instead
     if (!reduce.matches && !lens && picturesReadable()) lens = createLens();
     lensOn = live && !!lens;
-    rowLens = !live && !reduce.matches && !phone.matches && !!lens;
+    rowLens = !live && !reduce.matches && !!lens;
     ROWY = null;
     if (lens) for (const k of ["top", "left", "width", "height"]) lens.canvas.style.removeProperty(k);
     root.classList.toggle("work-lens", lensOn || rowLens);
@@ -656,6 +839,7 @@
       place(shown);
     } else onRow();
     driveRow();
+    markPinned();
     changed();
   }
 
@@ -663,19 +847,8 @@
   // focus; on the swipe row, slide to it)
   function goTo(i) {
     i = Math.max(0, Math.min(n - 1, i));
-    const behavior = reduce.matches ? "auto" : "smooth";
-    if (drive) {
-      scrollTo({ top: scrollForFrac(fracFor(i)), behavior });
-      return;
-    }
-    if (!live) {
-      row.scrollTo({ left: cards[i].offsetLeft - cards[0].offsetLeft, behavior });
-      return;
-    }
-    const top = section.getBoundingClientRect().top + scrollY;
-    const L = lead();
-    const total = section.offsetHeight - innerHeight - L;
-    scrollTo({ top: top + L + (i / (n - 1)) * total, behavior });
+    if (live || drive) { scrollToProject(i); return; }
+    row.scrollTo({ left: cards[i].offsetLeft - cards[0].offsetLeft, behavior: reduce.matches ? "auto" : "smooth" });
   }
   const onGoto = (e) => goTo(Number(e.currentTarget.dataset.goto));
   gotos.forEach((g) => g.addEventListener("click", onGoto));
@@ -691,34 +864,6 @@
     goTo(here() + (e.key === "ArrowRight" ? 1 : -1));
   });
 
-  // A sideways swipe on a trackpad (or a sideways wheel) moves the row too:
-  // it becomes the page scroll that would move the row as far, so the row
-  // follows the fingers and glides to rest just as it does for an up-down
-  // scroll. Only while the gallery fills the screen. There it never reaches
-  // the browser, so a fast swipe that runs past the first or last project
-  // can't turn into the two-finger swipe for Back or Forward; everywhere
-  // else on the page that swipe works as usual.
-  const onWheel = (e) => {
-    if (!live || e.ctrlKey) return; // ctrl: a pinch to zoom
-    const dx = e.deltaX, dy = e.deltaY;
-    if (Math.abs(dx) <= Math.abs(dy)) return;
-    const r = section.getBoundingClientRect();
-    if (r.top > 1 || r.bottom < innerHeight - 1) return; // not pinned
-    e.preventDefault();
-    const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? innerWidth : 1;
-    const L = lead();
-    const total = section.offsetHeight - innerHeight - L;
-    // one project's worth of scroll for one card's step on screen
-    const k = total / (n - 1) / (CW + GAP);
-    const top = r.top + scrollY;
-    const from = top + L, to = top + L + total;
-    const y = scrollY;
-    const want = y + dx * unit * k;
-    // stay among the projects (in the first one's rest, only go forward)
-    const next = dx < 0 ? Math.max(want, Math.min(y, from)) : Math.min(want, Math.max(y, to));
-    if (next !== y) scrollTo({ top: next, behavior: "instant" });
-  };
-  addEventListener("wheel", onWheel, { passive: false });
 
   /* ---------- the carousel's opening view, painted for the laptop ----------
    The hero's 3D laptop shows the carousel before the real one fades in
@@ -1003,6 +1148,10 @@
     const stageTop = parseFloat(getComputedStyle(stage).top) || 0;
     const origin = { left: stageBox.left, top: stageBox.top - stageTop };
 
+    // the cards at their opening view while painting (wherever the row is
+    // now), so the lens and the words painted over it always agree; then
+    // back to where the scroll has them
+    if (live) place(0);
     if (live && lensOn) {
       // the lens at the start, exactly as it draws, then the first card's
       // header line and its way in on top
@@ -1106,10 +1255,12 @@
         paintCard(ctx, cards[0], true, false);
         ctx.restore();
       }
+      // (paintCard draws the header and panel at their offsets inside the
+      // card, so it starts from the card's own corner)
       for (const li of rowLens ? [] : cards) {
-        const r = li.querySelector(".card3__body").getBoundingClientRect();
+        const r = li.getBoundingClientRect();
         ctx.save();
-        ctx.translate(r.left - origin.left + row.scrollLeft, r.top - origin.top);
+        ctx.translate(r.left - origin.left, r.top - origin.top);
         paintCard(ctx, li);
         ctx.restore();
       }
@@ -1119,6 +1270,7 @@
     }
     if ("letterSpacing" in ctx) ctx.letterSpacing = "0px";
     ctx.filter = "none";
+    if (live) { shown = rowAt(progress()); place(shown); }
   }
   window.paintWork = paintWork;
   const changed = () => document.dispatchEvent(new Event("work:changed"));
